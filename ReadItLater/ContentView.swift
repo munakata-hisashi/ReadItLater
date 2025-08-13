@@ -10,49 +10,49 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    @Query private var bookmarks: [Bookmark]
 
     var body: some View {
         NavigationSplitView {
             List {
-                ForEach(items) { item in
-                    NavigationLink(value: item) {
+                ForEach(bookmarks) { bookmark in
+                    NavigationLink(value: bookmark) {
                         VStack {
-                            Text(item.safeTitle)
-                            Text(item.id.uuidString)
+                            Text(bookmark.safeTitle)
+                            Text(bookmark.id.uuidString)
                         }
                     }
                 }
-                .onDelete(perform: deleteItems)
+                .onDelete(perform: deleteBookmarks)
             }
             .navigationTitle("Bookmarks")
-            .navigationDestination(for: Item.self, destination: BookmarkView.init)
+            .navigationDestination(for: Bookmark.self, destination: BookmarkView.init)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     EditButton()
                 }
                 ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
+                    Button(action: addBookmark) {
+                        Label("Add Bookmark", systemImage: "plus")
                     }
                 }
             }
         } detail: {
-            Text("Select an item")
+            Text("Select an Bookmark")
         }
     }
 
-    private func addItem() {
+    private func addBookmark() {
         withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
+            let newBookmark = Bookmark(url: "https://example.com")
+            modelContext.insert(newBookmark)
         }
     }
 
-    private func deleteItems(offsets: IndexSet) {
+    private func deleteBookmarks(offsets: IndexSet) {
         withAnimation {
             for index in offsets {
-                modelContext.delete(items[index])
+                modelContext.delete(bookmarks[index])
             }
         }
     }
@@ -61,6 +61,7 @@ struct ContentView: View {
 #Preview {
     let schema = Schema([
         Item.self,
+        Bookmark.self
     ])
     let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
 

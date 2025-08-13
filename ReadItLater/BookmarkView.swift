@@ -9,15 +9,15 @@ import SwiftUI
 import SwiftData
 
 struct BookmarkView: View {
-    @Bindable var item: Item
+    @Bindable var bookmark: Bookmark
 
     var body: some View {
         VStack {
-            Text(item.safeTitle)
+            Text(bookmark.safeTitle)
            
-            Text(item.maybeURL?.absoluteString ?? "No URL")
+            Text(bookmark.maybeURL?.absoluteString ?? "No URL")
         }
-        .navigationTitle(item.safeTitle)
+        .navigationTitle(bookmark.safeTitle)
         .navigationBarTitleDisplayMode(.inline)
 
     }
@@ -26,9 +26,9 @@ struct BookmarkView: View {
 #Preview {
   
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
-        let container = try! ModelContainer(for: Item.self, configurations: config)
-        let example = Item(url: "https://example.com", title: "Title")
-        BookmarkView(item: example)
+    let container = try! ModelContainer(for: Bookmark.self, configurations: config)
+    let example = Bookmark(url: "https://example.com")
+    BookmarkView(bookmark: example)
             .modelContainer(container)
 }
 
