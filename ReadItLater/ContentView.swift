@@ -16,14 +16,17 @@ struct ContentView: View {
         NavigationSplitView {
             List {
                 ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+                    NavigationLink(value: item) {
+                        VStack {
+                            Text(item.safeTitle)
+                            Text(item.id.uuidString)
+                        }
                     }
                 }
                 .onDelete(perform: deleteItems)
             }
+            .navigationTitle("Bookmarks")
+            .navigationDestination(for: Item.self, destination: BookmarkView.init)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     EditButton()
@@ -56,6 +59,12 @@ struct ContentView: View {
 }
 
 #Preview {
+    let schema = Schema([
+        Item.self,
+    ])
+    let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+
+    let modelContainer = try! ModelContainer(for: schema, migrationPlan: AppMigrationPlan.self, configurations: modelConfiguration)
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+        .modelContainer(modelContainer)
 }

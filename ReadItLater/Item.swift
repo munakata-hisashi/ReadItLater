@@ -8,11 +8,14 @@
 import Foundation
 import SwiftData
 
-@Model
-final class Item {
-    var timestamp: Date
+typealias Item = AppV1Schema.Item
+
+extension Item {
+    var safeTitle: String {
+        title ?? "No title"
+    }
     
-    init(timestamp: Date) {
-        self.timestamp = timestamp
+    var maybeURL: URL? {
+        URL(string: url ?? "")
     }
 }
