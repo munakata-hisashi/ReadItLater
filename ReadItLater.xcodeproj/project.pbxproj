@@ -30,6 +30,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		63507E752E4DE87A001679E9 /* Exceptions for "ReadItLaterTests" folder in "ReadItLaterTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				BookmarkTitleTests.swift,
+			);
+			target = 63B6ACB32E3E038400A16C13 /* ReadItLaterTests */;
+		};
 		63B6ACC62E3E038400A16C13 /* Exceptions for "ReadItLater" folder in "ReadItLater" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -50,6 +57,9 @@
 		};
 		63B6ACB72E3E038400A16C13 /* ReadItLaterTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				63507E752E4DE87A001679E9 /* Exceptions for "ReadItLaterTests" folder in "ReadItLaterTests" target */,
+			);
 			path = ReadItLaterTests;
 			sourceTree = "<group>";
 		};
