@@ -139,8 +139,6 @@ final class BookmarkTitleTests: XCTestCase {
         let multilineTitle = "Line1\nLine2\rLine3\r\nLine4"
         let title = BookmarkTitle(multilineTitle)
         XCTAssertEqual(title.displayValue, "Line1\nLine2\rLine3\r\nLine4")
-        // 内部的には改行文字は除去されるが、trimmingCharacters(in:)は
-        // 前後の空白のみ除去するため、中間の改行は残る想定
     }
     
     // MARK: - 国際化テスト
@@ -166,14 +164,12 @@ final class BookmarkTitleTests: XCTestCase {
     // MARK: - Equatable テスト（将来的にEquatableを実装する場合）
     
     func test_同じタイトル_等価比較_将来実装予定() {
-        // Equatableプロトコル実装時のテストケース
         let title1 = BookmarkTitle("Same Title")
         let title2 = BookmarkTitle("Same Title")
         // XCTAssertEqual(title1, title2) // 将来実装
     }
     
     func test_異なるタイトル_非等価比較_将来実装予定() {
-        // Equatableプロトコル実装時のテストケース
         let title1 = BookmarkTitle("Title 1")
         let title2 = BookmarkTitle("Title 2")
         // XCTAssertNotEqual(title1, title2) // 将来実装

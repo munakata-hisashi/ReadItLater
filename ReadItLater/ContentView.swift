@@ -43,8 +43,8 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showingAddSheet) {
             AddBookmarkSheet(
-                onSave: { url, title in
-                    addBookmark(url: url, title: title)
+                onSave: { bookmarkData in
+                    addBookmark(from: bookmarkData)
                     showingAddSheet = false
                 },
                 onCancel: {
@@ -54,9 +54,9 @@ struct ContentView: View {
         }
     }
 
-    private func addBookmark(url: String, title: String) {
+    private func addBookmark(from bookmarkData: BookmarkData) {
         withAnimation {
-            let newBookmark = Bookmark(url: url, title: title)
+            let newBookmark = Bookmark(url: bookmarkData.url, title: bookmarkData.title)
             modelContext.insert(newBookmark)
         }
     }
