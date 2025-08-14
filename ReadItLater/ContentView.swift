@@ -11,6 +11,7 @@ import SwiftData
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var bookmarks: [Bookmark]
+    @State private var showingAddSheet = false
 
     var body: some View {
         NavigationSplitView {
@@ -32,7 +33,7 @@ struct ContentView: View {
                     EditButton()
                 }
                 ToolbarItem {
-                    Button(action: addBookmark) {
+                    Button(action: { showingAddSheet = true }) {
                         Label("Add Bookmark", systemImage: "plus")
                     }
                 }
@@ -40,11 +41,22 @@ struct ContentView: View {
         } detail: {
             Text("Select an Bookmark")
         }
+        .sheet(isPresented: $showingAddSheet) {
+            AddBookmarkSheet(
+                onSave: { url, title in
+                    addBookmark(url: url, title: title)
+                    showingAddSheet = false
+                },
+                onCancel: {
+                    showingAddSheet = false
+                }
+            )
+        }
     }
 
-    private func addBookmark() {
+    private func addBookmark(url: String, title: String) {
         withAnimation {
-            let newBookmark = Bookmark(url: "https://example.com")
+            let newBookmark = Bookmark(url: url, title: title)
             modelContext.insert(newBookmark)
         }
     }
