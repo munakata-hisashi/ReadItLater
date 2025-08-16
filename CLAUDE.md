@@ -9,16 +9,16 @@ ReadItLater is an iOS app for bookmarking URLs with planned AI-powered content s
 ## Development Commands
 
 ### Building and Running
-- **Build for Simulator**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'id=9004EE5F-6902-434B-AD12-DFAF3B5255EC' build`
+- **Build for Simulator**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 15,OS=18.1' build`
 - **Build (Generic)**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater build` (may fail with provisioning issues on device)
-- **Run All Tests**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'id=9004EE5F-6902-434B-AD12-DFAF3B5255EC' test`
-- **Run UI Tests**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'id=9004EE5F-6902-434B-AD12-DFAF3B5255EC' test -only-testing:ReadItLaterUITests`
-- **Run Unit Tests Only**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'id=9004EE5F-6902-434B-AD12-DFAF3B5255EC' test -only-testing:ReadItLaterTests`
+- **Run All Tests**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 15,OS=18.1' test`
+- **Run UI Tests**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 15,OS=18.1' test -only-testing:ReadItLaterUITests`
+- **Run Unit Tests Only**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 15,OS=18.1' test -only-testing:ReadItLaterTests`
 
 ### Simulator Configuration
 - **Target**: arm64-apple-ios18.1-simulator
 - **Deployment Target**: iOS 18.1+
-- **Default Simulator**: iPhone 15 (ID: 9004EE5F-6902-434B-AD12-DFAF3B5255EC)
+- **Default Simulator**: iPhone 15 (iOS 18.1)
 
 ### Build Notes
 - Provisioning profile issues may occur when building for physical devices
@@ -66,3 +66,11 @@ Based on README.md, the app will expand to include:
 - Remote notifications configured for background processing
 - Test targets include both unit tests (`ReadItLaterTests`) and UI tests (`ReadItLaterUITests`)
 - Preview configurations use in-memory model containers for SwiftUI previews
+
+## Git Commit Guidelines
+- **Language**: Write commit messages in Japanese
+- **Format**: Follow conventional commit style with descriptive Japanese messages
+- **Structure**: 
+  - Short summary line in Japanese
+  - Detailed bullet points for changes
+  - Include Claude Code attribution footer
