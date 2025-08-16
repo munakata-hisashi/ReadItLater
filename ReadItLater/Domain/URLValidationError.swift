@@ -12,7 +12,7 @@ enum URLValidationError: Error, LocalizedError, Equatable {
     case invalidFormat
     case unsupportedScheme
     
-    var errorDescription: String? {
+    var errorDescription: String {
         switch self {
         case .emptyURL:
             return "URLを入力してください"
