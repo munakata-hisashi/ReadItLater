@@ -7,6 +7,8 @@
 import Foundation
 import SwiftData
 
+typealias Item = AppV1Schema.Item
+
 struct AppV1Schema: VersionedSchema {
     static let models: [any PersistentModel.Type] = [Item.self, Bookmark.self]
     static let versionIdentifier: Schema.Version = .init(1, 0, 0)
