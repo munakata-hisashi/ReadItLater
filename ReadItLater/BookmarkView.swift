@@ -13,13 +13,17 @@ struct BookmarkView: View {
 
     var body: some View {
         VStack {
-            Text(bookmark.safeTitle)
-           
-            Text(bookmark.maybeURL?.absoluteString ?? "No URL")
+            if let url = bookmark.maybeURL {
+                WebView(url: url)
+            } else {
+                VStack {
+                    Text(bookmark.safeTitle)
+                    Text("No URL")
+                }
+            }
         }
         .navigationTitle(bookmark.safeTitle)
         .navigationBarTitleDisplayMode(.inline)
-
     }
 }
 
