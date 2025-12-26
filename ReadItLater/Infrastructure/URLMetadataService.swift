@@ -15,16 +15,18 @@ struct URLMetadata {
 
 @MainActor
 final class URLMetadataService {
-    private let metadataProvider = LPMetadataProvider()
     private var currentProvider: LPMetadataProvider?
-    func fetchMetadata(for url: URL) async throws -> URLMetadata {
-        
-        currentProvider?.cancel()
-        
-        let metadataProvider = LPMetadataProvider()
-        currentProvider = metadataProvider
-        let hoge = try await currentProvider!.startFetchingMetadata(for: url)
 
-        return URLMetadata(title: hoge.title, description: hoge.originalURL?.absoluteString)
+    func fetchMetadata(for url: URL) async throws -> URLMetadata {
+        // 前回のリクエストをキャンセル
+        currentProvider?.cancel()
+
+        // 新しいproviderを作成して保持
+        let provider = LPMetadataProvider()
+        currentProvider = provider
+
+        // メタデータを取得
+        let metadata = try await provider.startFetchingMetadata(for: url)
+        return URLMetadata(title: metadata.title, description: nil)
     }
 }
