@@ -18,6 +18,8 @@ final class AddBookmarkViewModel {
         didSet {
             if urlString != oldValue {
                 clearErrorMessage()
+                // URL変更時は取得済みタイトルもクリア
+                fetchedTitle = nil
             }
         }
     }
@@ -86,7 +88,6 @@ final class AddBookmarkViewModel {
     
     private func clearErrorMessage() {
         errorMessage = nil
-        fetchedTitle = nil
     }
     
     private func handleCreationError(_ error: Bookmark.CreationError) {
