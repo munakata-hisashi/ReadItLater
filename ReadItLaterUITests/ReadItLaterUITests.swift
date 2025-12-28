@@ -28,7 +28,19 @@ final class ReadItLaterUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
 
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        // アプリの主要なUI要素が存在することを確認
+
+        // ナビゲーションタイトルが表示されることを確認
+        let bookmarksNavigationBar = app.navigationBars["Bookmarks"]
+        XCTAssertTrue(bookmarksNavigationBar.waitForExistence(timeout: 5), "Bookmarks navigation bar should exist")
+
+        // 追加ボタンが存在することを確認
+        let addButton = app.buttons["Add Bookmark"]
+        XCTAssertTrue(addButton.exists, "Add Bookmark button should exist")
+
+        // Editボタンが存在することを確認
+        let editButton = app.buttons["Edit"]
+        XCTAssertTrue(editButton.exists, "Edit button should exist")
     }
 
     @MainActor
