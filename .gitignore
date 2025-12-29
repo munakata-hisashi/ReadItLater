@@ -27,3 +27,4 @@ playground.xcworkspace
 # .swiftpm
 
 .build/
+.claude/settings.local.json
