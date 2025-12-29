@@ -7,6 +7,9 @@
 import SwiftData
 
 struct AppMigrationPlan: SchemaMigrationPlan {
-    static let schemas: [VersionedSchema.Type] = [AppV1Schema.self]
+    static let schemas: [VersionedSchema.Type] = [
+        AppV1Schema.self,
+        AppV2Schema.self
+    ]
     static let stages: [MigrationStage] = []
 }

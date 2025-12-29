@@ -7,8 +7,6 @@
 import Foundation
 import SwiftData
 
-typealias Item = AppV1Schema.Item
-
 struct AppV1Schema: VersionedSchema {
     static let models: [any PersistentModel.Type] = [Item.self, Bookmark.self]
     static let versionIdentifier: Schema.Version = .init(1, 0, 0)
@@ -38,6 +36,24 @@ struct AppV1Schema: VersionedSchema {
             self.title = title
         }
         
+    }
+}
+
+struct AppV2Schema: VersionedSchema {
+    static let models: [any PersistentModel.Type] = [Bookmark.self]
+    static let versionIdentifier: Schema.Version = .init(2, 0, 0)
+
+    @Model
+    final class Bookmark {
+        var id: UUID = UUID()
+        var createdAt: Date = Date.now
+        var url: String?
+        var title: String?
+
+        init(url: String, title: String = "") {
+            self.url = url
+            self.title = title
+        }
     }
 }
 

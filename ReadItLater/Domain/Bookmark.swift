@@ -7,7 +7,7 @@
 
 import Foundation
 
-typealias Bookmark = AppV1Schema.Bookmark
+typealias Bookmark = AppV2Schema.Bookmark
 
 extension Bookmark {
     var safeTitle: String {

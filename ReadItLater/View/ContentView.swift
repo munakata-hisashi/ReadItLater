@@ -72,7 +72,6 @@ struct ContentView: View {
 
 #Preview {
     let schema = Schema([
-        Item.self,
         Bookmark.self
     ])
     let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
