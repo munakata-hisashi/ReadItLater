@@ -1,0 +1,42 @@
+{
+  "configurations" : [
+    {
+      "id" : "FDD833AD-5990-46CF-B812-0A18DF866D90",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "commandLineArgumentEntries" : [
+      {
+        "argument" : "-com.apple.CoreData.SQLDebug 1"
+      }
+    ],
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:ReadItLater.xcodeproj",
+      "identifier" : "63B6AC9F2E3E038300A16C13",
+      "name" : "ReadItLater"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:ReadItLater.xcodeproj",
+        "identifier" : "63B6ACB32E3E038400A16C13",
+        "name" : "ReadItLaterTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:ReadItLater.xcodeproj",
+        "identifier" : "63B6ACBD2E3E038400A16C13",
+        "name" : "ReadItLaterUITests"
+      }
+    }
+  ],
+  "version" : 1
+}
