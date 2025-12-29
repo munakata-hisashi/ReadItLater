@@ -18,6 +18,8 @@ final class AddBookmarkViewModel {
         didSet {
             if urlString != oldValue {
                 clearErrorMessage()
+                // URL変更時は取得済みタイトルもクリア
+                fetchedTitle = nil
             }
         }
     }
@@ -32,6 +34,12 @@ final class AddBookmarkViewModel {
     
     var errorMessage: String?
     var isLoading: Bool = false
+    var isFetchingMetadata: Bool = false
+    var fetchedTitle: String?
+    
+    // MARK: - Dependencies
+    
+    private let metadataService = URLMetadataService()
     
     // MARK: - Initialization
     
@@ -39,11 +47,13 @@ final class AddBookmarkViewModel {
     
     // MARK: - Public Methods
     
-    func createBookmark() async -> Bool {
+    func createBookmark() -> Bool {
         isLoading = true
         defer { isLoading = false }
         
-        let result = Bookmark.create(from: urlString, title: titleString.isEmpty ? nil : titleString)
+        let trimmedTitle = titleString.trimmingCharacters(in: .whitespacesAndNewlines)
+        let finalTitle = trimmedTitle.isEmpty ? fetchedTitle : trimmedTitle
+        let result = Bookmark.create(from: urlString, title: finalTitle)
         
         switch result {
         case .success:
@@ -53,6 +63,24 @@ final class AddBookmarkViewModel {
         case .failure(let error):
             handleCreationError(error)
             return false
+        }
+    }
+    
+    func fetchMetadataIfNeeded() async {
+        guard titleString.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+              !urlString.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+              let url = URL(string: urlString.trimmingCharacters(in: .whitespacesAndNewlines)) else {
+            return
+        }
+        
+        isFetchingMetadata = true
+        defer { isFetchingMetadata = false }
+        
+        do {
+            let metadata = try await metadataService.fetchMetadata(for: url)
+            fetchedTitle = metadata.title
+        } catch {
+            fetchedTitle = nil
         }
     }
     
