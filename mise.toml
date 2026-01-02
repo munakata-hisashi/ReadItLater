@@ -1,0 +1,25 @@
+[tools]
+xcbeautify = "3"
+
+[tasks.build]
+description = "Build ReadItLater App"
+run = "xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 15,OS=18.1' build"
+
+[tasks.buildformat]
+description = "Build app and format log"
+run = "xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 15,OS=18.1' build | xcbeautify"
+alias = "b"
+
+[tasks.test]
+description = "Run tests"
+run = "xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 15,OS=18.1' test"
+
+[tasks.testformat]
+description = "Run tests and format log"
+run = "xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 15,OS=18.1' test | xcbeautify"
+alias = "t"
+
+[tasks.unit]
+description = "Run unit tests"
+run = "xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 15,OS=18.1' test -only-testing:ReadItLaterTests | xcbeautify"
+alias = "u"
