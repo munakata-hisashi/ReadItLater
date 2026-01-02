@@ -8,7 +8,18 @@ ReadItLater is an iOS app for bookmarking URLs with planned AI-powered content s
 
 ## Development Commands
 
-### Building and Running
+### mise Tasks (Recommended)
+The project uses [mise](https://mise.jdx.dev/) for task automation with formatted output:
+
+- **Build with formatted output**: `mise run buildformat` or `mise run b`
+- **Run tests with formatted output**: `mise run testformat` or `mise run t`
+- **Run unit tests only**: `mise run unit` or `mise run u`
+- **Build (raw output)**: `mise run build`
+- **Run tests (raw output)**: `mise run test`
+
+All tasks use `xcbeautify` for clean, readable build logs.
+
+### Direct xcodebuild Commands
 - **Build for Simulator**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 15,OS=18.1' build`
 - **Build (Generic)**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater build` (may fail with provisioning issues on device)
 - **Run All Tests**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 15,OS=18.1' test`
@@ -30,17 +41,23 @@ ReadItLater is an iOS app for bookmarking URLs with planned AI-powered content s
 ### Data Models & Migration System
 The app uses a versioned schema architecture for SwiftData migrations:
 
-- **Current Models**: Defined in `VersionedSchema.swift` as part of `AppV1Schema`
-  - `Item`: Legacy model with timestamp, URL, title
-  - `Bookmark`: Primary model with creation date, URL, title
-- **Type Aliases**: `Bookmark.swift` and `Item.swift` define type aliases pointing to current schema versions
-- **Migration Plan**: `MigrationPlan.swift` contains `AppMigrationPlan` with schema versions and migration stages
+- **Current Schema**: `AppV2Schema` (version 2.0.0) in `Migration/VersionedSchema.swift`
+  - `Bookmark`: Primary model with id, createdAt, url, title
+  - `Item` model has been removed from active use
+- **Legacy Schema**: `AppV1Schema` (version 1.0.0) maintained for migration history
+  - Contains both `Item` and `Bookmark` models
+- **Type Alias**: `Domain/Bookmark.swift` defines `typealias Bookmark = AppV2Schema.Bookmark`
+- **Migration Plan**: `Migration/MigrationPlan.swift` contains `AppMigrationPlan`
+  - Includes both `AppV1Schema` and `AppV2Schema`
+  - Uses lightweight migration (empty stages array - SwiftData handles automatically)
 - **Model Container**: Configured in `ReadItLaterApp.swift:14-51` with migration plan integration
+  - Schema only includes `Bookmark.self`
 
 When adding new models or modifying existing ones:
-1. Create new versioned schema (e.g., `AppV2Schema`)
-2. Update migration plan with new schema and migration stages
-3. Update type aliases to point to new schema version
+1. Create new versioned schema (e.g., `AppV3Schema`)
+2. Update migration plan to include new schema in schemas array
+3. Add migration stages if custom migration logic is needed (otherwise use empty array for lightweight migration)
+4. Update type aliases to point to new schema version
 
 ### CloudKit Integration
 - **Container ID**: `iCloud.munakata-hisashi.ReadItLater` (defined in entitlements)
@@ -48,11 +65,31 @@ When adding new models or modifying existing ones:
 - **Configuration**: ModelContainer configured for CloudKit sync in app initialization
 - **Debugging**: Commented CloudKit schema initialization code available in `ReadItLaterApp.swift:22-46`
 
+### Project Structure
+```
+ReadItLater/
+├── Domain/              # Domain models and value objects
+│   ├── Bookmark.swift
+│   ├── BookmarkURL.swift
+│   ├── BookmarkTitle.swift
+│   └── BookmarkCreation.swift
+├── Migration/           # SwiftData schema versioning
+│   ├── VersionedSchema.swift
+│   └── MigrationPlan.swift
+├── Presentation/        # ViewModels and presentation logic
+│   └── AddBookmarkViewModel.swift
+└── View/               # SwiftUI views
+    ├── ContentView.swift
+    ├── BookmarkView.swift
+    └── AddBookmarkSheet.swift
+```
+
 ### UI Structure
 - **Navigation**: Uses `NavigationSplitView` pattern with master-detail layout
 - **ContentView**: Master list showing bookmarks with CRUD operations
 - **BookmarkView**: Detail view for individual bookmark display
-- **Extensions**: Safe accessors defined for optional properties (`safeTitle`, `maybeURL`)
+- **AddBookmarkSheet**: Modal sheet for adding new bookmarks
+- **Extensions**: Safe accessors defined for optional properties (`safeTitle`, `maybeURL`) in `Domain/Bookmark.swift`
 
 ## Planned Features
 Based on README.md, the app will expand to include:
