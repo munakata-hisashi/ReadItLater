@@ -85,7 +85,7 @@ struct AddBookmarkSheet: View {
         .onAppear {
             isURLFieldFocused = true
         }
-        .onChange(of: viewModel.urlString) { oldValue, newValue in
+        .onChange(of: viewModel.urlString) { _, newValue in
             // 前回のタスクをキャンセル
             fetchTask?.cancel()
 
