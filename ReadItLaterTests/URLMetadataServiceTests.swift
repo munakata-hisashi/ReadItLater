@@ -12,15 +12,15 @@ import XCTest
 final class URLMetadataServiceTests: XCTestCase {
     
     private var service: URLMetadataService!
-    
-    override func setUp() {
-        super.setUp()
+
+    override func setUp() async throws {
+        try await super.setUp()
         service = URLMetadataService()
     }
-    
-    override func tearDown() {
+
+    override func tearDown() async throws {
         service = nil
-        super.tearDown()
+        try await super.tearDown()
     }
     
     func testFetchMetadata_withValidURL_shouldReturnMetadata() async throws {
