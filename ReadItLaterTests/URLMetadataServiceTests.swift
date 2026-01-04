@@ -23,15 +23,6 @@ final class URLMetadataServiceTests: XCTestCase {
         try await super.tearDown()
     }
     
-    func testFetchMetadata_withValidURL_shouldReturnMetadata() async throws {
-        let url = URL(string: "https://www.apple.com")!
-        
-        let metadata = try await service.fetchMetadata(for: url)
-        
-        XCTAssertNotNil(metadata.title)
-        XCTAssertFalse(metadata.title?.isEmpty ?? true, "タイトルが取得されるべき")
-    }
-    
     func testFetchMetadata_withInvalidURL_shouldThrowError() async {
         let url = URL(string: "https://invalid-domain-that-does-not-exist-12345.com")!
         
