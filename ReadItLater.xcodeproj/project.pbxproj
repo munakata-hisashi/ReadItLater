@@ -6,7 +6,18 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		631A9C402F0BFC1600FA4142 /* ShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 631A9C362F0BFC1600FA4142 /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
+		631A9C3E2F0BFC1600FA4142 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 63B6AC982E3E038300A16C13 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 631A9C352F0BFC1600FA4142;
+			remoteInfo = ShareExtension;
+		};
 		63B6ACB52E3E038400A16C13 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 63B6AC982E3E038300A16C13 /* Project object */;
@@ -23,7 +34,22 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		631A9C412F0BFC1600FA4142 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				631A9C402F0BFC1600FA4142 /* ShareExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		631A9C362F0BFC1600FA4142 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		63507EDD2E5DC637001679E9 /* ReadItLater.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = ReadItLater.xctestplan; sourceTree = "<group>"; };
 		63B6ACA02E3E038300A16C13 /* ReadItLater.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReadItLater.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63B6ACB42E3E038400A16C13 /* ReadItLaterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ReadItLaterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -31,6 +57,28 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		631A9C452F0BFC1600FA4142 /* Exceptions for "ShareExtension" folder in "ShareExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 631A9C352F0BFC1600FA4142 /* ShareExtension */;
+		};
+		631A9C4B2F0BFE9300FA4142 /* Exceptions for "ReadItLater" folder in "ShareExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Domain/Bookmark.swift,
+				Domain/BookmarkCreation.swift,
+				Domain/BookmarkTitle.swift,
+				Domain/BookmarkURL.swift,
+				Domain/URLValidationError.swift,
+				Infrastructure/URLMetadataService.swift,
+				Migration/MigrationPlan.swift,
+				Migration/VersionedSchema.swift,
+				ModelContainerFactory.swift,
+			);
+			target = 631A9C352F0BFC1600FA4142 /* ShareExtension */;
+		};
 		63507E752E4DE87A001679E9 /* Exceptions for "ReadItLaterTests" folder in "ReadItLaterTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -48,10 +96,19 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		631A9C372F0BFC1600FA4142 /* ShareExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				631A9C452F0BFC1600FA4142 /* Exceptions for "ShareExtension" folder in "ShareExtension" target */,
+			);
+			path = ShareExtension;
+			sourceTree = "<group>";
+		};
 		63B6ACA22E3E038300A16C13 /* ReadItLater */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				63B6ACC62E3E038400A16C13 /* Exceptions for "ReadItLater" folder in "ReadItLater" target */,
+				631A9C4B2F0BFE9300FA4142 /* Exceptions for "ReadItLater" folder in "ShareExtension" target */,
 			);
 			path = ReadItLater;
 			sourceTree = "<group>";
@@ -72,6 +129,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		631A9C332F0BFC1600FA4142 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		63B6AC9D2E3E038300A16C13 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -103,6 +167,7 @@
 				63B6ACA22E3E038300A16C13 /* ReadItLater */,
 				63B6ACB72E3E038400A16C13 /* ReadItLaterTests */,
 				63B6ACC12E3E038400A16C13 /* ReadItLaterUITests */,
+				631A9C372F0BFC1600FA4142 /* ShareExtension */,
 				63B6ACA12E3E038300A16C13 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -113,6 +178,7 @@
 				63B6ACA02E3E038300A16C13 /* ReadItLater.app */,
 				63B6ACB42E3E038400A16C13 /* ReadItLaterTests.xctest */,
 				63B6ACBE2E3E038400A16C13 /* ReadItLaterUITests.xctest */,
+				631A9C362F0BFC1600FA4142 /* ShareExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -120,6 +186,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		631A9C352F0BFC1600FA4142 /* ShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 631A9C442F0BFC1600FA4142 /* Build configuration list for PBXNativeTarget "ShareExtension" */;
+			buildPhases = (
+				631A9C322F0BFC1600FA4142 /* Sources */,
+				631A9C332F0BFC1600FA4142 /* Frameworks */,
+				631A9C342F0BFC1600FA4142 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				631A9C372F0BFC1600FA4142 /* ShareExtension */,
+			);
+			name = ShareExtension;
+			packageProductDependencies = (
+			);
+			productName = ShareExtension;
+			productReference = 631A9C362F0BFC1600FA4142 /* ShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		63B6AC9F2E3E038300A16C13 /* ReadItLater */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 63B6ACC72E3E038400A16C13 /* Build configuration list for PBXNativeTarget "ReadItLater" */;
@@ -127,10 +215,12 @@
 				63B6AC9C2E3E038300A16C13 /* Sources */,
 				63B6AC9D2E3E038300A16C13 /* Frameworks */,
 				63B6AC9E2E3E038300A16C13 /* Resources */,
+				631A9C412F0BFC1600FA4142 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				631A9C3F2F0BFC1600FA4142 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				63B6ACA22E3E038300A16C13 /* ReadItLater */,
@@ -195,9 +285,12 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1610;
+				LastSwiftUpdateCheck = 2600;
 				LastUpgradeCheck = 1610;
 				TargetAttributes = {
+					631A9C352F0BFC1600FA4142 = {
+						CreatedOnToolsVersion = 26.0.1;
+					};
 					63B6AC9F2E3E038300A16C13 = {
 						CreatedOnToolsVersion = 16.1;
 					};
@@ -228,11 +321,19 @@
 				63B6AC9F2E3E038300A16C13 /* ReadItLater */,
 				63B6ACB32E3E038400A16C13 /* ReadItLaterTests */,
 				63B6ACBD2E3E038400A16C13 /* ReadItLaterUITests */,
+				631A9C352F0BFC1600FA4142 /* ShareExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		631A9C342F0BFC1600FA4142 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		63B6AC9E2E3E038300A16C13 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -257,6 +358,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		631A9C322F0BFC1600FA4142 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		63B6AC9C2E3E038300A16C13 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -281,6 +389,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		631A9C3F2F0BFC1600FA4142 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 631A9C352F0BFC1600FA4142 /* ShareExtension */;
+			targetProxy = 631A9C3E2F0BFC1600FA4142 /* PBXContainerItemProxy */;
+		};
 		63B6ACB62E3E038400A16C13 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 63B6AC9F2E3E038300A16C13 /* ReadItLater */;
@@ -294,6 +407,66 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		631A9C422F0BFC1600FA4142 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = RDL87GQ43U;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ShareExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "munakata-hisashi.ReadItLater.ShareExtension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		631A9C432F0BFC1600FA4142 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = RDL87GQ43U;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ShareExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "munakata-hisashi.ReadItLater.ShareExtension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		63B6ACC82E3E038400A16C13 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -313,6 +486,7 @@
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -346,6 +520,7 @@
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -412,7 +587,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -470,7 +645,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -489,7 +664,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RDL87GQ43U;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "munakata-hisashi.ReadItLaterTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -508,7 +683,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RDL87GQ43U;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "munakata-hisashi.ReadItLaterTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -556,6 +731,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		631A9C442F0BFC1600FA4142 /* Build configuration list for PBXNativeTarget "ShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				631A9C422F0BFC1600FA4142 /* Debug */,
+				631A9C432F0BFC1600FA4142 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		63B6AC9B2E3E038300A16C13 /* Build configuration list for PBXProject "ReadItLater" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
