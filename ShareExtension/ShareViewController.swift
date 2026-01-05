@@ -33,13 +33,13 @@ final class ShareViewController: UIViewController {
 
     private func processSharedURL() async {
         do {
-            // 1. URL抽出
-            guard let url = try await extractURL() else {
-                throw ShareError.noURLFound
+            // 1. URL抽出とタイトル抽出
+            let (url, maybeTitle) = try await extractURLAndTitle()
+            let title: String? = if maybeTitle != nil {
+                maybeTitle
+            } else {
+                await fetchTitle(for: url)
             }
-
-            // 2. タイトル取得（非同期）
-            let title = await fetchTitle(for: url)
 
             // 3. ブックマーク保存
             try await saveBookmark(url: url.absoluteString, title: title)
@@ -52,26 +52,48 @@ final class ShareViewController: UIViewController {
         }
     }
 
-    private func extractURL() async throws -> URL? {
+    private func extractURLAndTitle() async throws -> (url: URL, title: String?) {
         guard let extensionItem = extensionContext?.inputItems.first as? NSExtensionItem,
-              let itemProvider = extensionItem.attachments?.first else {
-            return nil
+              let itemProviders = extensionItem.attachments else {
+            throw ShareError.noURLFound
         }
 
-        if itemProvider.hasItemConformingToTypeIdentifier("public.url") {
-            return try await withCheckedThrowingContinuation { continuation in
-                itemProvider.loadItem(forTypeIdentifier: "public.url", options: nil) { (item, error) in
-                    if let error = error {
-                        continuation.resume(throwing: error)
-                    } else if let url = item as? URL {
-                        continuation.resume(returning: url)
-                    } else {
-                        continuation.resume(returning: nil)
+        var foundURL: URL?
+        var foundTitle: String?
+
+        for provider in itemProviders {
+            if foundURL == nil, provider.hasItemConformingToTypeIdentifier("public.url") {
+                let url: URL? = try await withCheckedThrowingContinuation { continuation in
+                    provider.loadItem(forTypeIdentifier: "public.url", options: nil) { item, error in
+                        if let error = error {
+                            continuation.resume(throwing: error)
+                        } else {
+                            continuation.resume(returning: item as? URL)
+                        }
                     }
                 }
+                foundURL = url
+            }
+
+            if foundTitle == nil, provider.hasItemConformingToTypeIdentifier("public.plain-text") {
+                let text: String? = try await withCheckedThrowingContinuation { continuation in
+                    provider.loadItem(forTypeIdentifier: "public.plain-text", options: nil) { item, error in
+                        if let error = error {
+                            continuation.resume(throwing: error)
+                        } else {
+                            continuation.resume(returning: item as? String)
+                        }
+                    }
+                }
+                foundTitle = text
             }
         }
-        return nil
+
+        guard let url = foundURL else {
+            throw ShareError.noURLFound
+        }
+
+        return (url: url, title: foundTitle)
     }
 
     private func fetchTitle(for url: URL) async -> String? {
