@@ -10,7 +10,6 @@ import SwiftUI
 struct AddBookmarkSheet: View {
     @State private var viewModel = AddBookmarkViewModel()
     @FocusState private var isURLFieldFocused: Bool
-    @State private var fetchTask: Task<Void, Never>?
 
     let onSave: (BookmarkData) -> Void
     let onCancel: () -> Void
@@ -74,9 +73,7 @@ struct AddBookmarkSheet: View {
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
-                        Task {
-                            await saveBookmark()
-                        }
+                        saveBookmark()
                     }
                     .disabled(viewModel.urlString.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading)
                 }
@@ -84,23 +81,6 @@ struct AddBookmarkSheet: View {
         }
         .onAppear {
             isURLFieldFocused = true
-        }
-        .onChange(of: viewModel.urlString) { _, newValue in
-            // 前回のタスクをキャンセル
-            fetchTask?.cancel()
-
-            fetchTask = Task {
-                // 0.5秒のデバウンス
-                try? await Task.sleep(nanoseconds: 500_000_000)
-
-                // キャンセルされていないか確認
-                guard !Task.isCancelled else { return }
-
-                // URL文字列が変更されていないか確認
-                if viewModel.urlString == newValue {
-                    await viewModel.fetchMetadataIfNeeded()
-                }
-            }
         }
     }
     
@@ -113,17 +93,9 @@ struct AddBookmarkSheet: View {
         }
     }
     
-    @MainActor
-    private func saveBookmark() async {
-        let success = viewModel.createBookmark()
-        if success {
-            // ドメインモデルから成功時のBookmarkDataを取得
-            let trimmedTitle = viewModel.titleString.trimmingCharacters(in: .whitespacesAndNewlines)
-            let finalTitle = trimmedTitle.isEmpty ? viewModel.fetchedTitle : trimmedTitle
-            let result = Bookmark.create(from: viewModel.urlString, title: finalTitle)
-            if case .success(let bookmarkData) = result {
-                onSave(bookmarkData)
-            }
+    private func saveBookmark() {
+        if let bookmarkData = viewModel.createBookmark() {
+            onSave(bookmarkData)
         }
     }
 }

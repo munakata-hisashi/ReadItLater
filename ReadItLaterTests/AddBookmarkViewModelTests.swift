@@ -40,7 +40,7 @@ final class AddBookmarkViewModelTests: XCTestCase {
 
         let result = viewModel.createBookmark()
 
-        XCTAssertTrue(result)
+        XCTAssertNotNil(result)
         XCTAssertNil(viewModel.errorMessage)
         XCTAssertFalse(viewModel.isLoading)
     }
@@ -51,7 +51,7 @@ final class AddBookmarkViewModelTests: XCTestCase {
 
         let result = viewModel.createBookmark()
 
-        XCTAssertTrue(result)
+        XCTAssertNotNil(result)
         XCTAssertNil(viewModel.errorMessage)
     }
 
@@ -61,7 +61,7 @@ final class AddBookmarkViewModelTests: XCTestCase {
 
         let result = viewModel.createBookmark()
 
-        XCTAssertFalse(result)
+        XCTAssertNil(result)
         XCTAssertEqual(viewModel.errorMessage, "URLを入力してください")
         XCTAssertFalse(viewModel.isLoading)
     }
@@ -72,7 +72,7 @@ final class AddBookmarkViewModelTests: XCTestCase {
 
         let result = viewModel.createBookmark()
 
-        XCTAssertFalse(result)
+        XCTAssertNil(result)
         XCTAssertEqual(viewModel.errorMessage, "URLを入力してください")
     }
 
@@ -82,7 +82,7 @@ final class AddBookmarkViewModelTests: XCTestCase {
 
         let result = viewModel.createBookmark()
 
-        XCTAssertFalse(result)
+        XCTAssertNil(result)
         XCTAssertEqual(viewModel.errorMessage, "有効なURL形式で入力してください")
     }
 
@@ -92,7 +92,7 @@ final class AddBookmarkViewModelTests: XCTestCase {
 
         let result = viewModel.createBookmark()
 
-        XCTAssertFalse(result)
+        XCTAssertNil(result)
         XCTAssertEqual(viewModel.errorMessage, "有効なURL形式で入力してください")
     }
 
@@ -102,7 +102,7 @@ final class AddBookmarkViewModelTests: XCTestCase {
 
         let result = viewModel.createBookmark()
 
-        XCTAssertFalse(result)
+        XCTAssertNil(result)
         XCTAssertEqual(viewModel.errorMessage, "http://またはhttps://のURLのみ対応しています")
     }
 
@@ -112,7 +112,7 @@ final class AddBookmarkViewModelTests: XCTestCase {
 
         let result = viewModel.createBookmark()
 
-        XCTAssertFalse(result)
+        XCTAssertNil(result)
         XCTAssertEqual(viewModel.errorMessage, "http://またはhttps://のURLのみ対応しています")
     }
     
@@ -124,7 +124,7 @@ final class AddBookmarkViewModelTests: XCTestCase {
 
         let result = viewModel.createBookmark()
 
-        XCTAssertTrue(result)
+        XCTAssertNotNil(result)
         XCTAssertNil(viewModel.errorMessage)
         // 注: 実際のブックマーク作成結果はモックで検証する必要がある
     }
@@ -135,10 +135,10 @@ final class AddBookmarkViewModelTests: XCTestCase {
 
         let result = viewModel.createBookmark()
 
-        XCTAssertTrue(result)
+        XCTAssertNotNil(result)
         XCTAssertNil(viewModel.errorMessage)
     }
-    
+
     // MARK: - ローディング状態テスト
 
     func test_ブックマーク作成中_ローディング状態() {
@@ -148,7 +148,7 @@ final class AddBookmarkViewModelTests: XCTestCase {
         // createBookmark()は同期関数だが、内部でisLoadingをtrue/falseに切り替える
         let result = viewModel.createBookmark()
 
-        XCTAssertTrue(result)
+        XCTAssertNotNil(result)
         XCTAssertFalse(viewModel.isLoading) // 完了後はfalse
     }
     
@@ -197,7 +197,7 @@ final class AddBookmarkViewModelTests: XCTestCase {
 
         let result = viewModel.createBookmark()
 
-        XCTAssertTrue(result)
+        XCTAssertNotNil(result)
         XCTAssertNil(viewModel.errorMessage)
     }
 
@@ -207,7 +207,7 @@ final class AddBookmarkViewModelTests: XCTestCase {
 
         let result = viewModel.createBookmark()
 
-        XCTAssertTrue(result)
+        XCTAssertNotNil(result)
         XCTAssertNil(viewModel.errorMessage)
     }
 
@@ -217,7 +217,7 @@ final class AddBookmarkViewModelTests: XCTestCase {
 
         let result = viewModel.createBookmark()
 
-        XCTAssertTrue(result)
+        XCTAssertNotNil(result)
         XCTAssertNil(viewModel.errorMessage)
     }
 
@@ -229,7 +229,7 @@ final class AddBookmarkViewModelTests: XCTestCase {
 
         let result = viewModel.createBookmark()
 
-        XCTAssertTrue(result)
+        XCTAssertNotNil(result)
         XCTAssertNil(viewModel.errorMessage)
     }
 
@@ -239,7 +239,7 @@ final class AddBookmarkViewModelTests: XCTestCase {
 
         let result = viewModel.createBookmark()
 
-        XCTAssertTrue(result)
+        XCTAssertNotNil(result)
         XCTAssertNil(viewModel.errorMessage)
     }
 
@@ -249,7 +249,7 @@ final class AddBookmarkViewModelTests: XCTestCase {
 
         let result = viewModel.createBookmark()
 
-        XCTAssertTrue(result)
+        XCTAssertNotNil(result)
         XCTAssertNil(viewModel.errorMessage)
     }
     
