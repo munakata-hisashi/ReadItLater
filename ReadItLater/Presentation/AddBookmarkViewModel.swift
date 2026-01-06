@@ -20,6 +20,8 @@ final class AddBookmarkViewModel {
                 clearErrorMessage()
                 // URL変更時は取得済みタイトルもクリア
                 fetchedTitle = nil
+                // URL変更時にデバウンス付きでメタデータ取得を開始
+                startFetchingMetadataWithDebounce()
             }
         }
     }
@@ -38,8 +40,12 @@ final class AddBookmarkViewModel {
     var fetchedTitle: String?
     
     // MARK: - Dependencies
-    
+
     private let metadataService = URLMetadataService()
+
+    // MARK: - Private Properties
+
+    private var fetchTask: Task<Void, Never>?
     
     // MARK: - Initialization
     
@@ -47,25 +53,41 @@ final class AddBookmarkViewModel {
     
     // MARK: - Public Methods
     
-    func createBookmark() -> Bool {
+    func createBookmark() -> BookmarkData? {
         isLoading = true
         defer { isLoading = false }
-        
+
         let trimmedTitle = titleString.trimmingCharacters(in: .whitespacesAndNewlines)
         let finalTitle = trimmedTitle.isEmpty ? fetchedTitle : trimmedTitle
         let result = Bookmark.create(from: urlString, title: finalTitle)
-        
+
         switch result {
-        case .success:
+        case .success(let bookmarkData):
             clearErrorMessage()
-            return true
-            
+            return bookmarkData
+
         case .failure(let error):
             handleCreationError(error)
-            return false
+            return nil
         }
     }
-    
+
+    /// デバウンス付きでメタデータ取得を開始
+    func startFetchingMetadataWithDebounce() {
+        // 前回のタスクをキャンセル
+        fetchTask?.cancel()
+
+        fetchTask = Task {
+            // 0.5秒のデバウンス
+            try? await Task.sleep(nanoseconds: 500_000_000)
+
+            // キャンセルされていないか確認
+            guard !Task.isCancelled else { return }
+
+            await fetchMetadataIfNeeded()
+        }
+    }
+
     func fetchMetadataIfNeeded() async {
         guard titleString.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
               !urlString.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
