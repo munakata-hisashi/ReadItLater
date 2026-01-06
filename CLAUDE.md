@@ -20,16 +20,16 @@ The project uses [mise](https://mise.jdx.dev/) for task automation with formatte
 All tasks use `xcbeautify` for clean, readable build logs.
 
 ### Direct xcodebuild Commands
-- **Build for Simulator**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 15,OS=18.1' build`
+- **Build for Simulator**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' build`
 - **Build (Generic)**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater build` (may fail with provisioning issues on device)
-- **Run All Tests**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 15,OS=18.1' test`
-- **Run UI Tests**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 15,OS=18.1' test -only-testing:ReadItLaterUITests`
-- **Run Unit Tests Only**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 15,OS=18.1' test -only-testing:ReadItLaterTests`
+- **Run All Tests**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' test`
+- **Run UI Tests**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' test -only-testing:ReadItLaterUITests`
+- **Run Unit Tests Only**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' test -only-testing:ReadItLaterTests`
 
 ### Simulator Configuration
-- **Target**: arm64-apple-ios18.1-simulator
-- **Deployment Target**: iOS 18.1+
-- **Default Simulator**: iPhone 15 (iOS 18.1)
+- **Target**: arm64-apple-ios26.0.1-simulator
+- **Deployment Target**: iOS 26.0.1+
+- **Default Simulator**: iPhone 16 (iOS 26.0.1)
 
 ### Build Notes
 - Provisioning profile issues may occur when building for physical devices
@@ -46,7 +46,7 @@ The app uses a versioned schema architecture for SwiftData migrations:
   - `Item` model has been removed from active use
 - **Legacy Schema**: `AppV1Schema` (version 1.0.0) maintained for migration history
   - Contains both `Item` and `Bookmark` models
-- **Type Alias**: `Domain/Bookmark.swift` defines `typealias Bookmark = AppV2Schema.Bookmark`
+- **Type Alias**: `Domain/BookmarkExtensions.swift` defines `typealias Bookmark = AppV2Schema.Bookmark`
 - **Migration Plan**: `Migration/MigrationPlan.swift` contains `AppMigrationPlan`
   - Includes both `AppV1Schema` and `AppV2Schema`
   - Uses lightweight migration (empty stages array - SwiftData handles automatically)
@@ -69,10 +69,11 @@ When adding new models or modifying existing ones:
 ```
 ReadItLater/
 ├── Domain/              # Domain models and value objects
-│   ├── Bookmark.swift
+│   ├── BookmarkExtensions.swift  # Type alias and extensions
+│   ├── BookmarkData.swift        # DTO for bookmark creation
+│   ├── BookmarkCreation.swift    # Factory methods
 │   ├── BookmarkURL.swift
-│   ├── BookmarkTitle.swift
-│   └── BookmarkCreation.swift
+│   └── BookmarkTitle.swift
 ├── Migration/           # SwiftData schema versioning
 │   ├── VersionedSchema.swift
 │   └── MigrationPlan.swift
@@ -89,7 +90,7 @@ ReadItLater/
 - **ContentView**: Master list showing bookmarks with CRUD operations
 - **BookmarkView**: Detail view for individual bookmark display
 - **AddBookmarkSheet**: Modal sheet for adding new bookmarks
-- **Extensions**: Safe accessors defined for optional properties (`safeTitle`, `maybeURL`) in `Domain/Bookmark.swift`
+- **Extensions**: Safe accessors defined for optional properties (`safeTitle`, `maybeURL`) in `Domain/BookmarkExtensions.swift`
 
 ## Planned Features
 Based on README.md, the app will expand to include:
