@@ -2,16 +2,10 @@
 //  BookmarkCreation.swift
 //  ReadItLater
 //
-//  Created by Claude on 2025/08/14.
+//  Bookmark creation factory and validation logic
 //
 
 import Foundation
-
-// SwiftDataの制約によりBookmark直接作成は困難なため、中間データ構造を使用
-struct BookmarkData: Equatable {
-    let url: String
-    let title: String
-}
 
 extension Bookmark {
     enum CreationError: Error, LocalizedError, Equatable {

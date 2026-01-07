@@ -67,8 +67,9 @@
 		631A9C4B2F0BFE9300FA4142 /* Exceptions for "ReadItLater" folder in "ShareExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Domain/Bookmark.swift,
 				Domain/BookmarkCreation.swift,
+				Domain/BookmarkData.swift,
+				Domain/BookmarkExtensions.swift,
 				Domain/BookmarkTitle.swift,
 				Domain/BookmarkURL.swift,
 				Domain/URLValidationError.swift,
