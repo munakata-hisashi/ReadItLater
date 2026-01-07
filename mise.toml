@@ -1,6 +1,6 @@
 [tools]
 xcbeautify = "3"
-httpie = "3"
+"spm:giginet/swift-testing-revolutionary" = "latest"
 
 [tasks.build]
 description = "Build ReadItLater App"
