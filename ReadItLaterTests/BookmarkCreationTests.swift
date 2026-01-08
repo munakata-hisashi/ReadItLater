@@ -392,14 +392,14 @@ import Testing
     
     @Test func 失敗結果_CreationError型() {
         let result = Bookmark.create(from: "", title: "Test")
-        
+
         switch result {
         case .success:
             Issue.record("期待される失敗結果が得られませんでした")
         case .failure(let error):
             // Bookmark.CreationError型の確認
             #expect(type(of: error) == Bookmark.CreationError.self)
-            #expect(error.localizedDescription != nil)
+            #expect(!error.localizedDescription.isEmpty)
         }
     }
 }
