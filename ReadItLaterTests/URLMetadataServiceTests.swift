@@ -5,32 +5,28 @@
 //  Created by Claude on 2025/08/16.
 //
 
-import XCTest
+import Foundation
+import Testing
 @testable import ReadItLater
 
+@Suite
 @MainActor
-final class URLMetadataServiceTests: XCTestCase {
-    
-    private var service: URLMetadataService!
+struct URLMetadataServiceTests {
 
-    override func setUp() async throws {
-        try await super.setUp()
+    let service: URLMetadataService
+
+    init() {
         service = URLMetadataService()
     }
-
-    override func tearDown() async throws {
-        service = nil
-        try await super.tearDown()
-    }
     
-    func testFetchMetadata_withInvalidURL_shouldThrowError() async {
+    @Test func fetchMetadata_withInvalidURL_shouldThrowError() async {
         let url = URL(string: "https://invalid-domain-that-does-not-exist-12345.com")!
         
         do {
             _ = try await service.fetchMetadata(for: url)
-            XCTFail("無効なURLではエラーが発生するべき")
+            Issue.record("無効なURLではエラーが発生するべき")
         } catch {
-            XCTAssertTrue(true, "期待通りエラーが発生")
+            #expect(true, "期待通りエラーが発生")
         }
     }
 }
