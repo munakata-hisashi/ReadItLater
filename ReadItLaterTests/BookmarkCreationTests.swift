@@ -378,18 +378,17 @@ import Testing
     
     @Test func 成功結果_BookmarkData型() {
         let result = Bookmark.create(from: "https://test.com", title: "Test")
-        
+
         switch result {
         case .success(let data):
-            // BookmarkData型の確認
-            #expect(type(of: data) == BookmarkData.self)
-            #expect(!data.url.isEmpty)
-            #expect(!data.title.isEmpty)
+            // BookmarkDataの内容確認（型はswitch文で保証済み）
+            #expect(data.url == "https://test.com")
+            #expect(data.title == "Test")
         case .failure:
             Issue.record("期待される成功結果が得られませんでした")
         }
     }
-    
+
     @Test func 失敗結果_CreationError型() {
         let result = Bookmark.create(from: "", title: "Test")
 
@@ -397,9 +396,8 @@ import Testing
         case .success:
             Issue.record("期待される失敗結果が得られませんでした")
         case .failure(let error):
-            // Bookmark.CreationError型の確認
-            #expect(type(of: error) == Bookmark.CreationError.self)
-            #expect(!error.localizedDescription.isEmpty)
+            // 具体的なエラー値を確認
+            #expect(error == .invalidURL(.emptyURL))
         }
     }
 }
