@@ -108,7 +108,30 @@ Based on README.md, the app will expand to include:
 ## Git Commit Guidelines
 - **Language**: Write commit messages in Japanese
 - **Format**: Follow conventional commit style with descriptive Japanese messages
-- **Structure**: 
+- **Structure**:
   - Short summary line in Japanese
   - Detailed bullet points for changes
   - Include Claude Code attribution footer
+
+## GitHub Operations Guidelines
+
+### Tool Selection: GitHub MCP vs gh CLI
+
+**Use `gh` CLI for write operations (preferred):**
+- Creating/editing PRs: `gh pr create`, `gh pr edit`
+- Creating/editing Issues: `gh issue create`, `gh issue edit`
+- Adding comments: `gh pr comment`, `gh issue comment`
+- Merging PRs: `gh pr merge`
+- Requesting reviews: `gh pr review`
+
+**Use GitHub MCP for read operations:**
+- Fetching PR details: `mcp__github__pull_request_read`
+- Searching issues/PRs: `mcp__github__search_issues`, `mcp__github__search_pull_requests`
+- Getting commit info: `mcp__github__get_commit`, `mcp__github__list_commits`
+- Searching code: `mcp__github__search_code`
+
+**Rationale:**
+- `gh` CLI uses user authentication with broader permissions
+- GitHub MCP may encounter 403 errors on write operations due to PAT restrictions
+- GitHub MCP returns structured JSON data, better for complex queries
+- Always try `gh` first for write operations, fallback to MCP only if unavailable
