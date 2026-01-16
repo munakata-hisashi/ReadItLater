@@ -23,81 +23,27 @@ import Testing
     }
     
     @Test func 空文字列_初期化失敗() {
-        var caughtError: URLValidationError?
-        do {
-            _ = try BookmarkURL("")
-            Issue.record("Expected URLValidationError to be thrown")
-        } catch let error as URLValidationError {
-            caughtError = error
-        } catch {
-            Issue.record("Unexpected error type: \(error)")
-        }
-        #expect(caughtError == .emptyURL)
+        #expect(throws: URLValidationError.emptyURL, performing: { try BookmarkURL("")})
     }
     
     @Test func 空白のみ_初期化失敗() {
-        var caughtError: URLValidationError?
-        do {
-            _ = try BookmarkURL("   \n\t   ")
-            Issue.record("Expected URLValidationError to be thrown")
-        } catch let error as URLValidationError {
-            caughtError = error
-        } catch {
-            Issue.record("Unexpected error type: \(error)")
-        }
-        #expect(caughtError == .emptyURL)
+        #expect(throws: URLValidationError.emptyURL, performing: { try BookmarkURL("   \n\t   ")})
     }
     
     @Test func 無効な形式_初期化失敗() {
-        var caughtError: URLValidationError?
-        do {
-            _ = try BookmarkURL("invalid-url")
-            Issue.record("Expected URLValidationError to be thrown")
-        } catch let error as URLValidationError {
-            caughtError = error
-        } catch {
-            Issue.record("Unexpected error type: \(error)")
-        }
-        #expect(caughtError == .invalidFormat)
+        #expect(throws: URLValidationError.invalidFormat, performing: { try BookmarkURL("invalid-url")})
     }
     
     @Test func プロトコルなし_初期化失敗() {
-        var caughtError: URLValidationError?
-        do {
-            _ = try BookmarkURL("example.com")
-            Issue.record("Expected URLValidationError to be thrown")
-        } catch let error as URLValidationError {
-            caughtError = error
-        } catch {
-            Issue.record("Unexpected error type: \(error)")
-        }
-        #expect(caughtError == .invalidFormat)
+        #expect(throws: URLValidationError.invalidFormat, performing: { try BookmarkURL("example.com")})
     }
     
     @Test func ftpプロトコル_初期化失敗() {
-        var caughtError: URLValidationError?
-        do {
-            _ = try BookmarkURL("ftp://example.com")
-            Issue.record("Expected URLValidationError to be thrown")
-        } catch let error as URLValidationError {
-            caughtError = error
-        } catch {
-            Issue.record("Unexpected error type: \(error)")
-        }
-        #expect(caughtError == .unsupportedScheme)
+        #expect(throws: URLValidationError.unsupportedScheme, performing: { try BookmarkURL("ftp://example.com")})
     }
     
     @Test func fileプロトコル_初期化失敗() {
-        var caughtError: URLValidationError?
-        do {
-            _ = try BookmarkURL("file:///path/to/file")
-            Issue.record("Expected URLValidationError to be thrown")
-        } catch let error as URLValidationError {
-            caughtError = error
-        } catch {
-            Issue.record("Unexpected error type: \(error)")
-        }
-        #expect(caughtError == .unsupportedScheme)
+        #expect(throws: URLValidationError.unsupportedScheme, performing: { try BookmarkURL("file:///path/to/file")})
     }
     
     // MARK: - 正規化テスト
