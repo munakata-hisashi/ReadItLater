@@ -196,9 +196,9 @@ struct AppV3Schema: VersionedSchema {
 
 ### マイグレーション方式
 
-**カスタムマイグレーション（Custom Migration）**を採用：
+**軽量マイグレーション（Lightweight Migration）**を採用：
 
-既存のBookmarkデータを新しいBookmarkモデルに変換する必要があるため、カスタムマイグレーションロジックを実装します。
+プロパティ名の変更と新規プロパティの追加のみなので、SwiftDataの自動マイグレーション機能を使用します。
 
 ```swift
 struct AppMigrationPlan: SchemaMigrationPlan {
@@ -208,33 +208,7 @@ struct AppMigrationPlan: SchemaMigrationPlan {
         AppV3Schema.self  // 追加
     ]
 
-    static let stages: [MigrationStage] = [
-        // V2 → V3: 既存のBookmarkを新しいBookmarkモデルに変換
-        MigrationStage.custom(
-            fromVersion: AppV2Schema.self,
-            toVersion: AppV3Schema.self,
-            willMigrate: nil,
-            didMigrate: { context in
-                // 既存のBookmarkを全て取得
-                let oldBookmarks = try context.fetch(FetchDescriptor<AppV2Schema.Bookmark>())
-
-                // 各Bookmarkを新しいBookmarkモデルに変換
-                for oldBookmark in oldBookmarks {
-                    let newBookmark = AppV3Schema.Bookmark(
-                        id: oldBookmark.id,  // 同じIDを維持
-                        url: oldBookmark.url ?? "",
-                        title: oldBookmark.title ?? "",
-                        addedInboxAt: oldBookmark.createdAt,  // 元の作成日時
-                        bookmarkedAt: oldBookmark.createdAt   // 同じ日時（既存データは最初からBookmark）
-                    )
-                    context.insert(newBookmark)
-                }
-
-                // 古いBookmarkは自動的に削除される
-                try context.save()
-            }
-        )
-    ]
+    static let stages: [MigrationStage] = []  // 空配列 = 軽量マイグレーション
 }
 ```
 
@@ -242,12 +216,13 @@ struct AppMigrationPlan: SchemaMigrationPlan {
 
 **設計決定**:
 - 既存の全ブックマークは**Bookmark**として保持
-- 理由: まだ開発中で実ユーザーがいないため、既存データをそのまま移行
-- 元のIDを維持することで、CloudKitの追跡を継続
+- 理由: まだ開発中で実ユーザーがいないため、テストデータとして扱う
+- 軽量マイグレーションでSwiftDataが自動的に変換
 
 **日時の扱い**:
-- `addedInboxAt`と`bookmarkedAt`の両方に`createdAt`を使用
-- 既存データは「最初からBookmarkだった」として扱う
+- `createdAt`プロパティは削除される
+- `addedInboxAt`と`bookmarkedAt`は新規追加され、マイグレーション時刻で初期化される
+- テストデータなので日時情報の保持は不要
 
 **重要な注意点**:
 - V2のBookmarkモデルは削除され、V3の新しいBookmarkモデルに置き換わる
@@ -337,7 +312,7 @@ struct AppV3Schema: VersionedSchema {
 
 #### 1.2 Migration/MigrationPlan.swift
 
-**変更内容**: schemas配列に`AppV3Schema`を追加し、カスタムマイグレーションを実装
+**変更内容**: schemas配列に`AppV3Schema`を追加（軽量マイグレーション）
 
 ```swift
 struct AppMigrationPlan: SchemaMigrationPlan {
@@ -347,29 +322,14 @@ struct AppMigrationPlan: SchemaMigrationPlan {
         AppV3Schema.self
     ]
 
-    static let stages: [MigrationStage] = [
-        MigrationStage.custom(
-            fromVersion: AppV2Schema.self,
-            toVersion: AppV3Schema.self,
-            willMigrate: nil,
-            didMigrate: { context in
-                let oldBookmarks = try context.fetch(FetchDescriptor<AppV2Schema.Bookmark>())
-                for oldBookmark in oldBookmarks {
-                    let newBookmark = AppV3Schema.Bookmark(
-                        id: oldBookmark.id,
-                        url: oldBookmark.url ?? "",
-                        title: oldBookmark.title ?? "",
-                        addedInboxAt: oldBookmark.createdAt,
-                        bookmarkedAt: oldBookmark.createdAt
-                    )
-                    context.insert(newBookmark)
-                }
-                try context.save()
-            }
-        )
-    ]
+    static let stages: [MigrationStage] = []  // 空配列 = 軽量マイグレーション
 }
 ```
+
+**技術ポイント**:
+- 空のstages配列により、SwiftDataが自動的に軽量マイグレーションを実行
+- プロパティ名の変更（`createdAt` → `addedInboxAt`）と新規プロパティ追加を自動処理
+- カスタムロジック不要でシンプル
 
 ---
 
@@ -922,10 +882,11 @@ mise run unit
 
 ### マイグレーション
 
-**カスタムマイグレーション**:
-- V2のBookmarkを全てInboxに変換
-- 元のIDを維持してCloudKit追跡を継続
-- `didMigrate`クロージャで変換ロジックを実装
+**軽量マイグレーション**:
+- SwiftDataが自動的にスキーマ変更を処理
+- プロパティ名変更と新規プロパティ追加を自動で実行
+- カスタムロジック不要でシンプル
+- 既存データはBookmarkとして保持、日時は初期化
 
 ### パフォーマンス
 
@@ -1033,8 +994,8 @@ func searchFullText(in archives: [Archive], query: String) -> [Archive] {
 [アプリ起動]
     ↓
 AppMigrationPlan実行
-    ↓ V2 → V3へカスタムマイグレーション
-    ↓ 既存BookmarkをBookmarkとして保持（IDは維持、addedInboxAt=bookmarkedAt=createdAt）
+    ↓ V2 → V3へ軽量マイグレーション
+    ↓ 既存BookmarkをBookmarkとして保持（日時は現在時刻で初期化）
     ↓
 [マイグレーション完了]
     ↓
