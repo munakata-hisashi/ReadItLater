@@ -198,7 +198,7 @@ struct AppV3Schema: VersionedSchema {
 
 **カスタムマイグレーション（Custom Migration）**を採用：
 
-既存のBookmarkデータをInboxに移行する必要があるため、カスタムマイグレーションロジックを実装します。
+既存のBookmarkデータを新しいBookmarkモデルに変換する必要があるため、カスタムマイグレーションロジックを実装します。
 
 ```swift
 struct AppMigrationPlan: SchemaMigrationPlan {
@@ -209,24 +209,25 @@ struct AppMigrationPlan: SchemaMigrationPlan {
     ]
 
     static let stages: [MigrationStage] = [
-        // V2 → V3: 既存のBookmarkをInboxに移行
+        // V2 → V3: 既存のBookmarkを新しいBookmarkモデルに変換
         MigrationStage.custom(
             fromVersion: AppV2Schema.self,
             toVersion: AppV3Schema.self,
             willMigrate: nil,
             didMigrate: { context in
                 // 既存のBookmarkを全て取得
-                let bookmarks = try context.fetch(FetchDescriptor<AppV2Schema.Bookmark>())
+                let oldBookmarks = try context.fetch(FetchDescriptor<AppV2Schema.Bookmark>())
 
-                // 各BookmarkをInboxとして新規作成
-                for oldBookmark in bookmarks {
-                    let inbox = AppV3Schema.Inbox(
+                // 各Bookmarkを新しいBookmarkモデルに変換
+                for oldBookmark in oldBookmarks {
+                    let newBookmark = AppV3Schema.Bookmark(
                         id: oldBookmark.id,  // 同じIDを維持
                         url: oldBookmark.url ?? "",
                         title: oldBookmark.title ?? "",
-                        addedInboxAt: oldBookmark.createdAt
+                        addedInboxAt: oldBookmark.createdAt,  // 元の作成日時
+                        bookmarkedAt: oldBookmark.createdAt   // 同じ日時（既存データは最初からBookmark）
                     )
-                    context.insert(inbox)
+                    context.insert(newBookmark)
                 }
 
                 // 古いBookmarkは自動的に削除される
@@ -240,14 +241,18 @@ struct AppMigrationPlan: SchemaMigrationPlan {
 ### 既存データの扱い
 
 **設計決定**:
-- 既存の全ブックマークは**Inbox**として移行
-- 理由: 新機能導入として、ユーザーに分類を促す
+- 既存の全ブックマークは**Bookmark**として保持
+- 理由: まだ開発中で実ユーザーがいないため、既存データをそのまま移行
 - 元のIDを維持することで、CloudKitの追跡を継続
 
+**日時の扱い**:
+- `addedInboxAt`と`bookmarkedAt`の両方に`createdAt`を使用
+- 既存データは「最初からBookmarkだった」として扱う
+
 **重要な注意点**:
-- V2のBookmarkモデルは完全に削除され、V3では3つの別モデルになる
+- V2のBookmarkモデルは削除され、V3の新しいBookmarkモデルに置き換わる
 - CloudKit上では既存のBookmarkレコードが更新される形で同期される
-- ユーザーは初回起動時に全てのURLがInboxに入っていることを確認できる
+- 新規追加されるURLは全てInboxに入る（既存データのみBookmark）
 
 ---
 
@@ -348,15 +353,16 @@ struct AppMigrationPlan: SchemaMigrationPlan {
             toVersion: AppV3Schema.self,
             willMigrate: nil,
             didMigrate: { context in
-                let bookmarks = try context.fetch(FetchDescriptor<AppV2Schema.Bookmark>())
-                for oldBookmark in bookmarks {
-                    let inbox = AppV3Schema.Inbox(
+                let oldBookmarks = try context.fetch(FetchDescriptor<AppV2Schema.Bookmark>())
+                for oldBookmark in oldBookmarks {
+                    let newBookmark = AppV3Schema.Bookmark(
                         id: oldBookmark.id,
                         url: oldBookmark.url ?? "",
                         title: oldBookmark.title ?? "",
-                        addedInboxAt: oldBookmark.createdAt
+                        addedInboxAt: oldBookmark.createdAt,
+                        bookmarkedAt: oldBookmark.createdAt
                     )
-                    context.insert(inbox)
+                    context.insert(newBookmark)
                 }
                 try context.save()
             }
@@ -877,7 +883,7 @@ mise run unit
 ### 動作確認項目
 
 1. **マイグレーション確認**
-   - 既存アプリをアップデート後、全ブックマークがinbox状態になっていることを確認
+   - 既存アプリをアップデート後、全ブックマークがbookmark状態（Bookmarkタブ）に残っていることを確認
    - アプリがクラッシュせずに起動することを確認
 
 2. **新規追加確認**
@@ -1028,7 +1034,7 @@ func searchFullText(in archives: [Archive], query: String) -> [Archive] {
     ↓
 AppMigrationPlan実行
     ↓ V2 → V3へカスタムマイグレーション
-    ↓ 既存BookmarkをInboxに変換（IDは維持）
+    ↓ 既存BookmarkをBookmarkとして保持（IDは維持、addedInboxAt=bookmarkedAt=createdAt）
     ↓
 [マイグレーション完了]
     ↓
