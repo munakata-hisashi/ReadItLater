@@ -132,7 +132,7 @@ struct AppV3Schema: VersionedSchema {
     @Model
     final class Inbox {
         var id: UUID = UUID()
-        var createdAt: Date = Date.now
+        var addedInboxAt: Date = Date.now  // Inboxに追加された日時
         var url: String?
         var title: String?
 
@@ -140,11 +140,11 @@ struct AppV3Schema: VersionedSchema {
         var lastRemindedAt: Date?
         var isRead: Bool = false
 
-        init(id: UUID = UUID(), url: String, title: String, createdAt: Date = Date.now) {
+        init(id: UUID = UUID(), url: String, title: String, addedInboxAt: Date = Date.now) {
             self.id = id
             self.url = url
             self.title = title
-            self.createdAt = createdAt
+            self.addedInboxAt = addedInboxAt
         }
     }
 
@@ -152,7 +152,8 @@ struct AppV3Schema: VersionedSchema {
     @Model
     final class Bookmark {
         var id: UUID = UUID()
-        var createdAt: Date = Date.now
+        var addedInboxAt: Date  // 元々Inboxに追加された日時
+        var bookmarkedAt: Date = Date.now  // Bookmarkに移動した日時
         var url: String?
         var title: String?
 
@@ -160,11 +161,12 @@ struct AppV3Schema: VersionedSchema {
         var lastViewedAt: Date?
         var viewCount: Int = 0
 
-        init(id: UUID = UUID(), url: String, title: String, createdAt: Date = Date.now) {
+        init(id: UUID = UUID(), url: String, title: String, addedInboxAt: Date, bookmarkedAt: Date = Date.now) {
             self.id = id
             self.url = url
             self.title = title
-            self.createdAt = createdAt
+            self.addedInboxAt = addedInboxAt
+            self.bookmarkedAt = bookmarkedAt
         }
     }
 
@@ -172,20 +174,21 @@ struct AppV3Schema: VersionedSchema {
     @Model
     final class Archive {
         var id: UUID = UUID()
-        var createdAt: Date = Date.now
+        var addedInboxAt: Date  // 元々Inboxに追加された日時
+        var archivedAt: Date = Date.now  // Archiveに移動した日時
         var url: String?
         var title: String?
 
         // Archive固有のプロパティ
-        var archivedAt: Date = Date.now
         var fullTextContent: String?
         var readingNotes: String?
 
-        init(id: UUID = UUID(), url: String, title: String, createdAt: Date = Date.now) {
+        init(id: UUID = UUID(), url: String, title: String, addedInboxAt: Date, archivedAt: Date = Date.now) {
             self.id = id
             self.url = url
             self.title = title
-            self.createdAt = createdAt
+            self.addedInboxAt = addedInboxAt
+            self.archivedAt = archivedAt
         }
     }
 }
@@ -221,7 +224,7 @@ struct AppMigrationPlan: SchemaMigrationPlan {
                         id: oldBookmark.id,  // 同じIDを維持
                         url: oldBookmark.url ?? "",
                         title: oldBookmark.title ?? "",
-                        createdAt: oldBookmark.createdAt
+                        addedInboxAt: oldBookmark.createdAt
                     )
                     context.insert(inbox)
                 }
@@ -268,52 +271,55 @@ struct AppV3Schema: VersionedSchema {
     @Model
     final class Inbox {
         var id: UUID = UUID()
-        var createdAt: Date = Date.now
+        var addedInboxAt: Date = Date.now
         var url: String?
         var title: String?
         var lastRemindedAt: Date?
         var isRead: Bool = false
 
-        init(id: UUID = UUID(), url: String, title: String, createdAt: Date = Date.now) {
+        init(id: UUID = UUID(), url: String, title: String, addedInboxAt: Date = Date.now) {
             self.id = id
             self.url = url
             self.title = title
-            self.createdAt = createdAt
+            self.addedInboxAt = addedInboxAt
         }
     }
 
     @Model
     final class Bookmark {
         var id: UUID = UUID()
-        var createdAt: Date = Date.now
+        var addedInboxAt: Date
+        var bookmarkedAt: Date = Date.now
         var url: String?
         var title: String?
         var lastViewedAt: Date?
         var viewCount: Int = 0
 
-        init(id: UUID = UUID(), url: String, title: String, createdAt: Date = Date.now) {
+        init(id: UUID = UUID(), url: String, title: String, addedInboxAt: Date, bookmarkedAt: Date = Date.now) {
             self.id = id
             self.url = url
             self.title = title
-            self.createdAt = createdAt
+            self.addedInboxAt = addedInboxAt
+            self.bookmarkedAt = bookmarkedAt
         }
     }
 
     @Model
     final class Archive {
         var id: UUID = UUID()
-        var createdAt: Date = Date.now
+        var addedInboxAt: Date
+        var archivedAt: Date = Date.now
         var url: String?
         var title: String?
-        var archivedAt: Date = Date.now
         var fullTextContent: String?
         var readingNotes: String?
 
-        init(id: UUID = UUID(), url: String, title: String, createdAt: Date = Date.now) {
+        init(id: UUID = UUID(), url: String, title: String, addedInboxAt: Date, archivedAt: Date = Date.now) {
             self.id = id
             self.url = url
             self.title = title
-            self.createdAt = createdAt
+            self.addedInboxAt = addedInboxAt
+            self.archivedAt = archivedAt
         }
     }
 }
@@ -348,7 +354,7 @@ struct AppMigrationPlan: SchemaMigrationPlan {
                         id: oldBookmark.id,
                         url: oldBookmark.url ?? "",
                         title: oldBookmark.title ?? "",
-                        createdAt: oldBookmark.createdAt
+                        addedInboxAt: oldBookmark.createdAt
                     )
                     context.insert(inbox)
                 }
@@ -385,7 +391,7 @@ protocol URLItem {
     var id: UUID { get }
     var url: String? { get }
     var title: String? { get }
-    var createdAt: Date { get }
+    var addedInboxAt: Date { get }
 }
 
 extension Inbox: URLItem {}
@@ -527,7 +533,7 @@ final class URLItemRepository: URLItemRepositoryProtocol {
         let bookmark = Bookmark(
             url: inbox.url ?? "",
             title: inbox.title ?? "",
-            createdAt: inbox.createdAt
+            addedInboxAt: inbox.addedInboxAt
         )
 
         modelContext.insert(bookmark)
@@ -539,7 +545,7 @@ final class URLItemRepository: URLItemRepositoryProtocol {
         let archive = Archive(
             url: inbox.url ?? "",
             title: inbox.title ?? "",
-            createdAt: inbox.createdAt
+            addedInboxAt: inbox.addedInboxAt
         )
 
         modelContext.insert(archive)
@@ -551,7 +557,7 @@ final class URLItemRepository: URLItemRepositoryProtocol {
         let archive = Archive(
             url: bookmark.url ?? "",
             title: bookmark.title ?? "",
-            createdAt: bookmark.createdAt
+            addedInboxAt: bookmark.addedInboxAt
         )
 
         modelContext.insert(archive)
@@ -563,7 +569,7 @@ final class URLItemRepository: URLItemRepositoryProtocol {
         let bookmark = Bookmark(
             url: archive.url ?? "",
             title: archive.title ?? "",
-            createdAt: archive.createdAt
+            addedInboxAt: archive.addedInboxAt
         )
 
         modelContext.insert(bookmark)
@@ -600,7 +606,7 @@ enum RepositoryError: LocalizedError {
 
 **技術ポイント**:
 - 状態移動は「新規作成 + 削除」のシンプルな実装
-- `createdAt`を引き継ぐことで元の追加日時を保持
+- `addedInboxAt`を引き継ぐことで元の追加日時を保持
 - 型安全性により、誤った移動を防止
 
 ---
@@ -895,7 +901,7 @@ mise run unit
 **同期の仕組み**:
 - 各モデル（Inbox, Bookmark, Archive）は独立したCloudKitレコードタイプとして同期
 - 状態移動時は「削除 + 作成」の2操作として同期される
-- `createdAt`を引き継ぐことで元の追加日時を保持
+- `addedInboxAt`を引き継ぐことで元の追加日時を保持
 
 **競合リスクと対策**:
 - **競合発生条件**: オフライン時に同じアイテムを別デバイスで編集＋状態移動
@@ -1048,7 +1054,7 @@ repository.canAddToInbox()チェック
     ↓
 repository.moveToArchive(inbox)
     ↓
-1. Archiveモデルを作成（createdAtを引き継ぐ）
+1. Archiveモデルを作成（addedInboxAtを引き継ぐ）
 2. Inboxモデルを削除
 3. modelContext.save()
     ↓
@@ -1140,9 +1146,10 @@ CloudKit同期: 削除 + 作成の2操作
 - コードが理解しやすい
 
 **日時情報の保持**:
-- `createdAt`で元の追加日時を保持
+- `addedInboxAt`で元の追加日時を保持（全URLはまずInboxに入る）
+- `bookmarkedAt`でBookmark化した日時を記録
 - `archivedAt`でアーカイブした日時を記録
-- 経過日数の計算が可能
+- 経過日数の計算が可能（例：`archivedAt - addedInboxAt`でInboxにいた期間）
 
 ### ためっぱなし防止機能の実現
 
