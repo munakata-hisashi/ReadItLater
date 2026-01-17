@@ -94,9 +94,8 @@ ReadItLaterアプリに「**あとで読む**」機能特有の課題である**
 
 1. **基本的にオンライン使用を想定**（ユーザー要件）
 2. **シンプルな物理削除**を採用（複雑な論理削除は避ける）
-3. **履歴追跡**：`originalInboxId`などで移行元を記録
-4. **競合発生は稀**：1日5件程度の操作頻度、オフライン利用は少ない
-5. **影響は限定的**：競合が起きても1件のみ、URLは外部に存在するため再取得可能
+3. **競合発生は稀**：1日5件程度の操作頻度、オフライン利用は少ない
+4. **影響は限定的**：競合が起きても1件のみ、URLは外部に存在するため再取得可能
 
 → **シンプルさを優先し、過剰な対策は避ける**
 
@@ -161,10 +160,6 @@ struct AppV3Schema: VersionedSchema {
         var lastViewedAt: Date?
         var viewCount: Int = 0
 
-        // 履歴追跡用（InboxまたはArchiveから移行した場合）
-        var originalInboxId: UUID?
-        var originalArchiveId: UUID?
-
         init(id: UUID = UUID(), url: String, title: String, createdAt: Date = Date.now) {
             self.id = id
             self.url = url
@@ -185,10 +180,6 @@ struct AppV3Schema: VersionedSchema {
         var archivedAt: Date = Date.now
         var fullTextContent: String?
         var readingNotes: String?
-
-        // 履歴追跡用（InboxまたはBookmarkから移行した場合）
-        var originalInboxId: UUID?
-        var originalBookmarkId: UUID?
 
         init(id: UUID = UUID(), url: String, title: String, createdAt: Date = Date.now) {
             self.id = id
@@ -299,8 +290,6 @@ struct AppV3Schema: VersionedSchema {
         var title: String?
         var lastViewedAt: Date?
         var viewCount: Int = 0
-        var originalInboxId: UUID?
-        var originalArchiveId: UUID?
 
         init(id: UUID = UUID(), url: String, title: String, createdAt: Date = Date.now) {
             self.id = id
@@ -319,8 +308,6 @@ struct AppV3Schema: VersionedSchema {
         var archivedAt: Date = Date.now
         var fullTextContent: String?
         var readingNotes: String?
-        var originalInboxId: UUID?
-        var originalBookmarkId: UUID?
 
         init(id: UUID = UUID(), url: String, title: String, createdAt: Date = Date.now) {
             self.id = id
@@ -335,7 +322,7 @@ struct AppV3Schema: VersionedSchema {
 **技術ポイント**:
 - 3つの独立したモデルで型安全性を確保
 - 各モデルは状態固有のプロパティを持つ
-- `originalXxxId`で履歴追跡が可能
+- シンプルな設計で理解しやすい
 
 #### 1.2 Migration/MigrationPlan.swift
 
@@ -542,7 +529,6 @@ final class URLItemRepository: URLItemRepositoryProtocol {
             title: inbox.title ?? "",
             createdAt: inbox.createdAt
         )
-        bookmark.originalInboxId = inbox.id
 
         modelContext.insert(bookmark)
         modelContext.delete(inbox)
@@ -555,7 +541,6 @@ final class URLItemRepository: URLItemRepositoryProtocol {
             title: inbox.title ?? "",
             createdAt: inbox.createdAt
         )
-        archive.originalInboxId = inbox.id
 
         modelContext.insert(archive)
         modelContext.delete(inbox)
@@ -568,7 +553,6 @@ final class URLItemRepository: URLItemRepositoryProtocol {
             title: bookmark.title ?? "",
             createdAt: bookmark.createdAt
         )
-        archive.originalBookmarkId = bookmark.id
 
         modelContext.insert(archive)
         modelContext.delete(bookmark)
@@ -581,7 +565,6 @@ final class URLItemRepository: URLItemRepositoryProtocol {
             title: archive.title ?? "",
             createdAt: archive.createdAt
         )
-        bookmark.originalArchiveId = archive.id
 
         modelContext.insert(bookmark)
         modelContext.delete(archive)
@@ -617,7 +600,7 @@ enum RepositoryError: LocalizedError {
 
 **技術ポイント**:
 - 状態移動は「新規作成 + 削除」のシンプルな実装
-- `originalXxxId`で履歴を追跡
+- `createdAt`を引き継ぐことで元の追加日時を保持
 - 型安全性により、誤った移動を防止
 
 ---
@@ -776,7 +759,6 @@ struct URLItemRepositoryTests {
         let bookmarks = try modelContext.fetch(bookmarkDescriptor)
         #expect(bookmarks.count == 1)
         #expect(bookmarks.first?.url == "https://example.com")
-        #expect(bookmarks.first?.originalInboxId == inbox.id)
 
         let remainingInbox = try modelContext.fetch(inboxDescriptor)
         #expect(remainingInbox.isEmpty)
@@ -794,7 +776,7 @@ struct URLItemRepositoryTests {
         // Then: Archiveに存在
         let archives = try modelContext.fetch(FetchDescriptor<Archive>())
         #expect(archives.count == 1)
-        #expect(archives.first?.originalInboxId == inbox.id)
+        #expect(archives.first?.url == "https://example.com")
     }
 
     @Test("BookmarkからArchiveへ移動")
@@ -811,7 +793,7 @@ struct URLItemRepositoryTests {
         // Then: Archiveに存在
         let archives = try modelContext.fetch(FetchDescriptor<Archive>())
         #expect(archives.count == 1)
-        #expect(archives.first?.originalBookmarkId == bookmark.id)
+        #expect(archives.first?.url == "https://example.com")
     }
 
     @Test("削除操作")
@@ -835,7 +817,7 @@ struct URLItemRepositoryTests {
 **技術ポイント**:
 - Swift Testing APIを使用
 - 別モデル方式の状態移動をテスト
-- 履歴追跡（`originalXxxId`）の検証
+- データが正しく移行されることを検証
 - 型安全性が保証されることを確認
 
 ---
@@ -913,7 +895,7 @@ mise run unit
 **同期の仕組み**:
 - 各モデル（Inbox, Bookmark, Archive）は独立したCloudKitレコードタイプとして同期
 - 状態移動時は「削除 + 作成」の2操作として同期される
-- `originalXxxId`で履歴追跡が可能
+- `createdAt`を引き継ぐことで元の追加日時を保持
 
 **競合リスクと対策**:
 - **競合発生条件**: オフライン時に同じアイテムを別デバイスで編集＋状態移動
@@ -1066,7 +1048,7 @@ repository.canAddToInbox()チェック
     ↓
 repository.moveToArchive(inbox)
     ↓
-1. Archiveモデルを作成（originalInboxId = inbox.id）
+1. Archiveモデルを作成（createdAtを引き継ぐ）
 2. Inboxモデルを削除
 3. modelContext.save()
     ↓
@@ -1103,7 +1085,7 @@ CloudKit同期: 削除 + 作成の2操作
 2. トランザクションテーブル → 実装複雑、ストレージ消費
 3. 同一ID維持 + 参照 → 完全な競合回避は不可
 4. 物理削除 + ユーザー警告 → オフライン時の操作制限
-5. シンプルな物理削除 + 履歴追跡 → **採用**
+5. シンプルな物理削除 → **採用**
 
 **採用理由**:
 - 基本的にオンライン使用（ユーザー要件）
@@ -1157,10 +1139,10 @@ CloudKit同期: 削除 + 作成の2操作
 - データが蓄積しない
 - コードが理解しやすい
 
-**履歴追跡の最小実装**:
-- `originalXxxId`で移行元を記録
-- デバッグが容易
-- 将来の機能拡張に対応可能
+**日時情報の保持**:
+- `createdAt`で元の追加日時を保持
+- `archivedAt`でアーカイブした日時を記録
+- 経過日数の計算が可能
 
 ### ためっぱなし防止機能の実現
 
