@@ -269,7 +269,7 @@ struct AppV3Schema: VersionedSchema {
         var url: String?
         var title: String?
 
-        init(id: UUID = UUID(), url: String, title: String, addedInboxAt: Date, bookmarkedAt: Date = Date.now) {
+        init(id: UUID = UUID(), url: String, title: String, addedInboxAt: Date = Date.now, bookmarkedAt: Date = Date.now) {
             self.id = id
             self.url = url
             self.title = title
@@ -286,7 +286,7 @@ struct AppV3Schema: VersionedSchema {
         var url: String?
         var title: String?
 
-        init(id: UUID = UUID(), url: String, title: String, addedInboxAt: Date, archivedAt: Date = Date.now) {
+        init(id: UUID = UUID(), url: String, title: String, addedInboxAt: Date = Date.now, archivedAt: Date = Date.now) {
             self.id = id
             self.url = url
             self.title = title
@@ -404,25 +404,26 @@ enum ModelContainerFactory {
 
 ### 5. Infrastructure/BookmarkRepository.swift
 
-**変更内容**: V3 Bookmarkのイニシャライザに`addedInboxAt`引数を追加
+**変更内容**: V3 Bookmarkのイニシャライザ対応（`addedInboxAt`を明示的に指定）
 
 ```swift
 func add(_ bookmarkData: BookmarkData) {
     let newBookmark = Bookmark(
         url: bookmarkData.url,
         title: bookmarkData.title,
-        addedInboxAt: Date.now  // 新規追加
+        addedInboxAt: Date.now  // 明示的に指定（省略も可能）
     )
     modelContext.insert(newBookmark)
 }
 ```
 
 **技術ポイント**:
-- 新規ブックマーク追加時は現在時刻を`addedInboxAt`に設定
+- `addedInboxAt`はデフォルト値があるため省略可能
+- ただし、「新規追加時は現在時刻」という意図を明確にするため明示的に指定することを推奨
 
 ### 6. ShareExtension/ShareViewController.swift
 
-**変更内容**: V3 Bookmarkのイニシャライザに`addedInboxAt`引数を追加
+**変更内容**: V3 Bookmarkのイニシャライザ対応（`addedInboxAt`を明示的に指定）
 
 ```swift
 private func saveBookmark(url: String, title: String?) async throws {
@@ -430,7 +431,7 @@ private func saveBookmark(url: String, title: String?) async throws {
     let bookmark = Bookmark(
         url: bookmarkData.url,
         title: bookmarkData.title,
-        addedInboxAt: Date.now  // 新規追加
+        addedInboxAt: Date.now  // 明示的に指定（省略も可能）
     )
     context.insert(bookmark)
     try context.save()
@@ -438,7 +439,8 @@ private func saveBookmark(url: String, title: String?) async throws {
 ```
 
 **技術ポイント**:
-- Share Extension経由でのブックマーク追加も同様に対応
+- `addedInboxAt`はデフォルト値があるため省略可能
+- Share Extension経由でのブックマーク追加も意図を明確にするため明示的に指定
 
 ### 7. View/ContentView.swift
 
@@ -478,41 +480,36 @@ private func saveBookmark(url: String, title: String?) async throws {
 
 ### 9. ReadItLaterTests/Infrastructure/BookmarkRepositoryTests.swift
 
-**変更内容**: 全てのBookmark直接生成箇所（5箇所）で`addedInboxAt`引数を追加
+**変更内容**: 変更不要
 
 ```swift
-// 変更前
+// V2と同じ書き方で動作（addedInboxAtはデフォルト値が使われる）
 let bookmark = Bookmark(url: "https://example.com", title: "Example")
-
-// 変更後
-let bookmark = Bookmark(url: "https://example.com", title: "Example", addedInboxAt: Date.now)
 ```
 
-**該当箇所**:
-- 行64: `ブックマーク削除_単一削除成功`テスト
-- 行91-93: `ブックマーク削除_複数削除成功`テスト（3箇所）
-- 行121: `ブックマーク削除_空配列を削除`テスト
-- 行141-142: `ブックマーク削除_全件削除`テスト（2箇所）
+**技術ポイント**:
+- イニシャライザで`addedInboxAt`にデフォルト値があるため、呼び出し側での指定は省略可能
+- 既存のテストコードをそのまま使用できる
 
 ---
 
 ## 修正対象ファイル一覧
 
-### 変更ファイル（8ファイル）
+### 変更ファイル（7ファイル）
 
 | ファイル | 変更内容 |
 |---------|---------|
 | `Migration/VersionedSchema.swift` | AppV3Schemaに3つのモデル（Inbox, Bookmark, Archive）を追加（基本プロパティのみ） |
 | `Migration/MigrationPlan.swift` | AppV3Schemaを追加、軽量マイグレーション（stages = []） |
 | `ModelContainerFactory.swift` | Schemaを3モデルに更新、Preview用関数を追加 |
-| `Infrastructure/BookmarkRepository.swift` | V3 Bookmarkのイニシャライザ（`addedInboxAt`引数追加）に対応 |
+| `Infrastructure/BookmarkRepository.swift` | V3 Bookmarkのイニシャライザ対応（`addedInboxAt`は省略可能だが明示的指定を推奨） |
 | `View/ContentView.swift` | PreviewでModelContainerFactoryの共通関数を使用 |
 | `View/BookmarkView.swift` | PreviewでModelContainerFactoryの共通関数を使用 |
-| `ShareExtension/ShareViewController.swift` | V3 Bookmarkのイニシャライザに対応 |
-| `ReadItLaterTests/Infrastructure/BookmarkRepositoryTests.swift` | V3 Bookmarkのイニシャライザに対応（5箇所） |
+| `ShareExtension/ShareViewController.swift` | V3 Bookmarkのイニシャライザ対応（`addedInboxAt`は省略可能だが明示的指定を推奨） |
 
 **注意**:
-- 当初の計画では4ファイルの変更を想定していましたが、V3 Bookmarkのイニシャライザ変更により、アプリが正常にビルド・起動できる状態を維持するため、影響範囲を拡大しました。
+- 当初の計画では4ファイルの変更を想定していましたが、アプリが正常にビルド・起動できる状態を維持するため、影響範囲を拡大しました。
+- イニシャライザで`addedInboxAt`にデフォルト値を設定するため、テストコード（BookmarkRepositoryTests.swift）での変更は不要です。
 - 各モデルの固有プロパティ（Inbox: lastRemindedAt/isRead、Bookmark: lastViewedAt/viewCount、Archive: fullTextContent/readingNotes）は、それぞれの機能実装時に追加するため、006では基本プロパティのみを定義します。
 
 ### 新規ファイル（1ファイル）
