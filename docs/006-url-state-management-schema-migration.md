@@ -163,7 +163,7 @@ struct AppV3Schema: VersionedSchema {
     @Model
     final class Bookmark {
         var id: UUID = UUID()
-        var addedInboxAt: Date  // 元々Inboxに追加された日時
+        var addedInboxAt: Date = Date.now  // 重要: デフォルト値必須（軽量マイグレーション）
         var bookmarkedAt: Date = Date.now  // Bookmarkに移動した日時
         var url: String?
         var title: String?
@@ -185,7 +185,7 @@ struct AppV3Schema: VersionedSchema {
     @Model
     final class Archive {
         var id: UUID = UUID()
-        var addedInboxAt: Date  // 元々Inboxに追加された日時
+        var addedInboxAt: Date = Date.now  // 重要: デフォルト値必須（軽量マイグレーション）
         var archivedAt: Date = Date.now  // Archiveに移動した日時
         var url: String?
         var title: String?
@@ -277,7 +277,7 @@ struct AppV3Schema: VersionedSchema {
     @Model
     final class Bookmark {
         var id: UUID = UUID()
-        var addedInboxAt: Date
+        var addedInboxAt: Date = Date.now  // 重要: デフォルト値必須（軽量マイグレーション）
         var bookmarkedAt: Date = Date.now
         var url: String?
         var title: String?
@@ -296,7 +296,7 @@ struct AppV3Schema: VersionedSchema {
     @Model
     final class Archive {
         var id: UUID = UUID()
-        var addedInboxAt: Date
+        var addedInboxAt: Date = Date.now  // 重要: デフォルト値必須（軽量マイグレーション）
         var archivedAt: Date = Date.now
         var url: String?
         var title: String?
@@ -386,79 +386,206 @@ extension URLItem {
 - 各モデルのtype aliasを一箇所で管理
 - 共通の便利メソッドをextensionで提供
 
-### 4. ReadItLaterApp.swift
+### 4. ModelContainerFactory.swift
 
-**変更内容**: ModelContainerの設定を3モデルに更新
+**変更内容**: Schemaを3モデル（Inbox, Bookmark, Archive）に更新
 
 ```swift
-import SwiftUI
-import SwiftData
+enum ModelContainerFactory {
+    static let appGroupIdentifier = "group.munakata-hisashi.ReadItLater"
 
-@main
-struct ReadItLaterApp: App {
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-        }
-        .modelContainer(for: [
+    static func createSharedContainer(inMemory: Bool = false) throws -> ModelContainer {
+        let schema = Schema([
             Inbox.self,
             Bookmark.self,
             Archive.self
-        ], migrationPlan: AppMigrationPlan.self)
+        ])
+        // ... 以下同じ
     }
 }
 ```
 
 **技術ポイント**:
-- ModelContainerに3つのモデルを登録
-- migrationPlanを指定してマイグレーションを実行
+- Schemaに3つのモデルを登録
+- migrationPlanは既に指定されているため変更不要
+
+### 5. Infrastructure/BookmarkRepository.swift
+
+**変更内容**: V3 Bookmarkのイニシャライザに`addedInboxAt`引数を追加
+
+```swift
+func add(_ bookmarkData: BookmarkData) {
+    let newBookmark = Bookmark(
+        url: bookmarkData.url,
+        title: bookmarkData.title,
+        addedInboxAt: Date.now  // 新規追加
+    )
+    modelContext.insert(newBookmark)
+}
+```
+
+**技術ポイント**:
+- 新規ブックマーク追加時は現在時刻を`addedInboxAt`に設定
+
+### 6. ShareExtension/ShareViewController.swift
+
+**変更内容**: V3 Bookmarkのイニシャライザに`addedInboxAt`引数を追加
+
+```swift
+private func saveBookmark(url: String, title: String?) async throws {
+    // ...
+    let bookmark = Bookmark(
+        url: bookmarkData.url,
+        title: bookmarkData.title,
+        addedInboxAt: Date.now  // 新規追加
+    )
+    context.insert(bookmark)
+    try context.save()
+}
+```
+
+**技術ポイント**:
+- Share Extension経由でのブックマーク追加も同様に対応
+
+### 7. View/ContentView.swift
+
+**変更内容**: Previewを3モデル対応に更新
+
+```swift
+#Preview {
+    let schema = Schema([
+        Inbox.self,
+        Bookmark.self,
+        Archive.self
+    ])
+    let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+    let modelContainer = try! ModelContainer(for: schema, migrationPlan: AppMigrationPlan.self, configurations: modelConfiguration)
+    ContentView()
+        .modelContainer(modelContainer)
+}
+```
+
+### 8. View/BookmarkView.swift
+
+**変更内容**: Previewを3モデル対応に更新
+
+```swift
+#Preview {
+    let schema = Schema([
+        Inbox.self,
+        Bookmark.self,
+        Archive.self
+    ])
+    let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: schema, migrationPlan: AppMigrationPlan.self, configurations: config)
+    let example = Bookmark(
+        url: "https://example.com",
+        title: "Example",
+        addedInboxAt: Date.now  // 新規追加
+    )
+    BookmarkView(bookmark: example)
+        .modelContainer(container)
+}
+```
+
+### 9. ReadItLaterTests/Infrastructure/BookmarkRepositoryTests.swift
+
+**変更内容**: 全てのBookmark直接生成箇所（5箇所）で`addedInboxAt`引数を追加
+
+```swift
+// 変更前
+let bookmark = Bookmark(url: "https://example.com", title: "Example")
+
+// 変更後
+let bookmark = Bookmark(url: "https://example.com", title: "Example", addedInboxAt: Date.now)
+```
+
+**該当箇所**:
+- 行64: `ブックマーク削除_単一削除成功`テスト
+- 行91-93: `ブックマーク削除_複数削除成功`テスト（3箇所）
+- 行121: `ブックマーク削除_空配列を削除`テスト
+- 行141-142: `ブックマーク削除_全件削除`テスト（2箇所）
 
 ---
 
 ## 修正対象ファイル一覧
 
-### 変更ファイル
+### 変更ファイル（8ファイル）
 
 | ファイル | 変更内容 |
 |---------|---------|
 | `Migration/VersionedSchema.swift` | AppV3Schemaに3つのモデル（Inbox, Bookmark, Archive）を追加 |
 | `Migration/MigrationPlan.swift` | AppV3Schemaを追加、軽量マイグレーション（stages = []） |
-| `ReadItLaterApp.swift` | ModelContainerの設定を3モデルに更新 |
+| `ModelContainerFactory.swift` | Schemaを3モデル（Inbox, Bookmark, Archive）に更新 |
+| `Infrastructure/BookmarkRepository.swift` | V3 Bookmarkのイニシャライザ（`addedInboxAt`引数追加）に対応 |
+| `View/ContentView.swift` | Previewを3モデル対応に更新 |
+| `View/BookmarkView.swift` | Previewを3モデル対応に更新 |
+| `ShareExtension/ShareViewController.swift` | V3 Bookmarkのイニシャライザに対応 |
+| `ReadItLaterTests/Infrastructure/BookmarkRepositoryTests.swift` | V3 Bookmarkのイニシャライザに対応（5箇所） |
 
-### 新規ファイル
+**注意**: 当初の計画では4ファイルの変更を想定していましたが、V3 Bookmarkのイニシャライザ変更により、アプリが正常にビルド・起動できる状態を維持するため、影響範囲を拡大しました。
+
+### 新規ファイル（1ファイル）
 
 | ファイル | 目的 |
 |---------|------|
 | `Domain/ModelExtensions.swift` | 3モデルのtype aliasと共通プロトコル定義 |
 
-### 削除または変更が必要なファイル（007以降で対応）
+### 削除ファイル（1ファイル）
 
 | ファイル | 理由 |
 |---------|------|
-| `Domain/BookmarkExtensions.swift` | ModelExtensions.swiftに統合または削除 |
-| その他のファイル | 007, 008, 009で段階的に対応 |
+| `Domain/BookmarkExtensions.swift` | ModelExtensions.swiftに統合 |
 
 ---
 
 ## 検証方法
 
-### ビルド確認
+### 1. ビルド確認
 ```bash
 mise run build
+# または
+xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater \
+  -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' build
 ```
 
-### マイグレーション確認
+**期待結果**: コンパイルエラーなし
 
-1. **既存アプリを起動**
-   - アプリがクラッシュせずに起動することを確認
-   - 既存のブックマークが残っていることを確認（SwiftDataの直接確認またはデバッガー）
+### 2. ユニットテスト実行
+```bash
+mise run unit
+# または
+xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater \
+  -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' \
+  test -only-testing:ReadItLaterTests
+```
 
-2. **スキーマ確認**
-   - V3スキーマが正しく適用されているか確認
-   - 軽量マイグレーションが正常に実行されたか確認
+**期待結果**: 全テストパス
 
-3. **CloudKit確認**（オプション）
-   - CloudKit Dashboardで既存レコードが更新されているか確認
+### 3. アプリ起動確認
+
+1. シミュレータでアプリを起動
+2. アプリがクラッシュせずに起動することを確認
+3. 既存のブックマークが表示されることを確認（日時は初期化されている）
+
+### 4. 新規ブックマーク追加確認
+
+1. +ボタンからブックマーク追加画面を開く
+2. URLとタイトルを入力して保存
+3. リストに追加されることを確認
+
+### 5. Preview確認
+
+Xcode上で以下のPreviewが正常に表示されることを確認:
+- ContentView Preview
+- BookmarkView Preview
+- AddBookmarkSheet Preview
+
+### 6. マイグレーション確認（オプション）
+
+- V3スキーマが正しく適用されているか確認
+- 軽量マイグレーションが正常に実行されたか確認
+- CloudKit Dashboardで既存レコードが更新されているか確認（オプション）
 
 ---
 
