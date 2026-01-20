@@ -117,7 +117,11 @@ final class ShareViewController: UIViewController {
         switch result {
         case .success(let bookmarkData):
             let context = ModelContext(container)
-            let bookmark = Bookmark(url: bookmarkData.url, title: bookmarkData.title)
+            let bookmark = Bookmark(
+                url: bookmarkData.url,
+                title: bookmarkData.title,
+                addedInboxAt: Date.now
+            )
             context.insert(bookmark)
             try context.save()
 

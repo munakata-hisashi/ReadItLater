@@ -27,7 +27,8 @@ final class BookmarkRepository: BookmarkRepositoryProtocol {
     func add(_ bookmarkData: BookmarkData) {
         let newBookmark = Bookmark(
             url: bookmarkData.url,
-            title: bookmarkData.title
+            title: bookmarkData.title,
+            addedInboxAt: Date.now
         )
         modelContext.insert(newBookmark)
     }

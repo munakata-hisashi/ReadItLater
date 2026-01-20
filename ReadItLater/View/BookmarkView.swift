@@ -28,12 +28,14 @@ struct BookmarkView: View {
 }
 
 #Preview {
-  
-        let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: Bookmark.self, configurations: config)
-    let example = Bookmark(url: "https://example.com")
+    let container = ModelContainerFactory.createPreviewContainer()
+    let example = Bookmark(
+        url: "https://example.com",
+        title: "Example",
+        addedInboxAt: Date.now
+    )
     BookmarkView(bookmark: example)
-            .modelContainer(container)
+        .modelContainer(container)
 }
 
 

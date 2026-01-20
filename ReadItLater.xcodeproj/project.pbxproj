@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		631A9C402F0BFC1600FA4142 /* ShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 631A9C362F0BFC1600FA4142 /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		C15FB1D80791B04A34D79532 /* ModelExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9E0033F5D804E67D4C0413 /* ModelExtensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +50,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5D9E0033F5D804E67D4C0413 /* ModelExtensions.swift */ = {isa = PBXFileReference; name = ModelExtensions.swift; path = ReadItLater/Domain/ModelExtensions.swift; sourceTree = "<group>"; };
 		631A9C362F0BFC1600FA4142 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		63507EDD2E5DC637001679E9 /* ReadItLater.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = ReadItLater.xctestplan; sourceTree = "<group>"; };
 		63B6ACA02E3E038300A16C13 /* ReadItLater.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReadItLater.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -57,19 +59,18 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		631A9C452F0BFC1600FA4142 /* Exceptions for "ShareExtension" folder in "ShareExtension" target */ = {
+		631A9C452F0BFC1600FA4142 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
 			target = 631A9C352F0BFC1600FA4142 /* ShareExtension */;
 		};
-		631A9C4B2F0BFE9300FA4142 /* Exceptions for "ReadItLater" folder in "ShareExtension" target */ = {
+		631A9C4B2F0BFE9300FA4142 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Domain/BookmarkCreation.swift,
 				Domain/BookmarkData.swift,
-				Domain/BookmarkExtensions.swift,
 				Domain/BookmarkTitle.swift,
 				Domain/BookmarkURL.swift,
 				Domain/URLValidationError.swift,
@@ -80,7 +81,7 @@
 			);
 			target = 631A9C352F0BFC1600FA4142 /* ShareExtension */;
 		};
-		63B6ACC62E3E038400A16C13 /* Exceptions for "ReadItLater" folder in "ReadItLater" target */ = {
+		63B6ACC62E3E038400A16C13 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -93,20 +94,12 @@
 		631A9C372F0BFC1600FA4142 /* ShareExtension */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				631A9C452F0BFC1600FA4142 /* Exceptions for "ShareExtension" folder in "ShareExtension" target */,
+				631A9C452F0BFC1600FA4142 /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
 			);
 			path = ShareExtension;
 			sourceTree = "<group>";
 		};
-		63B6ACA22E3E038300A16C13 /* ReadItLater */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				63B6ACC62E3E038400A16C13 /* Exceptions for "ReadItLater" folder in "ReadItLater" target */,
-				631A9C4B2F0BFE9300FA4142 /* Exceptions for "ReadItLater" folder in "ShareExtension" target */,
-			);
-			path = ReadItLater;
-			sourceTree = "<group>";
-		};
+		63B6ACA22E3E038300A16C13 /* ReadItLater */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (63B6ACC62E3E038400A16C13 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 631A9C4B2F0BFE9300FA4142 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); path = ReadItLater; sourceTree = "<group>"; };
 		63B6ACB72E3E038400A16C13 /* ReadItLaterTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = ReadItLaterTests;
@@ -160,6 +153,7 @@
 				63B6ACC12E3E038400A16C13 /* ReadItLaterUITests */,
 				631A9C372F0BFC1600FA4142 /* ShareExtension */,
 				63B6ACA12E3E038300A16C13 /* Products */,
+				5D9E0033F5D804E67D4C0413 /* ModelExtensions.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -353,6 +347,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C15FB1D80791B04A34D79532 /* ModelExtensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
