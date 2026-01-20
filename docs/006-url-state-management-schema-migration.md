@@ -83,12 +83,13 @@ ReadItLaterアプリに「**あとで読む**」機能特有の課題である**
    - タブ分離はUI上の問題だけでなく、アプリとして別の概念として扱う
    - Inbox、Bookmark、Archiveは異なる目的と責務を持つ
 
-2. **状態固有の機能が大きく異なる**
+2. **状態固有の機能が大きく異なる**（将来実装予定）
    - **Inbox**: 上限制限、経過日数表示、未読強調、リマインダー通知
    - **Bookmark**: 最終閲覧日、閲覧回数、ランダムピックアップ
    - **Archive**: 読了日記録、全文検索、Webページ内容保存
 
-   これらは単一モデルでは扱いにくく、状態固有のプロパティが多数必要
+   これらは単一モデルでは扱いにくく、状態固有のプロパティが多数必要になる。
+   **006では基本プロパティのみを定義し、固有プロパティは各機能実装時に追加する。**
 
 3. **型安全性によるバグ防止**
    - `func sendReminder(for inbox: Inbox)` → Inboxのみ受け付ける
@@ -147,10 +148,6 @@ struct AppV3Schema: VersionedSchema {
         var url: String?
         var title: String?
 
-        // Inbox固有のプロパティ
-        var lastRemindedAt: Date?
-        var isRead: Bool = false
-
         init(id: UUID = UUID(), url: String, title: String, addedInboxAt: Date = Date.now) {
             self.id = id
             self.url = url
@@ -167,10 +164,6 @@ struct AppV3Schema: VersionedSchema {
         var bookmarkedAt: Date = Date.now  // Bookmarkに移動した日時
         var url: String?
         var title: String?
-
-        // Bookmark固有のプロパティ
-        var lastViewedAt: Date?
-        var viewCount: Int = 0
 
         init(id: UUID = UUID(), url: String, title: String, addedInboxAt: Date, bookmarkedAt: Date = Date.now) {
             self.id = id
@@ -189,10 +182,6 @@ struct AppV3Schema: VersionedSchema {
         var archivedAt: Date = Date.now  // Archiveに移動した日時
         var url: String?
         var title: String?
-
-        // Archive固有のプロパティ
-        var fullTextContent: String?
-        var readingNotes: String?
 
         init(id: UUID = UUID(), url: String, title: String, addedInboxAt: Date, archivedAt: Date = Date.now) {
             self.id = id
@@ -263,8 +252,6 @@ struct AppV3Schema: VersionedSchema {
         var addedInboxAt: Date = Date.now
         var url: String?
         var title: String?
-        var lastRemindedAt: Date?
-        var isRead: Bool = false
 
         init(id: UUID = UUID(), url: String, title: String, addedInboxAt: Date = Date.now) {
             self.id = id
@@ -281,8 +268,6 @@ struct AppV3Schema: VersionedSchema {
         var bookmarkedAt: Date = Date.now
         var url: String?
         var title: String?
-        var lastViewedAt: Date?
-        var viewCount: Int = 0
 
         init(id: UUID = UUID(), url: String, title: String, addedInboxAt: Date, bookmarkedAt: Date = Date.now) {
             self.id = id
@@ -300,8 +285,6 @@ struct AppV3Schema: VersionedSchema {
         var archivedAt: Date = Date.now
         var url: String?
         var title: String?
-        var fullTextContent: String?
-        var readingNotes: String?
 
         init(id: UUID = UUID(), url: String, title: String, addedInboxAt: Date, archivedAt: Date = Date.now) {
             self.id = id
@@ -316,7 +299,7 @@ struct AppV3Schema: VersionedSchema {
 
 **技術ポイント**:
 - 3つの独立したモデルで型安全性を確保
-- 各モデルは状態固有のプロパティを持つ
+- 各モデルの固有プロパティは、それぞれの機能実装時に追加予定
 - シンプルな設計で理解しやすい
 
 ### 2. Migration/MigrationPlan.swift
@@ -388,7 +371,7 @@ extension URLItem {
 
 ### 4. ModelContainerFactory.swift
 
-**変更内容**: Schemaを3モデル（Inbox, Bookmark, Archive）に更新
+**変更内容**: Schemaを3モデル（Inbox, Bookmark, Archive）に更新し、Preview用の関数を追加
 
 ```swift
 enum ModelContainerFactory {
@@ -402,12 +385,22 @@ enum ModelContainerFactory {
         ])
         // ... 以下同じ
     }
+
+    /// Preview用のin-memory ModelContainer作成
+    static func createPreviewContainer() -> ModelContainer {
+        do {
+            return try createSharedContainer(inMemory: true)
+        } catch {
+            fatalError("Could not create preview container: \(error)")
+        }
+    }
 }
 ```
 
 **技術ポイント**:
 - Schemaに3つのモデルを登録
 - migrationPlanは既に指定されているため変更不要
+- `createPreviewContainer()`で各ViewのPreview記述を共通化
 
 ### 5. Infrastructure/BookmarkRepository.swift
 
@@ -449,44 +442,39 @@ private func saveBookmark(url: String, title: String?) async throws {
 
 ### 7. View/ContentView.swift
 
-**変更内容**: Previewを3モデル対応に更新
+**変更内容**: PreviewでModelContainerFactoryの共通関数を使用
 
 ```swift
 #Preview {
-    let schema = Schema([
-        Inbox.self,
-        Bookmark.self,
-        Archive.self
-    ])
-    let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-    let modelContainer = try! ModelContainer(for: schema, migrationPlan: AppMigrationPlan.self, configurations: modelConfiguration)
     ContentView()
-        .modelContainer(modelContainer)
+        .modelContainer(ModelContainerFactory.createPreviewContainer())
 }
 ```
 
+**技術ポイント**:
+- `ModelContainerFactory.createPreviewContainer()`を使用して記述を簡潔化
+- 3モデルの設定とマイグレーションプランはFactory内で処理
+
 ### 8. View/BookmarkView.swift
 
-**変更内容**: Previewを3モデル対応に更新
+**変更内容**: PreviewでModelContainerFactoryの共通関数を使用
 
 ```swift
 #Preview {
-    let schema = Schema([
-        Inbox.self,
-        Bookmark.self,
-        Archive.self
-    ])
-    let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: schema, migrationPlan: AppMigrationPlan.self, configurations: config)
+    let container = ModelContainerFactory.createPreviewContainer()
     let example = Bookmark(
         url: "https://example.com",
         title: "Example",
-        addedInboxAt: Date.now  // 新規追加
+        addedInboxAt: Date.now
     )
     BookmarkView(bookmark: example)
         .modelContainer(container)
 }
 ```
+
+**技術ポイント**:
+- `ModelContainerFactory.createPreviewContainer()`で一貫性を保つ
+- サンプルデータの作成とPreviewの表示がシンプルに
 
 ### 9. ReadItLaterTests/Infrastructure/BookmarkRepositoryTests.swift
 
@@ -514,16 +502,18 @@ let bookmark = Bookmark(url: "https://example.com", title: "Example", addedInbox
 
 | ファイル | 変更内容 |
 |---------|---------|
-| `Migration/VersionedSchema.swift` | AppV3Schemaに3つのモデル（Inbox, Bookmark, Archive）を追加 |
+| `Migration/VersionedSchema.swift` | AppV3Schemaに3つのモデル（Inbox, Bookmark, Archive）を追加（基本プロパティのみ） |
 | `Migration/MigrationPlan.swift` | AppV3Schemaを追加、軽量マイグレーション（stages = []） |
-| `ModelContainerFactory.swift` | Schemaを3モデル（Inbox, Bookmark, Archive）に更新 |
+| `ModelContainerFactory.swift` | Schemaを3モデルに更新、Preview用関数を追加 |
 | `Infrastructure/BookmarkRepository.swift` | V3 Bookmarkのイニシャライザ（`addedInboxAt`引数追加）に対応 |
-| `View/ContentView.swift` | Previewを3モデル対応に更新 |
-| `View/BookmarkView.swift` | Previewを3モデル対応に更新 |
+| `View/ContentView.swift` | PreviewでModelContainerFactoryの共通関数を使用 |
+| `View/BookmarkView.swift` | PreviewでModelContainerFactoryの共通関数を使用 |
 | `ShareExtension/ShareViewController.swift` | V3 Bookmarkのイニシャライザに対応 |
 | `ReadItLaterTests/Infrastructure/BookmarkRepositoryTests.swift` | V3 Bookmarkのイニシャライザに対応（5箇所） |
 
-**注意**: 当初の計画では4ファイルの変更を想定していましたが、V3 Bookmarkのイニシャライザ変更により、アプリが正常にビルド・起動できる状態を維持するため、影響範囲を拡大しました。
+**注意**:
+- 当初の計画では4ファイルの変更を想定していましたが、V3 Bookmarkのイニシャライザ変更により、アプリが正常にビルド・起動できる状態を維持するため、影響範囲を拡大しました。
+- 各モデルの固有プロパティ（Inbox: lastRemindedAt/isRead、Bookmark: lastViewedAt/viewCount、Archive: fullTextContent/readingNotes）は、それぞれの機能実装時に追加するため、006では基本プロパティのみを定義します。
 
 ### 新規ファイル（1ファイル）
 
