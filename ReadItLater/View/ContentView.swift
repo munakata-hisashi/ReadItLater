@@ -74,12 +74,6 @@ struct ContentView: View {
 }
 
 #Preview {
-    let schema = Schema([
-        Bookmark.self
-    ])
-    let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-
-    let modelContainer = try! ModelContainer(for: schema, migrationPlan: AppMigrationPlan.self, configurations: modelConfiguration)
     ContentView()
-        .modelContainer(modelContainer)
+        .modelContainer(ModelContainerFactory.createPreviewContainer())
 }

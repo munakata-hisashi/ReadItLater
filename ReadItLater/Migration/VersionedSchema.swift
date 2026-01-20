@@ -56,3 +56,65 @@ struct AppV2Schema: VersionedSchema {
         }
     }
 }
+
+struct AppV3Schema: VersionedSchema {
+    static let models: [any PersistentModel.Type] = [
+        Inbox.self,
+        Bookmark.self,
+        Archive.self
+    ]
+    static let versionIdentifier: Schema.Version = .init(3, 0, 0)
+
+    /// Inbox: 新規追加されたURL（最大50件制限）
+    @Model
+    final class Inbox {
+        var id: UUID = UUID()
+        var addedInboxAt: Date = Date.now  // Inboxに追加された日時
+        var url: String?
+        var title: String?
+
+        init(id: UUID = UUID(), url: String, title: String, addedInboxAt: Date = Date.now) {
+            self.id = id
+            self.url = url
+            self.title = title
+            self.addedInboxAt = addedInboxAt
+        }
+    }
+
+    /// Bookmark: 定期的に見たいURL
+    @Model
+    final class Bookmark {
+        var id: UUID = UUID()
+        var addedInboxAt: Date = Date.now  // 重要: デフォルト値必須（軽量マイグレーション）
+        var bookmarkedAt: Date = Date.now  // Bookmarkに移動した日時
+        var url: String?
+        var title: String?
+
+        init(id: UUID = UUID(), url: String, title: String, addedInboxAt: Date = Date.now, bookmarkedAt: Date = Date.now) {
+            self.id = id
+            self.url = url
+            self.title = title
+            self.addedInboxAt = addedInboxAt
+            self.bookmarkedAt = bookmarkedAt
+        }
+    }
+
+    /// Archive: 読み終わったURL
+    @Model
+    final class Archive {
+        var id: UUID = UUID()
+        var addedInboxAt: Date = Date.now  // 重要: デフォルト値必須（軽量マイグレーション）
+        var archivedAt: Date = Date.now  // Archiveに移動した日時
+        var url: String?
+        var title: String?
+
+        init(id: UUID = UUID(), url: String, title: String, addedInboxAt: Date = Date.now, archivedAt: Date = Date.now) {
+            self.id = id
+            self.url = url
+            self.title = title
+            self.addedInboxAt = addedInboxAt
+            self.archivedAt = archivedAt
+        }
+    }
+}
+
