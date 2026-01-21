@@ -7,8 +7,10 @@
 ### このステップの目的
 
 - Share ExtensionからInboxにURLを追加できるようにする
-- Inbox上限（50件）のチェック機能を実装
+- Inbox上限（5件）のチェック機能を実装
 - 実データを使って動作確認ができる状態にする
+
+**注**: 上限は検証を容易にするため5件に設定。将来的に50件に変更予定。
 
 ### 段階的実装の位置づけ
 
@@ -18,6 +20,8 @@
 - **009**: UI実装（タブとリスト表示）
 
 **007のゴール**: SafariなどからURLを共有すると、Inboxに追加され、SwiftDataで確認できる状態にすること
+
+**実装方針**: `URLItemRepository`ではなく`InboxRepository`として実装（`BookmarkRepository`とは別管理）
 
 ---
 
@@ -48,7 +52,8 @@ import Foundation
 /// Inboxの設定値
 enum InboxConfiguration {
     /// inbox内の最大保存数
-    static let maxItems: Int = 50
+    /// 開発時: 検証用に5件。将来的には50件に変更予定
+    static let maxItems: Int = 5
 
     /// 警告を表示する閾値（最大数の80%）
     static var warningThreshold: Int {
@@ -61,46 +66,47 @@ enum InboxConfiguration {
 - 上限値を一箇所で管理
 - 警告閾値を自動計算（将来のUI実装で使用）
 
-### 2. URLItemRepositoryProtocol
+### 2. InboxRepositoryProtocol
 
 Inbox追加に必要な最小限のプロトコルを定義します。
 
 ```swift
 //
-//  URLItemRepositoryProtocol.swift
+//  InboxRepositoryProtocol.swift
 //  ReadItLater
 //
 
 import Foundation
 
-protocol URLItemRepositoryProtocol {
+protocol InboxRepositoryProtocol {
     // MARK: - Inbox操作
 
-    func addToInbox(url: String, title: String) throws
-    func canAddToInbox() -> Bool
-    func inboxCount() -> Int
-    func remainingInboxCapacity() -> Int
+    func add(url: String, title: String) throws
+    func canAdd() -> Bool
+    func count() -> Int
+    func remainingCapacity() -> Int
 }
 ```
 
 **技術ポイント**:
 - 007では上記4メソッドのみ定義
 - 008で状態移動メソッドを追加
+- 既存の`BookmarkRepository`とは別に`InboxRepository`として実装
 
-### 3. URLItemRepository
+### 3. InboxRepository
 
 Inbox追加ロジックを実装します。
 
 ```swift
 //
-//  URLItemRepository.swift
+//  InboxRepository.swift
 //  ReadItLater
 //
 
 import Foundation
 import SwiftData
 
-final class URLItemRepository: URLItemRepositoryProtocol {
+final class InboxRepository: InboxRepositoryProtocol {
     private let modelContext: ModelContext
 
     init(modelContext: ModelContext) {
@@ -109,9 +115,9 @@ final class URLItemRepository: URLItemRepositoryProtocol {
 
     // MARK: - Inbox操作
 
-    func addToInbox(url: String, title: String) throws {
-        guard canAddToInbox() else {
-            throw RepositoryError.inboxFull
+    func add(url: String, title: String) throws {
+        guard canAdd() else {
+            throw InboxRepositoryError.inboxFull
         }
 
         let inbox = Inbox(url: url, title: title)
@@ -119,21 +125,21 @@ final class URLItemRepository: URLItemRepositoryProtocol {
         try modelContext.save()
     }
 
-    func canAddToInbox() -> Bool {
-        remainingInboxCapacity() > 0
+    func canAdd() -> Bool {
+        remainingCapacity() > 0
     }
 
-    func inboxCount() -> Int {
+    func count() -> Int {
         let descriptor = FetchDescriptor<Inbox>()
         return (try? modelContext.fetchCount(descriptor)) ?? 0
     }
 
-    func remainingInboxCapacity() -> Int {
-        max(0, InboxConfiguration.maxItems - inboxCount())
+    func remainingCapacity() -> Int {
+        max(0, InboxConfiguration.maxItems - count())
     }
 }
 
-enum RepositoryError: LocalizedError {
+enum InboxRepositoryError: LocalizedError {
     case inboxFull
 
     var errorDescription: String? {
@@ -218,7 +224,7 @@ class ShareViewController: UIViewController {
                 }
 
                 let title = item.attributedContentText?.string ?? urlString
-                try await saveBookmark(url: urlString, title: title)
+                try await saveToInbox(url: urlString, title: title)
                 completeRequest(error: nil)
             }
         } catch {
@@ -226,16 +232,16 @@ class ShareViewController: UIViewController {
         }
     }
 
-    private func saveBookmark(url: String, title: String?) async throws {
+    private func saveToInbox(url: String, title: String?) async throws {
         guard let container = modelContainer else {
             throw ShareError.containerInitFailed
         }
 
         let context = ModelContext(container)
-        let repository = URLItemRepository(modelContext: context)
+        let repository = InboxRepository(modelContext: context)
 
         // Inbox上限チェック
-        guard repository.canAddToInbox() else {
+        guard repository.canAdd() else {
             throw ShareError.inboxFull
         }
 
@@ -245,7 +251,7 @@ class ShareViewController: UIViewController {
         switch result {
         case .success(let bookmarkData):
             // Inboxに追加
-            try repository.addToInbox(
+            try repository.add(
                 url: bookmarkData.url,
                 title: bookmarkData.title
             )
@@ -279,6 +285,7 @@ enum ShareError: LocalizedError {
         case .bookmarkCreationFailed(let error):
             return "ブックマークの作成に失敗しました: \(error.localizedDescription)"
         case .inboxFull:
+            // InboxConfiguration.maxItemsを参照するため、上限変更時も自動更新される
             return "Inboxが上限（\(InboxConfiguration.maxItems)件）に達しています。既存のアイテムを整理してください。"
         }
     }
@@ -303,7 +310,8 @@ enum ShareError: LocalizedError {
 import Foundation
 
 enum InboxConfiguration {
-    static let maxItems: Int = 50
+    /// 開発時: 検証用に5件。将来的には50件に変更予定
+    static let maxItems: Int = 5
 
     static var warningThreshold: Int {
         Int(Double(maxItems) * 0.8)
@@ -311,24 +319,24 @@ enum InboxConfiguration {
 }
 ```
 
-### 2. URLItemRepositoryProtocol.swiftを作成
+### 2. InboxRepositoryProtocol.swiftを作成
 
-**ファイルパス**: `ReadItLater/Domain/URLItemRepositoryProtocol.swift`
+**ファイルパス**: `ReadItLater/Domain/InboxRepositoryProtocol.swift`
 
 ```swift
 import Foundation
 
-protocol URLItemRepositoryProtocol {
-    func addToInbox(url: String, title: String) throws
-    func canAddToInbox() -> Bool
-    func inboxCount() -> Int
-    func remainingInboxCapacity() -> Int
+protocol InboxRepositoryProtocol {
+    func add(url: String, title: String) throws
+    func canAdd() -> Bool
+    func count() -> Int
+    func remainingCapacity() -> Int
 }
 ```
 
-### 3. URLItemRepository.swiftを作成
+### 3. InboxRepository.swiftを作成
 
-**ファイルパス**: `ReadItLater/Infrastructure/URLItemRepository.swift`
+**ファイルパス**: `ReadItLater/Infrastructure/InboxRepository.swift`
 
 Inbox追加ロジックを実装します（上記のコード参照）。
 
@@ -346,9 +354,9 @@ Inbox追加に対応したコードに更新します（上記のコード参照
 
 | ファイル | 目的 |
 |---------|------|
-| `Domain/InboxConfiguration.swift` | Inbox上限設定 |
-| `Domain/URLItemRepositoryProtocol.swift` | Repository層のプロトコル定義（Inbox操作のみ） |
-| `Infrastructure/URLItemRepository.swift` | Inbox追加ロジックの実装 |
+| `Domain/InboxConfiguration.swift` | Inbox上限設定（5件） |
+| `Domain/InboxRepositoryProtocol.swift` | Repository層のプロトコル定義（Inbox操作のみ） |
+| `Infrastructure/InboxRepository.swift` | Inbox追加ロジックの実装 |
 
 ### 変更ファイル
 
@@ -407,9 +415,9 @@ xcrun simctl get_app_container booted com.munakata-hisashi.ReadItLater data
 
 #### 3. Inbox上限確認
 
-1. Share Extensionから50件のURLを追加
-2. 51件目を追加しようとする
-3. 「Inboxが上限（50件）に達しています」エラーが表示されることを確認
+1. Share Extensionから5件のURLを追加
+2. 6件目を追加しようとする
+3. 「Inboxが上限（5件）に達しています」エラーが表示されることを確認
 
 ---
 
@@ -445,6 +453,15 @@ xcrun simctl get_app_container booted com.munakata-hisashi.ReadItLater data
 
 ## 技術的補足
 
+### Inbox上限設定について
+
+開発・検証時は上限を5件に設定しています。これにより:
+- 上限エラーの動作確認が容易
+- テストケースの実行が高速
+- デバッグ時のデータ確認が簡単
+
+本番リリース時には`InboxConfiguration.maxItems`を50件に変更してください。
+
 ### App Groupsとデータ共有
 
 Share ExtensionとメインアプリでSwiftDataを共有するには、App Groupsを使用します：
@@ -466,6 +483,7 @@ let modelConfiguration = ModelConfiguration(
 - **テスト容易性**: ModelContextへの依存を注入可能にする
 - **ビジネスロジックの分離**: SwiftDataの詳細をViewから隠蔽
 - **再利用性**: Share ExtensionとメインアプリでRepositoryを共有
+- **単一責任**: InboxRepositoryとBookmarkRepositoryを分離して各々の責務を明確化
 
 ---
 

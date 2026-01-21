@@ -41,8 +41,8 @@ final class ShareViewController: UIViewController {
                 await fetchTitle(for: url)
             }
 
-            // 3. ブックマーク保存
-            try await saveBookmark(url: url.absoluteString, title: title)
+            // 3. Inboxに保存
+            try await saveToInbox(url: url.absoluteString, title: title)
 
             // 4. 成功完了
             completeRequest(with: .success(()))
@@ -106,24 +106,29 @@ final class ShareViewController: UIViewController {
         }
     }
 
-    private func saveBookmark(url: String, title: String?) async throws {
+    private func saveToInbox(url: String, title: String?) async throws {
         guard let container = modelContainer else {
             throw ShareError.containerInitFailed
         }
 
-        // 既存のBookmarkCreationロジックを使用
+        // 既存のBookmarkCreationロジックを使用（URL検証とタイトル正規化）
         let result = Bookmark.create(from: url, title: title)
 
         switch result {
         case .success(let bookmarkData):
             let context = ModelContext(container)
-            let bookmark = Bookmark(
+            let repository = InboxRepository(modelContext: context)
+
+            // Inbox上限チェック
+            guard repository.canAdd() else {
+                throw ShareError.inboxFull
+            }
+
+            // Inboxに追加
+            try repository.add(
                 url: bookmarkData.url,
-                title: bookmarkData.title,
-                addedInboxAt: Date.now
+                title: bookmarkData.title
             )
-            context.insert(bookmark)
-            try context.save()
 
         case .failure(let error):
             throw ShareError.bookmarkCreationFailed(error)
@@ -135,8 +140,27 @@ final class ShareViewController: UIViewController {
         case .success:
             extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
         case .failure(let error):
-            extensionContext?.cancelRequest(withError: error as NSError)
+            // エラーメッセージをアラートで表示
+            showErrorAlert(error) {
+                self.extensionContext?.cancelRequest(withError: error as NSError)
+            }
         }
+    }
+
+    private func showErrorAlert(_ error: Error, completion: @escaping () -> Void) {
+        let message = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+
+        let alert = UIAlertController(
+            title: "エラー",
+            message: message,
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+            completion()
+        })
+
+        present(alert, animated: true)
     }
 }
 
@@ -144,6 +168,7 @@ enum ShareError: LocalizedError {
     case noURLFound
     case containerInitFailed
     case bookmarkCreationFailed(Bookmark.CreationError)
+    case inboxFull
 
     var errorDescription: String? {
         switch self {
@@ -153,6 +178,8 @@ enum ShareError: LocalizedError {
             return "データベースの初期化に失敗しました"
         case .bookmarkCreationFailed(let error):
             return "ブックマークの作成に失敗しました: \(error.localizedDescription)"
+        case .inboxFull:
+            return "Inboxが上限（\(InboxConfiguration.maxItems)件）に達しています。既存のアイテムを整理してください。"
         }
     }
 }
