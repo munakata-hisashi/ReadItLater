@@ -42,4 +42,19 @@ final class BookmarkRepository: BookmarkRepositoryProtocol {
             modelContext.delete(bookmark)
         }
     }
+
+    // MARK: - 状態移動
+
+    func moveToArchive(_ bookmark: Bookmark) throws {
+        let archive = Archive(
+            url: bookmark.url ?? "",
+            title: bookmark.title ?? "",
+            addedInboxAt: bookmark.addedInboxAt,  // 元の追加日時を引き継ぐ
+            archivedAt: Date.now  // Archiveに移動した日時
+        )
+
+        modelContext.insert(archive)
+        modelContext.delete(bookmark)
+        try modelContext.save()
+    }
 }

@@ -34,6 +34,24 @@ protocol InboxRepositoryProtocol {
     /// 残りの追加可能数を取得
     /// - Returns: 残り容量
     func remainingCapacity() -> Int
+
+    // MARK: - 状態移動
+
+    /// InboxからBookmarkへ移動
+    /// - Parameter inbox: 移動元のInbox
+    /// - Throws: SwiftDataのエラー
+    func moveToBookmark(_ inbox: Inbox) throws
+
+    /// InboxからArchiveへ移動
+    /// - Parameter inbox: 移動元のInbox
+    /// - Throws: SwiftDataのエラー
+    func moveToArchive(_ inbox: Inbox) throws
+
+    // MARK: - 削除
+
+    /// Inboxを削除
+    /// - Parameter inbox: 削除対象のInbox
+    func delete(_ inbox: Inbox)
 }
 
 /// InboxRepository固有のエラー

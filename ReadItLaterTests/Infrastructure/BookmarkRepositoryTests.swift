@@ -1,5 +1,6 @@
 import Testing
 import SwiftData
+import Foundation
 @testable import ReadItLater
 
 @Suite("BookmarkRepository")
@@ -152,5 +153,39 @@ struct BookmarkRepositoryTests {
         descriptor = FetchDescriptor<Bookmark>()
         allBookmarks = try context.fetch(descriptor)
         #expect(allBookmarks.isEmpty)
+    }
+
+    // MARK: - 状態移動テスト
+
+    @Test("状態移動: BookmarkからArchiveへ")
+    @MainActor
+    func 状態移動_BookmarkからArchiveへ() throws {
+        let container = try createInMemoryContainer()
+        let context = container.mainContext
+        let repository = BookmarkRepository(modelContext: context)
+
+        // Given: Bookmarkを作成
+        let bookmark = Bookmark(
+            url: "https://example.com",
+            title: "Test",
+            addedInboxAt: Date(timeIntervalSince1970: 1234567890)
+        )
+        context.insert(bookmark)
+        try context.save()
+
+        let originalAddedAt = bookmark.addedInboxAt
+
+        // When: Archiveへ移動
+        try repository.moveToArchive(bookmark)
+
+        // Then: Archiveに存在
+        let archives = try context.fetch(FetchDescriptor<Archive>())
+        #expect(archives.count == 1)
+        #expect(archives.first?.url == "https://example.com")
+        #expect(archives.first?.addedInboxAt == originalAddedAt)
+
+        // Bookmarkから削除されている
+        let remainingBookmarks = try context.fetch(FetchDescriptor<Bookmark>())
+        #expect(remainingBookmarks.isEmpty)
     }
 }
