@@ -57,4 +57,38 @@ final class InboxRepository: InboxRepositoryProtocol {
     func remainingCapacity() -> Int {
         max(0, InboxConfiguration.maxItems - count())
     }
+
+    // MARK: - 状態移動
+
+    func moveToBookmark(_ inbox: Inbox) throws {
+        let bookmark = Bookmark(
+            url: inbox.url ?? "",
+            title: inbox.title ?? "",
+            addedInboxAt: inbox.addedInboxAt,  // 元の追加日時を引き継ぐ
+            bookmarkedAt: Date.now  // Bookmarkに移動した日時
+        )
+
+        modelContext.insert(bookmark)
+        modelContext.delete(inbox)
+        try modelContext.save()
+    }
+
+    func moveToArchive(_ inbox: Inbox) throws {
+        let archive = Archive(
+            url: inbox.url ?? "",
+            title: inbox.title ?? "",
+            addedInboxAt: inbox.addedInboxAt,  // 元の追加日時を引き継ぐ
+            archivedAt: Date.now  // Archiveに移動した日時
+        )
+
+        modelContext.insert(archive)
+        modelContext.delete(inbox)
+        try modelContext.save()
+    }
+
+    // MARK: - 削除
+
+    func delete(_ inbox: Inbox) {
+        modelContext.delete(inbox)
+    }
 }

@@ -53,26 +53,26 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		09E0C02025FF2E4FC5207B69 /* InboxRepositoryProtocol.swift */ = {isa = PBXFileReference; name = InboxRepositoryProtocol.swift; path = ReadItLater/Domain/InboxRepositoryProtocol.swift; sourceTree = "<group>"; };
+		09E0C02025FF2E4FC5207B69 /* InboxRepositoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = InboxRepositoryProtocol.swift; path = ReadItLater/Domain/InboxRepositoryProtocol.swift; sourceTree = "<group>"; };
 		5D9E0033F5D804E67D4C0413 /* ModelExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ModelExtensions.swift; path = ReadItLater/Domain/ModelExtensions.swift; sourceTree = "<group>"; };
 		631A9C362F0BFC1600FA4142 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		63507EDD2E5DC637001679E9 /* ReadItLater.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = ReadItLater.xctestplan; sourceTree = "<group>"; };
 		63B6ACA02E3E038300A16C13 /* ReadItLater.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReadItLater.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63B6ACB42E3E038400A16C13 /* ReadItLaterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ReadItLaterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		63B6ACBE2E3E038400A16C13 /* ReadItLaterUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ReadItLaterUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		76C0A2F37949D7FBC32BF9DF /* InboxConfiguration.swift */ = {isa = PBXFileReference; name = InboxConfiguration.swift; path = ReadItLater/Domain/InboxConfiguration.swift; sourceTree = "<group>"; };
-		8541814F1EEEE31EA4F649D8 /* InboxRepository.swift */ = {isa = PBXFileReference; name = InboxRepository.swift; path = ReadItLater/Infrastructure/InboxRepository.swift; sourceTree = "<group>"; };
+		76C0A2F37949D7FBC32BF9DF /* InboxConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = InboxConfiguration.swift; path = ReadItLater/Domain/InboxConfiguration.swift; sourceTree = "<group>"; };
+		8541814F1EEEE31EA4F649D8 /* InboxRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = InboxRepository.swift; path = ReadItLater/Infrastructure/InboxRepository.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		631A9C452F0BFC1600FA4142 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		631A9C452F0BFC1600FA4142 /* Exceptions for "ShareExtension" folder in "ShareExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
 			target = 631A9C352F0BFC1600FA4142 /* ShareExtension */;
 		};
-		631A9C4B2F0BFE9300FA4142 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		631A9C4B2F0BFE9300FA4142 /* Exceptions for "ReadItLater" folder in "ShareExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Domain/BookmarkCreation.swift,
@@ -87,7 +87,7 @@
 			);
 			target = 631A9C352F0BFC1600FA4142 /* ShareExtension */;
 		};
-		63B6ACC62E3E038400A16C13 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		63B6ACC62E3E038400A16C13 /* Exceptions for "ReadItLater" folder in "ReadItLater" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -100,12 +100,20 @@
 		631A9C372F0BFC1600FA4142 /* ShareExtension */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				631A9C452F0BFC1600FA4142 /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+				631A9C452F0BFC1600FA4142 /* Exceptions for "ShareExtension" folder in "ShareExtension" target */,
 			);
 			path = ShareExtension;
 			sourceTree = "<group>";
 		};
-		63B6ACA22E3E038300A16C13 /* ReadItLater */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (63B6ACC62E3E038400A16C13 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 631A9C4B2F0BFE9300FA4142 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); path = ReadItLater; sourceTree = "<group>"; };
+		63B6ACA22E3E038300A16C13 /* ReadItLater */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				63B6ACC62E3E038400A16C13 /* Exceptions for "ReadItLater" folder in "ReadItLater" target */,
+				631A9C4B2F0BFE9300FA4142 /* Exceptions for "ReadItLater" folder in "ShareExtension" target */,
+			);
+			path = ReadItLater;
+			sourceTree = "<group>";
+		};
 		63B6ACB72E3E038400A16C13 /* ReadItLaterTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = ReadItLaterTests;
