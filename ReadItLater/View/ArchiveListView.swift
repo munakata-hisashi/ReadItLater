@@ -1,0 +1,71 @@
+//
+//  ArchiveListView.swift
+//  ReadItLater
+//
+//  Created by Claude Code on 2026/01/23.
+//
+
+import SwiftUI
+import SwiftData
+
+struct ArchiveListView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Query(sort: \Archive.archivedAt, order: .reverse) private var archiveItems: [Archive]
+
+    /// Repository（computed propertyとして生成）
+    private var repository: ArchiveRepositoryProtocol {
+        ArchiveRepository(modelContext: modelContext)
+    }
+
+    var body: some View {
+        List {
+            ForEach(archiveItems) { archive in
+                NavigationLink(value: archive) {
+                    URLItemRow(item: archive)
+                }
+                .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                    Button {
+                        moveToBookmark(archive)
+                    } label: {
+                        Label("Bookmark", systemImage: "bookmark")
+                    }
+                    .tint(.blue)
+                }
+                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                    Button(role: .destructive) {
+                        deleteArchive(archive)
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                }
+            }
+        }
+        .navigationTitle("Archive")
+        .navigationDestination(for: Archive.self) { archive in
+            URLItemDetailView(item: archive)
+        }
+    }
+
+    private func moveToBookmark(_ archive: Archive) {
+        withAnimation {
+            do {
+                try repository.moveToBookmark(archive)
+            } catch {
+                print("Failed to move to Bookmark: \(error)")
+            }
+        }
+    }
+
+    private func deleteArchive(_ archive: Archive) {
+        withAnimation {
+            repository.delete(archive)
+        }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        ArchiveListView()
+    }
+    .modelContainer(ModelContainerFactory.createPreviewContainer())
+}
