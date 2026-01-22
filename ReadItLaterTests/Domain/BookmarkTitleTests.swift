@@ -164,14 +164,14 @@ import Testing
     // MARK: - Equatable テスト（将来的にEquatableを実装する場合）
     
     @Test func 同じタイトル_等価比較_将来実装予定() {
-        let title1 = BookmarkTitle("Same Title")
-        let title2 = BookmarkTitle("Same Title")
+        let _ = BookmarkTitle("Same Title")
+        let _ = BookmarkTitle("Same Title")
         // XCTAssertEqual(title1, title2) // 将来実装
     }
-    
+
     @Test func 異なるタイトル_非等価比較_将来実装予定() {
-        let title1 = BookmarkTitle("Title 1")
-        let title2 = BookmarkTitle("Title 2")
+        let _ = BookmarkTitle("Title 1")
+        let _ = BookmarkTitle("Title 2")
         // XCTAssertNotEqual(title1, title2) // 将来実装
     }
 }
