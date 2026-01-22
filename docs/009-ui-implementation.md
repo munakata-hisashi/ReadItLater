@@ -9,14 +9,14 @@
 - 3つのタブ（Inbox、Bookmark、Archive）を実装
 - 各タブでリスト表示
 - スワイプアクションで状態移動
-- Inbox上限表示（XX/50）
+- Inbox上限表示（XX/5、開発用。将来的には50件に変更予定）
 
 ### 段階的実装の位置づけ
 
 - **006**: スキーママイグレーション（基盤のみ）✅
 - **007**: Share Extension対応（Inbox追加機能）✅
 - **008**: Repository層完成（状態移動ロジック）✅
-- **009** (本ドキュメント): UI実装（タブとリスト表示）
+- **009** (本ドキュメント): UI実装（タブとリスト表示）**← 未実装**
 
 **009のゴール**: ユーザーがアプリから3つの状態を表示・操作できる状態にすること
 
@@ -30,11 +30,15 @@
 
 - 007が完了していること
   - InboxConfigurationが定義されている
-  - URLItemRepositoryが実装されている（Inbox追加）
+  - InboxRepositoryが実装されている（Inbox追加）
   - Share Extensionからデータ追加可能
 
 - 008が完了していること
+  - 個別Repository（InboxRepository、BookmarkRepository、ArchiveRepository）が実装されている
   - 状態移動メソッドが実装されている
+    - InboxRepository: `moveToBookmark(_:)`, `moveToArchive(_:)`
+    - BookmarkRepository: `moveToArchive(_:)`
+    - ArchiveRepository: `moveToBookmark(_:)`
   - ユニットテストが通っている
 
 ---
@@ -62,26 +66,43 @@ struct ContentView: View {
     @Query private var bookmarkItems: [Bookmark]
     @Query private var archiveItems: [Archive]
 
-    private var repository: URLItemRepository {
-        URLItemRepository(modelContext: modelContext)
+    private var inboxRepository: InboxRepositoryProtocol {
+        InboxRepository(modelContext: modelContext)
+    }
+
+    private var bookmarkRepository: BookmarkRepositoryProtocol {
+        BookmarkRepository(modelContext: modelContext)
+    }
+
+    private var archiveRepository: ArchiveRepositoryProtocol {
+        ArchiveRepository(modelContext: modelContext)
     }
 
     var body: some View {
         TabView {
-            InboxView(items: inboxItems, repository: repository)
-                .tabItem {
-                    Label("Inbox", systemImage: "tray")
-                }
+            InboxListView(
+                items: inboxItems,
+                repository: inboxRepository
+            )
+            .tabItem {
+                Label("Inbox", systemImage: "tray")
+            }
 
-            BookmarkView(items: bookmarkItems, repository: repository)
-                .tabItem {
-                    Label("Bookmarks", systemImage: "bookmark")
-                }
+            BookmarkListView(
+                items: bookmarkItems,
+                repository: bookmarkRepository
+            )
+            .tabItem {
+                Label("Bookmarks", systemImage: "bookmark")
+            }
 
-            ArchiveView(items: archiveItems, repository: repository)
-                .tabItem {
-                    Label("Archive", systemImage: "archivebox")
-                }
+            ArchiveListView(
+                items: archiveItems,
+                repository: archiveRepository
+            )
+            .tabItem {
+                Label("Archive", systemImage: "archivebox")
+            }
         }
     }
 }
@@ -94,32 +115,32 @@ struct ContentView: View {
 
 **技術ポイント**:
 - `@Query`で各モデルを独立取得
-- Repository層を使って状態移動を実行
+- 個別Repository（InboxRepository、BookmarkRepository、ArchiveRepository）を使って状態移動を実行
 - TabViewで3つのタブを実装
 
-### 2. InboxView
+### 2. InboxListView
 
-Inbox専用のビューを実装します。
+Inbox専用のリスト表示ビューを実装します。
 
 ```swift
 //
-//  InboxView.swift
+//  InboxListView.swift
 //  ReadItLater
 //
 
 import SwiftUI
 import SwiftData
 
-struct InboxView: View {
+struct InboxListView: View {
     let items: [Inbox]
-    let repository: URLItemRepository
+    let repository: InboxRepositoryProtocol
     @State private var showingAddSheet = false
 
     var body: some View {
         NavigationView {
             List {
                 ForEach(items) { inbox in
-                    InboxRow(inbox: inbox)
+                    InboxListRow(inbox: inbox)
                         .swipeActions(edge: .leading) {
                             Button {
                                 try? repository.moveToBookmark(inbox)
@@ -159,7 +180,7 @@ struct InboxView: View {
     }
 }
 
-struct InboxRow: View {
+struct InboxListRow: View {
     let inbox: Inbox
 
     var body: some View {
@@ -185,7 +206,7 @@ struct InboxRow: View {
 #Preview {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
     let container = try! ModelContainer(
-        for: Inbox.self,
+        for: Inbox.self, Bookmark.self, Archive.self,
         configurations: config
     )
     let context = ModelContext(container)
@@ -195,39 +216,42 @@ struct InboxRow: View {
     context.insert(inbox1)
     context.insert(inbox2)
 
-    let repository = URLItemRepository(modelContext: context)
+    let repository = InboxRepository(modelContext: context)
 
-    return InboxView(items: [inbox1, inbox2], repository: repository)
+    return InboxListView(
+        items: [inbox1, inbox2],
+        repository: repository
+    )
 }
 ```
 
 **技術ポイント**:
 - スワイプアクション（左: Bookmark、右: Archive/Delete）
-- Inbox上限表示（XX/50）
+- Inbox上限表示（XX/5、開発用。将来的には50件に変更予定）
 - 相対時間表示（"2 hours ago"など）
 
-### 3. BookmarkView
+### 3. BookmarkListView
 
-Bookmark専用のビューを実装します。
+Bookmark専用のリスト表示ビューを実装します。
 
 ```swift
 //
-//  BookmarkView.swift
+//  BookmarkListView.swift
 //  ReadItLater
 //
 
 import SwiftUI
 import SwiftData
 
-struct BookmarkView: View {
+struct BookmarkListView: View {
     let items: [Bookmark]
-    let repository: URLItemRepository
+    let repository: BookmarkRepositoryProtocol
 
     var body: some View {
         NavigationView {
             List {
                 ForEach(items) { bookmark in
-                    BookmarkRow(bookmark: bookmark)
+                    BookmarkListRow(bookmark: bookmark)
                         .swipeActions(edge: .trailing) {
                             Button {
                                 try? repository.moveToArchive(bookmark)
@@ -249,7 +273,7 @@ struct BookmarkView: View {
     }
 }
 
-struct BookmarkRow: View {
+struct BookmarkListRow: View {
     let bookmark: Bookmark
 
     var body: some View {
@@ -279,7 +303,7 @@ struct BookmarkRow: View {
 #Preview {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
     let container = try! ModelContainer(
-        for: Bookmark.self,
+        for: Bookmark.self, Archive.self,
         configurations: config
     )
     let context = ModelContext(container)
@@ -292,9 +316,12 @@ struct BookmarkRow: View {
     )
     context.insert(bookmark1)
 
-    let repository = URLItemRepository(modelContext: context)
+    let repository = BookmarkRepository(modelContext: context)
 
-    return BookmarkView(items: [bookmark1], repository: repository)
+    return BookmarkListView(
+        items: [bookmark1],
+        repository: repository
+    )
 }
 ```
 
@@ -302,28 +329,28 @@ struct BookmarkRow: View {
 - スワイプアクション（右: Archive/Delete）
 - Bookmarked日時も表示
 
-### 4. ArchiveView
+### 4. ArchiveListView
 
-Archive専用のビューを実装します。
+Archive専用のリスト表示ビューを実装します。
 
 ```swift
 //
-//  ArchiveView.swift
+//  ArchiveListView.swift
 //  ReadItLater
 //
 
 import SwiftUI
 import SwiftData
 
-struct ArchiveView: View {
+struct ArchiveListView: View {
     let items: [Archive]
-    let repository: URLItemRepository
+    let repository: ArchiveRepositoryProtocol
 
     var body: some View {
         NavigationView {
             List {
                 ForEach(items) { archive in
-                    ArchiveRow(archive: archive)
+                    ArchiveListRow(archive: archive)
                         .swipeActions(edge: .leading) {
                             Button {
                                 try? repository.moveToBookmark(archive)
@@ -346,7 +373,7 @@ struct ArchiveView: View {
     }
 }
 
-struct ArchiveRow: View {
+struct ArchiveListRow: View {
     let archive: Archive
 
     var body: some View {
@@ -376,7 +403,7 @@ struct ArchiveRow: View {
 #Preview {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
     let container = try! ModelContainer(
-        for: Archive.self,
+        for: Archive.self, Bookmark.self,
         configurations: config
     )
     let context = ModelContext(container)
@@ -389,9 +416,12 @@ struct ArchiveRow: View {
     )
     context.insert(archive1)
 
-    let repository = URLItemRepository(modelContext: context)
+    let repository = ArchiveRepository(modelContext: context)
 
-    return ArchiveView(items: [archive1], repository: repository)
+    return ArchiveListView(
+        items: [archive1],
+        repository: repository
+    )
 }
 ```
 
@@ -413,7 +443,7 @@ import SwiftUI
 
 struct AddBookmarkSheet: View {
     @Environment(\.dismiss) private var dismiss
-    let repository: URLItemRepository
+    let repository: InboxRepositoryProtocol
 
     @State private var urlString = ""
     @State private var title = ""
@@ -480,7 +510,7 @@ struct AddBookmarkSheet: View {
         configurations: config
     )
     let context = ModelContext(container)
-    let repository = URLItemRepository(modelContext: context)
+    let repository = InboxRepository(modelContext: context)
 
     return AddBookmarkSheet(repository: repository)
 }
@@ -499,17 +529,17 @@ struct AddBookmarkSheet: View {
 
 既存のContentViewを3タブ構成に変更します。
 
-### 2. InboxView.swiftを作成
+### 2. InboxListView.swiftを作成
 
-**ファイルパス**: `ReadItLater/View/InboxView.swift`
+**ファイルパス**: `ReadItLater/View/InboxListView.swift`
 
-### 3. BookmarkView.swiftを作成
+### 3. BookmarkListView.swiftを作成
 
-**ファイルパス**: `ReadItLater/View/BookmarkView.swift`
+**ファイルパス**: `ReadItLater/View/BookmarkListView.swift`
 
-### 4. ArchiveView.swiftを作成
+### 4. ArchiveListView.swiftを作成
 
-**ファイルパス**: `ReadItLater/View/ArchiveView.swift`
+**ファイルパス**: `ReadItLater/View/ArchiveListView.swift`
 
 ### 5. AddBookmarkSheet.swiftを作成
 
@@ -529,17 +559,12 @@ struct AddBookmarkSheet: View {
 
 | ファイル | 目的 |
 |---------|------|
-| `View/InboxView.swift` | Inboxタブの実装 |
-| `View/BookmarkView.swift` | Bookmarkタブの実装 |
-| `View/ArchiveView.swift` | Archiveタブの実装 |
+| `View/InboxListView.swift` | Inboxタブのリスト表示 |
+| `View/BookmarkListView.swift` | Bookmarkタブのリスト表示 |
+| `View/ArchiveListView.swift` | Archiveタブのリスト表示 |
 | `View/AddBookmarkSheet.swift` | アプリ内からInbox追加するシート |
 
-### 削除または変更が必要なファイル
-
-| ファイル | 理由 |
-|---------|------|
-| `View/BookmarkView.swift`（既存） | 新しいBookmarkViewに置き換え |
-| `Presentation/AddBookmarkViewModel.swift` | ViewModelを使わずRepositoryを直接使用するため不要 |
+**注**: 既存の`BookmarkView.swift`（詳細表示用）と`AddBookmarkViewModel.swift`（メタデータ取得機能）は保持します。将来の機能拡張で使用予定です。
 
 ---
 
@@ -602,10 +627,12 @@ mise run build
 
 #### 5. Inbox上限
 
-1. Share Extensionから50件のURLを追加
-2. Inboxタブのタイトルが「Inbox (50/50)」と表示されることを確認
-3. 51件目を追加しようとする
+1. Share Extensionから5件のURLを追加
+2. Inboxタブのタイトルが「Inbox (5/5)」と表示されることを確認
+3. 6件目を追加しようとする
 4. 「Inboxが上限に達しています」エラーが表示されることを確認
+
+**注**: 現在の開発用設定では上限は5件です。将来的には50件に変更予定です。
 
 ---
 
@@ -669,10 +696,4 @@ mise run build
 - SafariなどからURLをInboxに追加
 - 3つのタブで状態を表示
 - スワイプアクションで状態を移動
-- Inbox上限（50件）の管理
-
----
-
-## 実装予定日
-
-2026-01-18
+- Inbox上限（5件、開発用）の管理
