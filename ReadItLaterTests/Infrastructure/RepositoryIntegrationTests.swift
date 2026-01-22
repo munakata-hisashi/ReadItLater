@@ -61,7 +61,6 @@ struct RepositoryIntegrationTests {
         let context = container.mainContext
 
         let inboxRepository = InboxRepository(modelContext: context)
-        let bookmarkRepository = BookmarkRepository(modelContext: context)
 
         // Given: 3つのInboxアイテム
         try inboxRepository.add(url: "https://example1.com", title: "Test1")
