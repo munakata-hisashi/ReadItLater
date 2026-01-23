@@ -11,7 +11,8 @@
   "defaultOptions" : {
     "commandLineArgumentEntries" : [
       {
-        "argument" : "-com.apple.CoreData.SQLDebug 1"
+        "argument" : "-com.apple.CoreData.SQLDebug 1",
+        "enabled" : false
       }
     ],
     "targetForVariableExpansion" : {
