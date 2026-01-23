@@ -1,6 +1,5 @@
 [tools]
 xcbeautify = "3.1.2"
-"spm:giginet/swift-testing-revolutionary" = "latest"
 
 # ===== 開発用タスク（通常のbuild）=====
 [tasks.build]
