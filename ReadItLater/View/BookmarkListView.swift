@@ -11,7 +11,6 @@ import SwiftData
 struct BookmarkListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Bookmark.bookmarkedAt, order: .reverse) private var bookmarks: [Bookmark]
-    @State private var showingAddSheet = false
 
     /// Repository（computed propertyとして生成）
     private var repository: BookmarkRepositoryProtocol {
@@ -44,30 +43,6 @@ struct BookmarkListView: View {
         .navigationTitle("Bookmarks")
         .navigationDestination(for: Bookmark.self) { bookmark in
             URLItemDetailView(item: bookmark)
-        }
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: { showingAddSheet = true }) {
-                    Label("Add Bookmark", systemImage: "plus")
-                }
-            }
-        }
-        .sheet(isPresented: $showingAddSheet) {
-            AddBookmarkSheet(
-                onSave: { bookmarkData in
-                    addBookmark(from: bookmarkData)
-                    showingAddSheet = false
-                },
-                onCancel: {
-                    showingAddSheet = false
-                }
-            )
-        }
-    }
-
-    private func addBookmark(from bookmarkData: BookmarkData) {
-        withAnimation {
-            repository.add(bookmarkData)
         }
     }
 
