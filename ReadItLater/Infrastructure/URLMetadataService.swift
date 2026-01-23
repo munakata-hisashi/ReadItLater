@@ -14,7 +14,7 @@ struct URLMetadata {
 }
 
 @MainActor
-final class URLMetadataService {
+final class URLMetadataService: URLMetadataServiceProtocol {
     private var currentProvider: LPMetadataProvider?
 
     func fetchMetadata(for url: URL) async throws -> URLMetadata {
