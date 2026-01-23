@@ -14,7 +14,11 @@ enum ModelContainerFactory {
 
     /// 共有ModelContainer作成
     static func createSharedContainer(inMemory: Bool = false) throws -> ModelContainer {
-        let schema = Schema([Bookmark.self])
+        let schema = Schema([
+            Inbox.self,
+            Bookmark.self,
+            Archive.self
+        ])
         let modelConfiguration: ModelConfiguration
 
         if inMemory {
@@ -35,5 +39,14 @@ enum ModelContainerFactory {
             migrationPlan: AppMigrationPlan.self,
             configurations: modelConfiguration
         )
+    }
+
+    /// Preview用のin-memory ModelContainer作成
+    static func createPreviewContainer() -> ModelContainer {
+        do {
+            return try createSharedContainer(inMemory: true)
+        } catch {
+            fatalError("Could not create preview container: \(error)")
+        }
     }
 }

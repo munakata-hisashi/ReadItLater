@@ -13,6 +13,11 @@ struct ContentView: View {
     @Query private var bookmarks: [Bookmark]
     @State private var showingAddSheet = false
 
+    /// Repository（computed propertyとして生成）
+    private var repository: BookmarkRepositoryProtocol {
+        BookmarkRepository(modelContext: modelContext)
+    }
+
     var body: some View {
         NavigationSplitView {
             List {
@@ -56,27 +61,19 @@ struct ContentView: View {
 
     private func addBookmark(from bookmarkData: BookmarkData) {
         withAnimation {
-            let newBookmark = Bookmark(url: bookmarkData.url, title: bookmarkData.title)
-            modelContext.insert(newBookmark)
+            repository.add(bookmarkData)
         }
     }
 
     private func deleteBookmarks(offsets: IndexSet) {
         withAnimation {
-            for index in offsets {
-                modelContext.delete(bookmarks[index])
-            }
+            let bookmarksToDelete = offsets.map { bookmarks[$0] }
+            repository.delete(bookmarksToDelete)
         }
     }
 }
 
 #Preview {
-    let schema = Schema([
-        Bookmark.self
-    ])
-    let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-
-    let modelContainer = try! ModelContainer(for: schema, migrationPlan: AppMigrationPlan.self, configurations: modelConfiguration)
     ContentView()
-        .modelContainer(modelContainer)
+        .modelContainer(ModelContainerFactory.createPreviewContainer())
 }

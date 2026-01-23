@@ -7,7 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		343A3E67997386BED26EC7CF /* InboxRepositoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09E0C02025FF2E4FC5207B69 /* InboxRepositoryProtocol.swift */; };
+		36C0BB105C6847739E1EC63E /* InboxRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8541814F1EEEE31EA4F649D8 /* InboxRepository.swift */; };
+		5D2D39BBA1C0BC18FC8114A7 /* InboxConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76C0A2F37949D7FBC32BF9DF /* InboxConfiguration.swift */; };
 		631A9C402F0BFC1600FA4142 /* ShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 631A9C362F0BFC1600FA4142 /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		C15FB1D80791B04A34D79532 /* ModelExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9E0033F5D804E67D4C0413 /* ModelExtensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,11 +53,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		09E0C02025FF2E4FC5207B69 /* InboxRepositoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = InboxRepositoryProtocol.swift; path = ReadItLater/Domain/InboxRepositoryProtocol.swift; sourceTree = "<group>"; };
+		5D9E0033F5D804E67D4C0413 /* ModelExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ModelExtensions.swift; path = ReadItLater/Domain/ModelExtensions.swift; sourceTree = "<group>"; };
 		631A9C362F0BFC1600FA4142 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		63507EDD2E5DC637001679E9 /* ReadItLater.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = ReadItLater.xctestplan; sourceTree = "<group>"; };
 		63B6ACA02E3E038300A16C13 /* ReadItLater.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReadItLater.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63B6ACB42E3E038400A16C13 /* ReadItLaterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ReadItLaterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		63B6ACBE2E3E038400A16C13 /* ReadItLaterUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ReadItLaterUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		76C0A2F37949D7FBC32BF9DF /* InboxConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = InboxConfiguration.swift; path = ReadItLater/Domain/InboxConfiguration.swift; sourceTree = "<group>"; };
+		8541814F1EEEE31EA4F649D8 /* InboxRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = InboxRepository.swift; path = ReadItLater/Infrastructure/InboxRepository.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -69,7 +77,6 @@
 			membershipExceptions = (
 				Domain/BookmarkCreation.swift,
 				Domain/BookmarkData.swift,
-				Domain/BookmarkExtensions.swift,
 				Domain/BookmarkTitle.swift,
 				Domain/BookmarkURL.swift,
 				Domain/URLValidationError.swift,
@@ -79,13 +86,6 @@
 				ModelContainerFactory.swift,
 			);
 			target = 631A9C352F0BFC1600FA4142 /* ShareExtension */;
-		};
-		63507E752E4DE87A001679E9 /* Exceptions for "ReadItLaterTests" folder in "ReadItLaterTests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				BookmarkTitleTests.swift,
-			);
-			target = 63B6ACB32E3E038400A16C13 /* ReadItLaterTests */;
 		};
 		63B6ACC62E3E038400A16C13 /* Exceptions for "ReadItLater" folder in "ReadItLater" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -116,9 +116,6 @@
 		};
 		63B6ACB72E3E038400A16C13 /* ReadItLaterTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				63507E752E4DE87A001679E9 /* Exceptions for "ReadItLaterTests" folder in "ReadItLaterTests" target */,
-			);
 			path = ReadItLaterTests;
 			sourceTree = "<group>";
 		};
@@ -170,6 +167,10 @@
 				63B6ACC12E3E038400A16C13 /* ReadItLaterUITests */,
 				631A9C372F0BFC1600FA4142 /* ShareExtension */,
 				63B6ACA12E3E038300A16C13 /* Products */,
+				5D9E0033F5D804E67D4C0413 /* ModelExtensions.swift */,
+				76C0A2F37949D7FBC32BF9DF /* InboxConfiguration.swift */,
+				09E0C02025FF2E4FC5207B69 /* InboxRepositoryProtocol.swift */,
+				8541814F1EEEE31EA4F649D8 /* InboxRepository.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -287,7 +288,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2600;
-				LastUpgradeCheck = 1610;
+				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					631A9C352F0BFC1600FA4142 = {
 						CreatedOnToolsVersion = 26.0.1;
@@ -363,6 +364,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C15FB1D80791B04A34D79532 /* ModelExtensions.swift in Sources */,
+				5D2D39BBA1C0BC18FC8114A7 /* InboxConfiguration.swift in Sources */,
+				343A3E67997386BED26EC7CF /* InboxRepositoryProtocol.swift in Sources */,
+				36C0BB105C6847739E1EC63E /* InboxRepository.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -414,7 +419,6 @@
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = RDL87GQ43U;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
@@ -444,7 +448,6 @@
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = RDL87GQ43U;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
@@ -477,8 +480,9 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ReadItLater/Preview Content\"";
-				DEVELOPMENT_TEAM = RDL87GQ43U;
+				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ReadItLater/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -511,8 +515,9 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ReadItLater/Preview Content\"";
-				DEVELOPMENT_TEAM = RDL87GQ43U;
+				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ReadItLater/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -571,6 +576,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = RDL87GQ43U;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -594,6 +600,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 6.0;
@@ -635,6 +642,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = RDL87GQ43U;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -651,6 +659,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_VERSION = 6.0;
 				VALIDATE_PRODUCT = YES;
@@ -663,7 +672,6 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = RDL87GQ43U;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				MARKETING_VERSION = 1.0;
@@ -682,7 +690,6 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = RDL87GQ43U;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				MARKETING_VERSION = 1.0;
@@ -700,7 +707,6 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = RDL87GQ43U;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "munakata-hisashi.ReadItLaterUITests";
@@ -717,7 +723,6 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = RDL87GQ43U;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "munakata-hisashi.ReadItLaterUITests";
