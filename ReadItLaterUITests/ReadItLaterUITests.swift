@@ -23,24 +23,48 @@ final class ReadItLaterUITests: XCTestCase {
     }
 
     @MainActor
-    func testExample() throws {
+    func testTabBarAndNavigation() throws {
         // UI tests must launch the application that they test.
         let app = XCUIApplication()
         app.launch()
 
-        // アプリの主要なUI要素が存在することを確認
+        // タブバーの存在を確認
+        let tabBar = app.tabBars
+        XCTAssertTrue(tabBar.firstMatch.waitForExistence(timeout: 5), "Tab bar should exist")
 
-        // ナビゲーションタイトルが表示されることを確認
+        // タブバーがInbox, Bookmarks, Archiveの順に並んでいることを確認
+        let inboxTab = tabBar.buttons["Inbox"]
+        let bookmarksTab = tabBar.buttons["Bookmarks"]
+        let archiveTab = tabBar.buttons["Archive"]
+
+        XCTAssertTrue(inboxTab.exists, "Inbox tab should exist")
+        XCTAssertTrue(bookmarksTab.exists, "Bookmarks tab should exist")
+        XCTAssertTrue(archiveTab.exists, "Archive tab should exist")
+
+        // Inboxタブを選択するとナビゲーションタイトルがInboxになっている
+        inboxTab.tap()
+        let inboxNavigationBar = app.navigationBars["Inbox"]
+        XCTAssertTrue(inboxNavigationBar.waitForExistence(timeout: 2), "Inbox navigation bar should exist")
+
+        // Inboxのリスト画面には追加ボタンがある
+        let addItemButton = app.buttons["Add Item"]
+        XCTAssertTrue(addItemButton.exists, "Add Item button should exist in Inbox")
+
+        // Bookmarksタブを選択するとナビゲーションタイトルがBookmarksになっている
+        bookmarksTab.tap()
         let bookmarksNavigationBar = app.navigationBars["Bookmarks"]
-        XCTAssertTrue(bookmarksNavigationBar.waitForExistence(timeout: 5), "Bookmarks navigation bar should exist")
+        XCTAssertTrue(bookmarksNavigationBar.waitForExistence(timeout: 2), "Bookmarks navigation bar should exist")
 
-        // 追加ボタンが存在することを確認
-        let addButton = app.buttons["Add Bookmark"]
-        XCTAssertTrue(addButton.exists, "Add Bookmark button should exist")
+        // Bookmarksのリスト画面には追加ボタンがない（Inboxのみ）
+        XCTAssertFalse(addItemButton.exists, "Add Item button should not exist in Bookmarks")
 
-        // Editボタンが存在することを確認
-        let editButton = app.buttons["Edit"]
-        XCTAssertTrue(editButton.exists, "Edit button should exist")
+        // Archiveタブを選択するとナビゲーションタイトルがArchiveになっている
+        archiveTab.tap()
+        let archiveNavigationBar = app.navigationBars["Archive"]
+        XCTAssertTrue(archiveNavigationBar.waitForExistence(timeout: 2), "Archive navigation bar should exist")
+
+        // Archiveのリスト画面には追加ボタンがない（Inboxのみ）
+        XCTAssertFalse(addItemButton.exists, "Add Item button should not exist in Archive")
     }
 
     @MainActor

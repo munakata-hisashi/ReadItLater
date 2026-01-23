@@ -7,11 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		343A3E67997386BED26EC7CF /* InboxRepositoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09E0C02025FF2E4FC5207B69 /* InboxRepositoryProtocol.swift */; };
-		36C0BB105C6847739E1EC63E /* InboxRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8541814F1EEEE31EA4F649D8 /* InboxRepository.swift */; };
-		5D2D39BBA1C0BC18FC8114A7 /* InboxConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76C0A2F37949D7FBC32BF9DF /* InboxConfiguration.swift */; };
 		631A9C402F0BFC1600FA4142 /* ShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 631A9C362F0BFC1600FA4142 /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		C15FB1D80791B04A34D79532 /* ModelExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9E0033F5D804E67D4C0413 /* ModelExtensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,15 +49,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		09E0C02025FF2E4FC5207B69 /* InboxRepositoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = InboxRepositoryProtocol.swift; path = ReadItLater/Domain/InboxRepositoryProtocol.swift; sourceTree = "<group>"; };
-		5D9E0033F5D804E67D4C0413 /* ModelExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ModelExtensions.swift; path = ReadItLater/Domain/ModelExtensions.swift; sourceTree = "<group>"; };
 		631A9C362F0BFC1600FA4142 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		63507EDD2E5DC637001679E9 /* ReadItLater.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = ReadItLater.xctestplan; sourceTree = "<group>"; };
 		63B6ACA02E3E038300A16C13 /* ReadItLater.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReadItLater.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63B6ACB42E3E038400A16C13 /* ReadItLaterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ReadItLaterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		63B6ACBE2E3E038400A16C13 /* ReadItLaterUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ReadItLaterUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		76C0A2F37949D7FBC32BF9DF /* InboxConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = InboxConfiguration.swift; path = ReadItLater/Domain/InboxConfiguration.swift; sourceTree = "<group>"; };
-		8541814F1EEEE31EA4F649D8 /* InboxRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = InboxRepository.swift; path = ReadItLater/Infrastructure/InboxRepository.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -79,7 +71,11 @@
 				Domain/BookmarkData.swift,
 				Domain/BookmarkTitle.swift,
 				Domain/BookmarkURL.swift,
+				Domain/InboxConfiguration.swift,
+				Domain/InboxRepositoryProtocol.swift,
+				Domain/ModelExtensions.swift,
 				Domain/URLValidationError.swift,
+				Infrastructure/InboxRepository.swift,
 				Infrastructure/URLMetadataService.swift,
 				Migration/MigrationPlan.swift,
 				Migration/VersionedSchema.swift,
@@ -167,10 +163,6 @@
 				63B6ACC12E3E038400A16C13 /* ReadItLaterUITests */,
 				631A9C372F0BFC1600FA4142 /* ShareExtension */,
 				63B6ACA12E3E038300A16C13 /* Products */,
-				5D9E0033F5D804E67D4C0413 /* ModelExtensions.swift */,
-				76C0A2F37949D7FBC32BF9DF /* InboxConfiguration.swift */,
-				09E0C02025FF2E4FC5207B69 /* InboxRepositoryProtocol.swift */,
-				8541814F1EEEE31EA4F649D8 /* InboxRepository.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -364,10 +356,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C15FB1D80791B04A34D79532 /* ModelExtensions.swift in Sources */,
-				5D2D39BBA1C0BC18FC8114A7 /* InboxConfiguration.swift in Sources */,
-				343A3E67997386BED26EC7CF /* InboxRepositoryProtocol.swift in Sources */,
-				36C0BB105C6847739E1EC63E /* InboxRepository.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
