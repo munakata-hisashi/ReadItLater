@@ -19,7 +19,7 @@ jobs:
         run: sudo xcode-select -switch /Applications/Xcode_26.2.app/Contents/Developer
 
       - name: Setup mise
-        uses: jdx/mise-action@v2
+        uses: jdx/mise-action@v3
 
       - name: Build
         run: mise run ci-build
