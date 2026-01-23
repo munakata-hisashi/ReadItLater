@@ -1,4 +1,4 @@
-name: iOS starter workflow
+name: iOS CI
 
 on:
   push:
@@ -8,45 +8,21 @@ on:
 
 jobs:
   build:
-    name: Build and Test default scheme using any available iPhone simulator
+    name: Build and Test
     runs-on: macos-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Select Xcode version
         run: sudo xcode-select -switch /Applications/Xcode_26.2.app/Contents/Developer
-      - name: Show Xcode version
-        run: |
-          xcodebuild -version
-          echo "### Xcode Version" >> $GITHUB_STEP_SUMMARY
-          xcodebuild -version >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Available Simulators" >> $GITHUB_STEP_SUMMARY
-          xcrun simctl list devices available | head -20 >> $GITHUB_STEP_SUMMARY
-      - name: Set Default Scheme
-        run: |
-          echo "ReadItLater" > default
-          echo "Using scheme: ReadItLater"
+
+      - name: Setup mise
+        uses: jdx/mise-action@v2
+
       - name: Build
-        env:
-          scheme: ${{ 'default' }}
-          platform: ${{ 'iOS Simulator' }}
-        run: |
-          # xcrun xctrace returns via stderr, not the expected stdout (see https://developer.apple.com/forums/thread/663959)
-          device="iPhone 16"
-          if [ $scheme = default ]; then scheme=$(cat default); fi
-          if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\$`"; fi
-          file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
-          set -o pipefail && xcodebuild build-for-testing -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device" -parallel-testing-enabled NO | xcbeautify --renderer github-actions
+        run: mise run ci-build
+
       - name: Test
-        env:
-          scheme: ${{ 'default' }}
-          platform: ${{ 'iOS Simulator' }}
-        run: |
-          # xcrun xctrace returns via stderr, not the expected stdout (see https://developer.apple.com/forums/thread/663959)
-          device="iPhone 16"
-          if [ $scheme = default ]; then scheme=$(cat default); fi
-          if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\$`"; fi
-          file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
-          set -o pipefail && xcodebuild test-without-building -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device" -parallel-testing-enabled NO -only-testing:ReadItLaterTests | xcbeautify --renderer github-actions
+        run: mise run ci-test

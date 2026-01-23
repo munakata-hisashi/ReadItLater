@@ -9,15 +9,25 @@ ReadItLater is an iOS app for bookmarking URLs with planned AI-powered content s
 ## Development Commands
 
 ### mise Tasks (Recommended)
-The project uses [mise](https://mise.jdx.dev/) for task automation with formatted output:
+The project uses [mise](https://mise.jdx.dev/) for task automation. All commands are defined in `mise.toml` as the Single Source of Truth for both local development and CI.
 
+**Development tasks:**
 - **Build with formatted output**: `mise run buildformat` or `mise run b`
-- **Run tests with formatted output**: `mise run testformat` or `mise run t`
+- **Run all tests with formatted output**: `mise run testformat` or `mise run t`
 - **Run unit tests only**: `mise run unit` or `mise run u`
 - **Build (raw output)**: `mise run build`
 - **Run tests (raw output)**: `mise run test`
 
-All tasks use `xcbeautify` for clean, readable build logs.
+**CI tasks (used by GitHub Actions):**
+- **CI build**: `mise run ci-build`
+- **CI test**: `mise run ci-test`
+
+**Important notes:**
+- Formatted build tasks use `SWIFT_TREAT_WARNINGS_AS_ERRORS=YES GCC_TREAT_WARNINGS_AS_ERRORS=YES`, which causes the build to fail if there are any warnings
+- Test tasks use `build-for-testing` + `test-without-building` pattern for faster execution
+- Parallel testing is disabled (`-parallel-testing-enabled NO`) to avoid race conditions
+- CI tasks use `--renderer github-actions` for proper output formatting in GitHub Actions
+- All tasks explicitly specify `OS=26.0.1` in the simulator destination for consistency
 
 ### Direct xcodebuild Commands
 - **Build for Simulator**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' build`
