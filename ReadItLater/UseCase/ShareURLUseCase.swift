@@ -29,7 +29,7 @@ final class ShareURLUseCase: ShareURLUseCaseProtocol {
         self.repository = repository
     }
 
-    func execute() async -> Result<Void, ShareError> {
+    func execute() async -> Result<Void, InboxSaveError> {
         do {
             // 1. URL抽出とタイトル抽出
             let (url, maybeTitle) = try await itemProvider.extractURLAndTitle()
@@ -47,7 +47,7 @@ final class ShareURLUseCase: ShareURLUseCaseProtocol {
             // 4. 成功完了
             return .success(())
 
-        } catch let error as ShareError {
+        } catch let error as InboxSaveError {
             return .failure(error)
         } catch {
             return .failure(.containerInitFailed)
@@ -74,7 +74,7 @@ final class ShareURLUseCase: ShareURLUseCaseProtocol {
         case .success(let bookmarkData):
             // Inbox上限チェック
             guard repository.canAdd() else {
-                throw ShareError.inboxFull
+                throw InboxSaveError.inboxFull
             }
 
             // Inboxに追加
@@ -84,7 +84,7 @@ final class ShareURLUseCase: ShareURLUseCaseProtocol {
             )
 
         case .failure(let error):
-            throw ShareError.bookmarkCreationFailed(error)
+            throw InboxSaveError.bookmarkCreationFailed(error)
         }
     }
 }

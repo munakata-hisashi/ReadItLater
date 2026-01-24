@@ -21,7 +21,7 @@ final class MockExtensionItemProvider: ExtensionItemProviderProtocol {
         }
 
         guard let url = urlToReturn else {
-            throw ShareError.noURLFound
+            throw InboxSaveError.noURLFound
         }
 
         return (url: url, title: titleToReturn)

@@ -35,7 +35,7 @@ ShareURLUseCase (ビジネスロジック - テスト対象)
 ```swift
 @MainActor
 protocol ShareURLUseCaseProtocol {
-    func execute() async -> Result<Void, ShareError>
+    func execute() async -> Result<Void, InboxSaveError>
 }
 
 @MainActor
@@ -46,7 +46,7 @@ final class ShareURLUseCase: ShareURLUseCaseProtocol {
         repository: InboxRepositoryProtocol
     )
 
-    func execute() async -> Result<Void, ShareError>
+    func execute() async -> Result<Void, InboxSaveError>
     // 1. URL抽出 → 2. タイトル取得 → 3. 検証 → 4. 保存
 }
 ```
@@ -56,7 +56,7 @@ final class ShareURLUseCase: ShareURLUseCaseProtocol {
 ### 新規作成ファイル
 
 #### Domain層（プロトコル定義）
-- `Domain/ShareError.swift` - エラー型（既存コードから分離、Equatable準拠）
+- `Domain/InboxSaveError.swift` - Inbox保存処理のエラー型（Equatable準拠）
 - `Domain/URLMetadataServiceProtocol.swift` - URLMetadataServiceの抽象化
 - `Domain/ExtensionItemProviderProtocol.swift` - NSExtensionItem抽象化
 - `Domain/ShareURLUseCaseProtocol.swift` - UseCaseプロトコル
@@ -93,7 +93,7 @@ UseCase使用にリファクタリング（186行→70行に削減）:
 final class ShareViewController: UIViewController {
     private func processSharedURL() async {
         guard let container = modelContainer else {
-            completeRequest(with: .failure(ShareError.containerInitFailed))
+            completeRequest(with: .failure(InboxSaveError.containerInitFailed))
             return
         }
 
@@ -119,7 +119,7 @@ final class ShareViewController: UIViewController {
 #### ReadItLater.xcodeproj/project.pbxproj
 新規ファイルをShareExtensionターゲットに追加:
 - Domain/ExtensionItemProviderProtocol.swift
-- Domain/ShareError.swift
+- Domain/InboxSaveError.swift
 - Domain/ShareURLUseCaseProtocol.swift
 - Domain/URLMetadataServiceProtocol.swift
 - Infrastructure/ExtensionItemProvider.swift

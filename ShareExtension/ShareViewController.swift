@@ -20,7 +20,7 @@ final class ShareViewController: UIViewController {
         do {
             modelContainer = try ModelContainerFactory.createSharedContainer()
         } catch {
-            completeRequest(with: .failure(ShareError.containerInitFailed))
+            completeRequest(with: .failure(InboxSaveError.containerInitFailed))
             return
         }
 
@@ -32,7 +32,7 @@ final class ShareViewController: UIViewController {
 
     private func processSharedURL() async {
         guard let container = modelContainer else {
-            completeRequest(with: .failure(ShareError.containerInitFailed))
+            completeRequest(with: .failure(InboxSaveError.containerInitFailed))
             return
         }
 
@@ -53,7 +53,7 @@ final class ShareViewController: UIViewController {
         completeRequest(with: result)
     }
 
-    private func completeRequest(with result: Result<Void, ShareError>) {
+    private func completeRequest(with result: Result<Void, InboxSaveError>) {
         switch result {
         case .success:
             extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)

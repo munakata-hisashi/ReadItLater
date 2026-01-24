@@ -14,5 +14,5 @@ import Foundation
 protocol ShareURLUseCaseProtocol {
     /// 共有されたURLをInboxに保存
     /// - Returns: 成功または失敗を示すResult
-    func execute() async -> Result<Void, ShareError>
+    func execute() async -> Result<Void, InboxSaveError>
 }

@@ -1,5 +1,5 @@
 //
-//  ShareError.swift
+//  InboxSaveError.swift
 //  ReadItLater
 //
 //  Created by Claude Code on 2026/01/24.
@@ -7,8 +7,8 @@
 
 import Foundation
 
-/// Share Extension固有のエラー
-enum ShareError: LocalizedError, Equatable {
+/// Inbox保存処理で発生するエラー
+enum InboxSaveError: LocalizedError, Equatable {
     case noURLFound
     case containerInitFailed
     case bookmarkCreationFailed(Bookmark.CreationError)
@@ -27,7 +27,7 @@ enum ShareError: LocalizedError, Equatable {
         }
     }
 
-    static func == (lhs: ShareError, rhs: ShareError) -> Bool {
+    static func == (lhs: InboxSaveError, rhs: InboxSaveError) -> Bool {
         switch (lhs, rhs) {
         case (.noURLFound, .noURLFound),
              (.containerInitFailed, .containerInitFailed),

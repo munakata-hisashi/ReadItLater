@@ -212,7 +212,7 @@ struct ShareURLUseCaseTests {
     func testExecuteFailure_ItemProviderError() async {
         // Given
         let mockItemProvider = MockExtensionItemProvider()
-        mockItemProvider.errorToThrow = ShareError.noURLFound
+        mockItemProvider.errorToThrow = InboxSaveError.noURLFound
 
         let mockMetadataService = MockURLMetadataService()
         let mockRepository = MockInboxRepository()

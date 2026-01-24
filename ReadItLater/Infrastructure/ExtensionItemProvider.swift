@@ -20,7 +20,7 @@ final class ExtensionItemProvider: ExtensionItemProviderProtocol {
     func extractURLAndTitle() async throws -> (url: URL, title: String?) {
         guard let extensionItem = extensionContext?.inputItems.first as? NSExtensionItem,
               let itemProviders = extensionItem.attachments else {
-            throw ShareError.noURLFound
+            throw InboxSaveError.noURLFound
         }
 
         var foundURL: URL?
@@ -55,7 +55,7 @@ final class ExtensionItemProvider: ExtensionItemProviderProtocol {
         }
 
         guard let url = foundURL else {
-            throw ShareError.noURLFound
+            throw InboxSaveError.noURLFound
         }
 
         return (url: url, title: foundTitle)
