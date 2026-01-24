@@ -107,7 +107,7 @@ struct ShareURLUseCaseTests {
             #expect(mockRepository.addCalled)
             #expect(mockRepository.addedURL == "https://example.com")
             // タイトルはnilだがBookmarkCreationがホスト名で代用するため保存は成功
-            #expect(mockRepository.addedTitle == "example.com")
+            #expect(mockRepository.addedTitle == "Example.Com")
         case .failure(let error):
             Issue.record("Expected success but got error: \(error)")
         }
