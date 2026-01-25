@@ -5,12 +5,11 @@ import SwiftData
 ///
 /// テスト時にモック実装を注入可能にするためのプロトコル。
 /// SwiftDataのModelContextを使用した実装をInfrastructure層で提供する。
+///
+/// 注: BookmarkはInboxから移動したものなので、直接addメソッドで追加することはありません。
+/// 追加はInboxRepositoryを使用し、その後moveToBookmarkで移動します。
 protocol BookmarkRepositoryProtocol {
-    // MARK: - 追加操作
-
-    /// ブックマークを追加
-    /// - Parameter bookmarkData: 作成済みのBookmarkData
-    func add(_ bookmarkData: BookmarkData)
+    // MARK: - 削除操作
 
     /// ブックマークを削除
     /// - Parameter bookmark: 削除対象のBookmark

@@ -1,5 +1,5 @@
 //
-//  BookmarkURL.swift
+//  InboxURL.swift
 //  ReadItLater
 //
 //  Created by Claude on 2025/08/14.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct BookmarkURL {
+struct InboxURL {
     private let rawURL: String
     
     init(_ urlString: String) throws {
@@ -41,7 +41,7 @@ struct BookmarkURL {
     var extractedTitle: String {
         guard let url = URL(string: rawURL),
               let host = url.host else {
-            return "Untitled Bookmark"
+            return "Untitled Inbox"
         }
         
         // Remove www. prefix if present

@@ -1,5 +1,5 @@
 //
-//  BookmarkCreationTests.swift
+//  InboxCreationTests.swift
 //  ReadItLaterTests
 //
 //  Created by Claude on 2025/08/14.
@@ -8,12 +8,12 @@
 import Testing
 @testable import ReadItLater
 
-@Suite struct BookmarkCreationTests {
+@Suite struct InboxCreationTests {
     
     // MARK: - 正常系テスト
     
     @Test func 有効なHTTPSURL_ブックマーク作成成功() {
-        let result = Bookmark.create(from: "https://example.com", title: "Example Site")
+        let result = Inbox.create(from: "https://example.com", title: "Example Site")
         
         switch result {
         case .success(let data):
@@ -25,7 +25,7 @@ import Testing
     }
     
     @Test func 有効なHTTPURL_ブックマーク作成成功() {
-        let result = Bookmark.create(from: "http://example.com", title: "Example HTTP")
+        let result = Inbox.create(from: "http://example.com", title: "Example HTTP")
         
         switch result {
         case .success(let data):
@@ -37,7 +37,7 @@ import Testing
     }
     
     @Test func タイトル省略_URL由来タイトル自動生成() {
-        let result = Bookmark.create(from: "https://github.com")
+        let result = Inbox.create(from: "https://github.com")
         
         switch result {
         case .success(let data):
@@ -49,7 +49,7 @@ import Testing
     }
     
     @Test func タイトル空文字列_URL由来タイトル自動生成() {
-        let result = Bookmark.create(from: "https://www.example.com", title: "")
+        let result = Inbox.create(from: "https://www.example.com", title: "")
         
         switch result {
         case .success(let data):
@@ -61,7 +61,7 @@ import Testing
     }
     
     @Test func タイトル空白のみ_URL由来タイトル自動生成() {
-        let result = Bookmark.create(from: "https://api.example.com", title: "   \n\t   ")
+        let result = Inbox.create(from: "https://api.example.com", title: "   \n\t   ")
         
         switch result {
         case .success(let data):
@@ -74,7 +74,7 @@ import Testing
     
     @Test func 複雑なURL_正常処理() {
         let complexURL = "https://blog.subdomain.example.com/path/to/article?id=123&utm_source=test"
-        let result = Bookmark.create(from: complexURL, title: "Complex Article")
+        let result = Inbox.create(from: complexURL, title: "Complex Article")
         
         switch result {
         case .success(let data):
@@ -86,7 +86,7 @@ import Testing
     }
     
     @Test func ポート番号付きURL_正常処理() {
-        let result = Bookmark.create(from: "http://localhost:3000", title: "Local Dev Server")
+        let result = Inbox.create(from: "http://localhost:3000", title: "Local Dev Server")
         
         switch result {
         case .success(let data):
@@ -98,7 +98,7 @@ import Testing
     }
     
     @Test func IPアドレスURL_正常処理() {
-        let result = Bookmark.create(from: "https://192.168.1.1:8080", title: "Router Admin")
+        let result = Inbox.create(from: "https://192.168.1.1:8080", title: "Router Admin")
         
         switch result {
         case .success(let data):
@@ -112,7 +112,7 @@ import Testing
     // MARK: - 異常系テスト（URL関連）
     
     @Test func 空URL_作成失敗() {
-        let result = Bookmark.create(from: "", title: "Empty URL")
+        let result = Inbox.create(from: "", title: "Empty URL")
         
         switch result {
         case .success:
@@ -127,7 +127,7 @@ import Testing
     }
     
     @Test func 空白のみURL_作成失敗() {
-        let result = Bookmark.create(from: "   \n\t   ", title: "Whitespace URL")
+        let result = Inbox.create(from: "   \n\t   ", title: "Whitespace URL")
         
         switch result {
         case .success:
@@ -142,7 +142,7 @@ import Testing
     }
     
     @Test func 無効な形式URL_作成失敗() {
-        let result = Bookmark.create(from: "invalid-url-format", title: "Invalid URL")
+        let result = Inbox.create(from: "invalid-url-format", title: "Invalid URL")
         
         switch result {
         case .success:
@@ -157,7 +157,7 @@ import Testing
     }
     
     @Test func プロトコルなしURL_作成失敗() {
-        let result = Bookmark.create(from: "example.com", title: "No Protocol")
+        let result = Inbox.create(from: "example.com", title: "No Protocol")
         
         switch result {
         case .success:
@@ -172,7 +172,7 @@ import Testing
     }
     
     @Test func 非対応プロトコル_FTP_作成失敗() {
-        let result = Bookmark.create(from: "ftp://ftp.example.com", title: "FTP Site")
+        let result = Inbox.create(from: "ftp://ftp.example.com", title: "FTP Site")
         
         switch result {
         case .success:
@@ -187,7 +187,7 @@ import Testing
     }
     
     @Test func 非対応プロトコル_FILE_作成失敗() {
-        let result = Bookmark.create(from: "file:///path/to/file", title: "Local File")
+        let result = Inbox.create(from: "file:///path/to/file", title: "Local File")
         
         switch result {
         case .success:
@@ -202,7 +202,7 @@ import Testing
     }
     
     @Test func 非対応プロトコル_MAILTO_作成失敗() {
-        let result = Bookmark.create(from: "mailto:user@example.com", title: "Email")
+        let result = Inbox.create(from: "mailto:user@example.com", title: "Email")
         
         switch result {
         case .success:
@@ -219,7 +219,7 @@ import Testing
     // MARK: - 正規化テスト
     
     @Test func URL前後空白除去() {
-        let result = Bookmark.create(from: "  https://example.com  ", title: "Trimmed URL")
+        let result = Inbox.create(from: "  https://example.com  ", title: "Trimmed URL")
         
         switch result {
         case .success(let data):
@@ -231,7 +231,7 @@ import Testing
     }
     
     @Test func タイトル前後空白除去() {
-        let result = Bookmark.create(from: "https://example.com", title: "  Trimmed Title  ")
+        let result = Inbox.create(from: "https://example.com", title: "  Trimmed Title  ")
         
         switch result {
         case .success(let data):
@@ -243,7 +243,7 @@ import Testing
     }
     
     @Test func URL改行文字除去() {
-        let result = Bookmark.create(from: "https://example.com\n\r", title: "URL with newlines")
+        let result = Inbox.create(from: "https://example.com\n\r", title: "URL with newlines")
         
         switch result {
         case .success(let data):
@@ -258,7 +258,7 @@ import Testing
     @Test func 非常に長いURL_処理可能() {
         let longPath = String(repeating: "a", count: 1000)
         let longURL = "https://example.com/\(longPath)"
-        let result = Bookmark.create(from: longURL, title: "Very Long URL")
+        let result = Inbox.create(from: longURL, title: "Very Long URL")
         
         switch result {
         case .success(let data):
@@ -271,7 +271,7 @@ import Testing
     
     @Test func 非常に長いタイトル_処理可能() {
         let longTitle = String(repeating: "あ", count: 500)
-        let result = Bookmark.create(from: "https://example.com", title: longTitle)
+        let result = Inbox.create(from: "https://example.com", title: longTitle)
         
         switch result {
         case .success(let data):
@@ -283,7 +283,7 @@ import Testing
     }
     
     @Test func 日本語ドメイン_処理可能() {
-        let result = Bookmark.create(from: "https://日本語.example.com", title: "日本語ドメイン")
+        let result = Inbox.create(from: "https://日本語.example.com", title: "日本語ドメイン")
         
         switch result {
         case .success(let data):
@@ -296,7 +296,7 @@ import Testing
     
     @Test func 特殊文字含むURL_処理可能() {
         let specialURL = "https://example.com/search?q=hello%20world&lang=ja"
-        let result = Bookmark.create(from: specialURL, title: "Search Result")
+        let result = Inbox.create(from: specialURL, title: "Search Result")
         
         switch result {
         case .success(let data):
@@ -309,7 +309,7 @@ import Testing
     
     @Test func 絵文字含むタイトル_処理可能() {
         let emojiTitle = "My Favorite Site 🚀 すごい！ 👍"
-        let result = Bookmark.create(from: "https://example.com", title: emojiTitle)
+        let result = Inbox.create(from: "https://example.com", title: emojiTitle)
         
         switch result {
         case .success(let data):
@@ -324,7 +324,7 @@ import Testing
     
     @Test func 中国語タイトル_処理可能() {
         let chineseTitle = "这是一个中文网站"
-        let result = Bookmark.create(from: "https://example.cn", title: chineseTitle)
+        let result = Inbox.create(from: "https://example.cn", title: chineseTitle)
         
         switch result {
         case .success(let data):
@@ -337,7 +337,7 @@ import Testing
     
     @Test func アラビア語タイトル_処理可能() {
         let arabicTitle = "هذا موقع عربي رائع"
-        let result = Bookmark.create(from: "https://example.ae", title: arabicTitle)
+        let result = Inbox.create(from: "https://example.ae", title: arabicTitle)
         
         switch result {
         case .success(let data):
@@ -351,7 +351,7 @@ import Testing
     // MARK: - プロトコル大文字小文字テスト
     
     @Test func HTTPS大文字_処理可能() {
-        let result = Bookmark.create(from: "HTTPS://example.com", title: "Upper HTTPS")
+        let result = Inbox.create(from: "HTTPS://example.com", title: "Upper HTTPS")
         
         switch result {
         case .success(let data):
@@ -363,7 +363,7 @@ import Testing
     }
     
     @Test func 混合ケースプロトコル_処理可能() {
-        let result = Bookmark.create(from: "HtTpS://example.com", title: "Mixed Case")
+        let result = Inbox.create(from: "HtTpS://example.com", title: "Mixed Case")
         
         switch result {
         case .success(let data):
@@ -377,7 +377,7 @@ import Testing
     // MARK: - Result型の詳細テスト
     
     @Test func 成功結果_BookmarkData型() {
-        let result = Bookmark.create(from: "https://test.com", title: "Test")
+        let result = Inbox.create(from: "https://test.com", title: "Test")
 
         switch result {
         case .success(let data):
@@ -390,7 +390,7 @@ import Testing
     }
 
     @Test func 失敗結果_CreationError型() {
-        let result = Bookmark.create(from: "", title: "Test")
+        let result = Inbox.create(from: "", title: "Test")
 
         switch result {
         case .success:

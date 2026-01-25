@@ -67,24 +67,64 @@ final class ShareURLUseCase: ShareURLUseCaseProtocol {
     }
 
     private func saveToInbox(url: String, title: String?) throws {
-        // 既存のBookmarkCreationロジックを使用（URL検証とタイトル正規化）
-        let result = Bookmark.create(from: url, title: title)
+        // URL検証
+        let validatedURL: String
+        let finalTitle: String
 
-        switch result {
-        case .success(let bookmarkData):
-            // Inbox上限チェック
-            guard repository.canAdd() else {
-                throw InboxSaveError.inboxFull
+        do {
+            // URLバリデーション（InboxURLと同じロジック）
+            let trimmed = url.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard !trimmed.isEmpty else {
+                throw URLValidationError.emptyURL
             }
 
-            // Inboxに追加
-            try repository.add(
-                url: bookmarkData.url,
-                title: bookmarkData.title
-            )
+            guard let urlObj = URL(string: trimmed),
+                  let scheme = urlObj.scheme?.lowercased() else {
+                throw URLValidationError.invalidFormat
+            }
 
-        case .failure(let error):
-            throw InboxSaveError.bookmarkCreationFailed(error)
+            guard ["http", "https"].contains(scheme) else {
+                throw URLValidationError.unsupportedScheme
+            }
+
+            guard urlObj.host != nil else {
+                throw URLValidationError.invalidFormat
+            }
+
+            validatedURL = trimmed
+
+            // タイトル処理（InboxTitleと同じロジック）
+            let trimmedTitle = title?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            if !trimmedTitle.isEmpty {
+                finalTitle = trimmedTitle
+            } else {
+                // URLからタイトルを生成
+                if let host = urlObj.host {
+                    let cleanHost = host.hasPrefix("www.") ? String(host.dropFirst(4)) : host
+                    let components = cleanHost.components(separatedBy: ".")
+                    let capitalizedComponents = components.map { component in
+                        guard !component.isEmpty else { return component }
+                        return component.prefix(1).uppercased() + component.dropFirst()
+                    }
+                    finalTitle = capitalizedComponents.joined(separator: ".")
+                } else {
+                    finalTitle = "Untitled Inbox"
+                }
+            }
+        } catch let error as URLValidationError {
+            throw InboxSaveError.inboxCreationFailed(error)
         }
+
+        // Inbox上限チェック
+        guard repository.canAdd() else {
+            throw InboxSaveError.inboxFull
+        }
+
+        // Inboxに追加
+        try repository.add(
+            url: validatedURL,
+            title: finalTitle
+        )
     }
 }

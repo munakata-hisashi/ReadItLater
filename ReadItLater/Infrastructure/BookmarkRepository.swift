@@ -6,11 +6,9 @@ import SwiftData
 /// BookmarkRepositoryProtocolの具体的な実装。
 /// ModelContextを通じてSwiftDataへのCRUD操作を提供する。
 ///
-/// # 使用方法
-/// ```swift
-/// let repository = BookmarkRepository(modelContext: modelContext)
-/// repository.add(bookmarkData)
-/// ```
+/// # 注意
+/// BookmarkはInboxから移動したものなので、直接addすることはありません。
+/// InboxRepositoryのmoveToBookmarkメソッドを使用してBookmarkを作成します。
 ///
 /// # テスト
 /// テスト時はin-memory ModelContainerのcontextを注入することで、
@@ -22,15 +20,6 @@ final class BookmarkRepository: BookmarkRepositoryProtocol {
     /// - Parameter modelContext: SwiftDataのModelContext
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
-    }
-
-    func add(_ bookmarkData: BookmarkData) {
-        let newBookmark = Bookmark(
-            url: bookmarkData.url,
-            title: bookmarkData.title,
-            addedInboxAt: Date.now
-        )
-        modelContext.insert(newBookmark)
     }
 
     func delete(_ bookmark: Bookmark) {

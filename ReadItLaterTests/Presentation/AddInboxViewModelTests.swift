@@ -1,5 +1,5 @@
 //
-//  AddBookmarkViewModelTests.swift
+//  AddInboxViewModelTests.swift
 //  ReadItLaterTests
 //
 //  Created by Claude on 2025/08/14.
@@ -10,12 +10,12 @@ import Testing
 
 @Suite
 @MainActor
-struct AddBookmarkViewModelTests {
+struct AddInboxViewModelTests {
 
-    let viewModel: AddBookmarkViewModel
+    let viewModel: AddInboxViewModel
 
     init() {
-        viewModel = AddBookmarkViewModel()
+        viewModel = AddInboxViewModel()
     }
     
     // MARK: - 初期状態テスト
@@ -33,7 +33,7 @@ struct AddBookmarkViewModelTests {
         viewModel.urlString = "https://example.com"
         viewModel.titleString = "Example Site"
 
-        let result = viewModel.createBookmark()
+        let result = viewModel.createInbox()
 
         #expect(result != nil)
         #expect(viewModel.errorMessage == nil)
@@ -44,7 +44,7 @@ struct AddBookmarkViewModelTests {
         viewModel.urlString = "http://example.com"
         viewModel.titleString = "HTTP Example"
 
-        let result = viewModel.createBookmark()
+        let result = viewModel.createInbox()
 
         #expect(result != nil)
         #expect(viewModel.errorMessage == nil)
@@ -54,7 +54,7 @@ struct AddBookmarkViewModelTests {
         viewModel.urlString = ""
         viewModel.titleString = "Empty URL"
 
-        let result = viewModel.createBookmark()
+        let result = viewModel.createInbox()
 
         #expect(result == nil)
         #expect(viewModel.errorMessage == "URLを入力してください")
@@ -65,7 +65,7 @@ struct AddBookmarkViewModelTests {
         viewModel.urlString = "   \n\t   "
         viewModel.titleString = "Whitespace URL"
 
-        let result = viewModel.createBookmark()
+        let result = viewModel.createInbox()
 
         #expect(result == nil)
         #expect(viewModel.errorMessage == "URLを入力してください")
@@ -75,7 +75,7 @@ struct AddBookmarkViewModelTests {
         viewModel.urlString = "invalid-url-format"
         viewModel.titleString = "Invalid URL"
 
-        let result = viewModel.createBookmark()
+        let result = viewModel.createInbox()
 
         #expect(result == nil)
         #expect(viewModel.errorMessage == "有効なURL形式で入力してください")
@@ -85,7 +85,7 @@ struct AddBookmarkViewModelTests {
         viewModel.urlString = "example.com"
         viewModel.titleString = "No Protocol"
 
-        let result = viewModel.createBookmark()
+        let result = viewModel.createInbox()
 
         #expect(result == nil)
         #expect(viewModel.errorMessage == "有効なURL形式で入力してください")
@@ -95,7 +95,7 @@ struct AddBookmarkViewModelTests {
         viewModel.urlString = "ftp://ftp.example.com"
         viewModel.titleString = "FTP Site"
 
-        let result = viewModel.createBookmark()
+        let result = viewModel.createInbox()
 
         #expect(result == nil)
         #expect(viewModel.errorMessage == "http://またはhttps://のURLのみ対応しています")
@@ -105,7 +105,7 @@ struct AddBookmarkViewModelTests {
         viewModel.urlString = "file:///path/to/file"
         viewModel.titleString = "Local File"
 
-        let result = viewModel.createBookmark()
+        let result = viewModel.createInbox()
 
         #expect(result == nil)
         #expect(viewModel.errorMessage == "http://またはhttps://のURLのみ対応しています")
@@ -117,7 +117,7 @@ struct AddBookmarkViewModelTests {
         viewModel.urlString = "https://github.com"
         viewModel.titleString = ""
 
-        let result = viewModel.createBookmark()
+        let result = viewModel.createInbox()
 
         #expect(result != nil)
         #expect(viewModel.errorMessage == nil)
@@ -128,7 +128,7 @@ struct AddBookmarkViewModelTests {
         viewModel.urlString = "https://www.example.com"
         viewModel.titleString = "   \n\t   "
 
-        let result = viewModel.createBookmark()
+        let result = viewModel.createInbox()
 
         #expect(result != nil)
         #expect(viewModel.errorMessage == nil)
@@ -140,8 +140,8 @@ struct AddBookmarkViewModelTests {
         viewModel.urlString = "https://example.com"
         viewModel.titleString = "Example"
 
-        // createBookmark()は同期関数だが、内部でisLoadingをtrue/falseに切り替える
-        let result = viewModel.createBookmark()
+        // createInbox()は同期関数だが、内部でisLoadingをtrue/falseに切り替える
+        let result = viewModel.createInbox()
 
         #expect(result != nil)
         #expect(!viewModel.isLoading) // 完了後はfalse // 完了後はfalse
@@ -164,7 +164,7 @@ struct AddBookmarkViewModelTests {
     @Test func URL変更時_エラーメッセージクリア() {
         // 先にエラー状態を作る
         viewModel.urlString = ""
-        _ = viewModel.createBookmark()
+        _ = viewModel.createInbox()
         #expect(viewModel.errorMessage != nil)
 
         // URL変更時にエラーメッセージがクリアされることをテスト
@@ -175,7 +175,7 @@ struct AddBookmarkViewModelTests {
     @Test func タイトル変更時_エラーメッセージクリア() {
         // 先にエラー状態を作る
         viewModel.urlString = ""
-        _ = viewModel.createBookmark()
+        _ = viewModel.createInbox()
         #expect(viewModel.errorMessage != nil)
 
         // タイトル変更時にエラーメッセージがクリアされることをテスト
@@ -190,7 +190,7 @@ struct AddBookmarkViewModelTests {
         viewModel.urlString = complexURL
         viewModel.titleString = "Complex Article"
 
-        let result = viewModel.createBookmark()
+        let result = viewModel.createInbox()
 
         #expect(result != nil)
         #expect(viewModel.errorMessage == nil)
@@ -200,7 +200,7 @@ struct AddBookmarkViewModelTests {
         viewModel.urlString = "http://localhost:3000"
         viewModel.titleString = "Local Dev Server"
 
-        let result = viewModel.createBookmark()
+        let result = viewModel.createInbox()
 
         #expect(result != nil)
         #expect(viewModel.errorMessage == nil)
@@ -210,7 +210,7 @@ struct AddBookmarkViewModelTests {
         viewModel.urlString = "https://192.168.1.1:8080"
         viewModel.titleString = "Router Admin"
 
-        let result = viewModel.createBookmark()
+        let result = viewModel.createInbox()
 
         #expect(result != nil)
         #expect(viewModel.errorMessage == nil)
@@ -222,7 +222,7 @@ struct AddBookmarkViewModelTests {
         viewModel.urlString = "https://日本語.example.com"
         viewModel.titleString = "日本語ドメイン"
 
-        let result = viewModel.createBookmark()
+        let result = viewModel.createInbox()
 
         #expect(result != nil)
         #expect(viewModel.errorMessage == nil)
@@ -232,7 +232,7 @@ struct AddBookmarkViewModelTests {
         viewModel.urlString = "https://example.cn"
         viewModel.titleString = "这是一个中文网站"
 
-        let result = viewModel.createBookmark()
+        let result = viewModel.createInbox()
 
         #expect(result != nil)
         #expect(viewModel.errorMessage == nil)
@@ -242,7 +242,7 @@ struct AddBookmarkViewModelTests {
         viewModel.urlString = "https://example.ae"
         viewModel.titleString = "هذا موقع عربي رائع"
 
-        let result = viewModel.createBookmark()
+        let result = viewModel.createInbox()
 
         #expect(result != nil)
         #expect(viewModel.errorMessage == nil)
@@ -263,7 +263,7 @@ struct AddBookmarkViewModelTests {
     @Test func errorMessage設定_プロパティ反映() {
         // エラーを発生させる
         viewModel.urlString = ""
-        _ = viewModel.createBookmark()
+        _ = viewModel.createInbox()
 
         #expect(viewModel.errorMessage != nil)
         #expect(viewModel.errorMessage == "URLを入力してください")

@@ -1,5 +1,5 @@
 //
-//  AddBookmarkViewModel.swift
+//  AddInboxViewModel.swift
 //  ReadItLater
 //
 //  Created by Claude on 2025/08/14.
@@ -10,7 +10,7 @@ import Observation
 
 @MainActor
 @Observable
-final class AddBookmarkViewModel {
+final class AddInboxViewModel {
     
     // MARK: - Published Properties
     
@@ -53,18 +53,18 @@ final class AddBookmarkViewModel {
     
     // MARK: - Public Methods
     
-    func createBookmark() -> BookmarkData? {
+    func createInbox() -> InboxData? {
         isLoading = true
         defer { isLoading = false }
 
         let trimmedTitle = titleString.trimmingCharacters(in: .whitespacesAndNewlines)
         let finalTitle = trimmedTitle.isEmpty ? fetchedTitle : trimmedTitle
-        let result = Bookmark.create(from: urlString, title: finalTitle)
+        let result = Inbox.create(from: urlString, title: finalTitle)
 
         switch result {
-        case .success(let bookmarkData):
+        case .success(let inboxData):
             clearErrorMessage()
-            return bookmarkData
+            return inboxData
 
         case .failure(let error):
             handleCreationError(error)
@@ -112,7 +112,7 @@ final class AddBookmarkViewModel {
         errorMessage = nil
     }
     
-    private func handleCreationError(_ error: Bookmark.CreationError) {
+    private func handleCreationError(_ error: Inbox.CreationError) {
         switch error {
         case .invalidURL(let urlError):
             errorMessage = urlError.localizedDescription

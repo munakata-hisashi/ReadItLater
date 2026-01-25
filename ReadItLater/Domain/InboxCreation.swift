@@ -1,16 +1,16 @@
 //
-//  BookmarkCreation.swift
+//  InboxCreation.swift
 //  ReadItLater
 //
-//  Bookmark creation factory and validation logic
+//  Inbox creation factory and validation logic
 //
 
 import Foundation
 
-extension Bookmark {
+extension Inbox {
     enum CreationError: Error, LocalizedError, Equatable {
         case invalidURL(URLValidationError)
-        
+
         var errorDescription: String? {
             switch self {
             case .invalidURL(let urlError):
@@ -18,25 +18,25 @@ extension Bookmark {
             }
         }
     }
-    
+
     static func create(
         from urlString: String,
         title: String? = nil
-    ) -> Result<BookmarkData, CreationError> {
+    ) -> Result<InboxData, CreationError> {
         do {
-            let bookmarkURL = try BookmarkURL(urlString)
-            
+            let inboxURL = try InboxURL(urlString)
+
             // タイトル処理: 提供されたタイトルが空の場合はURLから生成
-            let bookmarkTitle: BookmarkTitle
-            if let providedTitle = title, !BookmarkTitle(providedTitle).isEmpty {
-                bookmarkTitle = BookmarkTitle(providedTitle)
+            let inboxTitle: InboxTitle
+            if let providedTitle = title, !InboxTitle(providedTitle).isEmpty {
+                inboxTitle = InboxTitle(providedTitle)
             } else {
-                bookmarkTitle = BookmarkTitle.fromURL(bookmarkURL)
+                inboxTitle = InboxTitle.fromURL(inboxURL)
             }
-            
-            return .success(BookmarkData(
-                url: bookmarkURL.value,
-                title: bookmarkTitle.displayValue
+
+            return .success(InboxData(
+                url: inboxURL.value,
+                title: inboxTitle.displayValue
             ))
         } catch let error as URLValidationError {
             return .failure(.invalidURL(error))

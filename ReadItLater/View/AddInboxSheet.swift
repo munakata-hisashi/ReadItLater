@@ -1,5 +1,5 @@
 //
-//  AddBookmarkSheet.swift
+//  AddInboxSheet.swift
 //  ReadItLater
 //
 //  Created by Claude on 2025/08/14.
@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-struct AddBookmarkSheet: View {
-    @State private var viewModel = AddBookmarkViewModel()
+struct AddInboxSheet: View {
+    @State private var viewModel = AddInboxViewModel()
     @FocusState private var isURLFieldFocused: Bool
 
-    let onSave: (BookmarkData) -> Void
+    let onSave: (InboxData) -> Void
     let onCancel: () -> Void
     
     var body: some View {
@@ -27,7 +27,7 @@ struct AddBookmarkSheet: View {
                     TextField(titleFieldPlaceholder, text: $viewModel.titleString)
                         .autocapitalization(.words)
                 } header: {
-                    Text("Bookmark Details")
+                    Text("Inbox Details")
                 } footer: {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Enter a valid URL (http:// or https://)")
@@ -62,7 +62,7 @@ struct AddBookmarkSheet: View {
                     }
                 }
             }
-            .navigationTitle("Add Bookmark")
+            .navigationTitle("Add Inbox")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -73,7 +73,7 @@ struct AddBookmarkSheet: View {
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
-                        saveBookmark()
+                        saveInbox()
                     }
                     .disabled(viewModel.urlString.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading)
                 }
@@ -93,17 +93,17 @@ struct AddBookmarkSheet: View {
         }
     }
     
-    private func saveBookmark() {
-        if let bookmarkData = viewModel.createBookmark() {
-            onSave(bookmarkData)
+    private func saveInbox() {
+        if let inboxData = viewModel.createInbox() {
+            onSave(inboxData)
         }
     }
 }
 
 #Preview {
-    AddBookmarkSheet(
-        onSave: { bookmarkData in
-            print("Save: \(bookmarkData.url), \(bookmarkData.title)")
+    AddInboxSheet(
+        onSave: { inboxData in
+            print("Save: \(inboxData.url), \(inboxData.title)")
         },
         onCancel: {
             print("Cancel")
