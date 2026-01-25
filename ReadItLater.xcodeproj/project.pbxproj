@@ -71,15 +71,22 @@
 				Domain/BookmarkData.swift,
 				Domain/BookmarkTitle.swift,
 				Domain/BookmarkURL.swift,
+				Domain/ExtensionItemProviderProtocol.swift,
+				Domain/Hoge.swift,
 				Domain/InboxConfiguration.swift,
 				Domain/InboxRepositoryProtocol.swift,
+				Domain/InboxSaveError.swift,
 				Domain/ModelExtensions.swift,
+				Domain/ShareURLUseCaseProtocol.swift,
+				Domain/URLMetadataServiceProtocol.swift,
 				Domain/URLValidationError.swift,
+				Infrastructure/ExtensionItemProvider.swift,
 				Infrastructure/InboxRepository.swift,
 				Infrastructure/URLMetadataService.swift,
 				Migration/MigrationPlan.swift,
 				Migration/VersionedSchema.swift,
 				ModelContainerFactory.swift,
+				UseCase/ShareURLUseCase.swift,
 			);
 			target = 631A9C352F0BFC1600FA4142 /* ShareExtension */;
 		};

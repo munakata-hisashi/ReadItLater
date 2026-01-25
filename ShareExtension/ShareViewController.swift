@@ -12,7 +12,6 @@ import SwiftData
 final class ShareViewController: UIViewController {
 
     private var modelContainer: ModelContainer?
-    private let metadataService = URLMetadataService()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,7 +20,7 @@ final class ShareViewController: UIViewController {
         do {
             modelContainer = try ModelContainerFactory.createSharedContainer()
         } catch {
-            completeRequest(with: .failure(ShareError.containerInitFailed))
+            completeRequest(with: .failure(InboxSaveError.containerInitFailed))
             return
         }
 
@@ -32,110 +31,29 @@ final class ShareViewController: UIViewController {
     }
 
     private func processSharedURL() async {
-        do {
-            // 1. URL抽出とタイトル抽出
-            let (url, maybeTitle) = try await extractURLAndTitle()
-            let title: String? = if maybeTitle != nil {
-                maybeTitle
-            } else {
-                await fetchTitle(for: url)
-            }
-
-            // 3. Inboxに保存
-            try await saveToInbox(url: url.absoluteString, title: title)
-
-            // 4. 成功完了
-            completeRequest(with: .success(()))
-
-        } catch {
-            completeRequest(with: .failure(error))
-        }
-    }
-
-    private func extractURLAndTitle() async throws -> (url: URL, title: String?) {
-        guard let extensionItem = extensionContext?.inputItems.first as? NSExtensionItem,
-              let itemProviders = extensionItem.attachments else {
-            throw ShareError.noURLFound
-        }
-
-        var foundURL: URL?
-        var foundTitle: String?
-
-        for provider in itemProviders {
-            if foundURL == nil, provider.hasItemConformingToTypeIdentifier("public.url") {
-                let url: URL? = try await withCheckedThrowingContinuation { continuation in
-                    provider.loadItem(forTypeIdentifier: "public.url", options: nil) { item, error in
-                        if let error = error {
-                            continuation.resume(throwing: error)
-                        } else {
-                            continuation.resume(returning: item as? URL)
-                        }
-                    }
-                }
-                foundURL = url
-            }
-
-            if foundTitle == nil, provider.hasItemConformingToTypeIdentifier("public.plain-text") {
-                let text: String? = try await withCheckedThrowingContinuation { continuation in
-                    provider.loadItem(forTypeIdentifier: "public.plain-text", options: nil) { item, error in
-                        if let error = error {
-                            continuation.resume(throwing: error)
-                        } else {
-                            continuation.resume(returning: item as? String)
-                        }
-                    }
-                }
-                foundTitle = text
-            }
-        }
-
-        guard let url = foundURL else {
-            throw ShareError.noURLFound
-        }
-
-        return (url: url, title: foundTitle)
-    }
-
-    private func fetchTitle(for url: URL) async -> String? {
-        do {
-            let metadata = try await metadataService.fetchMetadata(for: url)
-            return metadata.title
-        } catch {
-            // タイトル取得失敗時はnilを返す（BookmarkCreationがホスト名で代用）
-            return nil
-        }
-    }
-
-    private func saveToInbox(url: String, title: String?) async throws {
         guard let container = modelContainer else {
-            throw ShareError.containerInitFailed
+            completeRequest(with: .failure(InboxSaveError.containerInitFailed))
+            return
         }
 
-        // 既存のBookmarkCreationロジックを使用（URL検証とタイトル正規化）
-        let result = Bookmark.create(from: url, title: title)
+        // 依存性を組み立て
+        let itemProvider = ExtensionItemProvider(extensionContext: extensionContext)
+        let metadataService = URLMetadataService()
+        let context = ModelContext(container)
+        let repository = InboxRepository(modelContext: context)
 
-        switch result {
-        case .success(let bookmarkData):
-            let context = ModelContext(container)
-            let repository = InboxRepository(modelContext: context)
+        // UseCaseを実行
+        let useCase = ShareURLUseCase(
+            itemProvider: itemProvider,
+            metadataService: metadataService,
+            repository: repository
+        )
 
-            // Inbox上限チェック
-            guard repository.canAdd() else {
-                throw ShareError.inboxFull
-            }
-
-            // Inboxに追加
-            try repository.add(
-                url: bookmarkData.url,
-                title: bookmarkData.title
-            )
-
-        case .failure(let error):
-            throw ShareError.bookmarkCreationFailed(error)
-        }
+        let result = await useCase.execute()
+        completeRequest(with: result)
     }
 
-    private func completeRequest(with result: Result<Void, Error>) {
+    private func completeRequest(with result: Result<Void, InboxSaveError>) {
         switch result {
         case .success:
             extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
@@ -161,25 +79,5 @@ final class ShareViewController: UIViewController {
         })
 
         present(alert, animated: true)
-    }
-}
-
-enum ShareError: LocalizedError {
-    case noURLFound
-    case containerInitFailed
-    case bookmarkCreationFailed(Bookmark.CreationError)
-    case inboxFull
-
-    var errorDescription: String? {
-        switch self {
-        case .noURLFound:
-            return "URLが見つかりませんでした"
-        case .containerInitFailed:
-            return "データベースの初期化に失敗しました"
-        case .bookmarkCreationFailed(let error):
-            return "ブックマークの作成に失敗しました: \(error.localizedDescription)"
-        case .inboxFull:
-            return "Inboxが上限（\(InboxConfiguration.maxItems)件）に達しています。既存のアイテムを整理してください。"
-        }
     }
 }
