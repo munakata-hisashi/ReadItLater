@@ -199,10 +199,10 @@ struct ShareURLUseCaseTests {
             Issue.record("Expected failure but got success")
         case .failure(let error):
             // BookmarkCreationがURL検証でエラーを返す
-            if case .bookmarkCreationFailed = error {
+            if case .inboxCreationFailed = error {
                 #expect(true)
             } else {
-                Issue.record("Expected bookmarkCreationFailed error but got: \(error)")
+                Issue.record("Expected inboxCreationFailed error but got: \(error)")
             }
             #expect(!mockRepository.addCalled)
         }
