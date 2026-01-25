@@ -38,8 +38,8 @@ alias = "u"
 # ===== CI用タスク（GitHub Actions形式）=====
 [tasks.ci-build]
 description = "Build for CI (GitHub Actions format)"
-run = "xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' build-for-testing -parallel-testing-enabled NO SWIFT_TREAT_WARNINGS_AS_ERRORS=YES GCC_TREAT_WARNINGS_AS_ERRORS=YES | xcbeautify --renderer github-actions"
+run = "set -o pipefail && xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' build-for-testing -parallel-testing-enabled NO SWIFT_TREAT_WARNINGS_AS_ERRORS=YES GCC_TREAT_WARNINGS_AS_ERRORS=YES | xcbeautify --renderer github-actions"
 
 [tasks.ci-test]
 description = "Run tests for CI (GitHub Actions format)"
-run = "xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' test-without-building -parallel-testing-enabled NO -only-testing:ReadItLaterTests | xcbeautify --renderer github-actions"
+run = "set -o pipefail && xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' test-without-building -parallel-testing-enabled NO -only-testing:ReadItLaterTests | xcbeautify --renderer github-actions"
