@@ -15,9 +15,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Select Xcode version
-        run: sudo xcode-select -switch /Applications/Xcode_26.2.app/Contents/Developer
-
       - name: Setup mise
         uses: jdx/mise-action@v3
 
