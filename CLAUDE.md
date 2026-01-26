@@ -4,7 +4,7 @@
 
 ## プロジェクト概要
 
-ReadItLaterは、URL をブックマークするiOSアプリで、AI駆動のコンテンツ要約と翻訳機能を計画しています。SwiftUIとSwiftDataで構築され、CloudKit同期によりデバイス間でのアクセスが可能です。
+ReadItLaterは、URLを保存してInbox/Bookmarks/Archiveで整理するiOSアプリです。SwiftUIとSwiftDataで構築され、CloudKit同期はエンタイトルメント設定済みです。Share拡張からの保存にも対応しています。サーバーサイド要約や翻訳は計画中です。
 
 ## 開発コマンド
 
@@ -27,14 +27,14 @@ ReadItLaterは、URL をブックマークするiOSアプリで、AI駆動のコ
 - テストタスクは`build-for-testing` + `test-without-building`パターンを使用して高速化しています
 - 並列テストは無効化されています（`-parallel-testing-enabled NO`）。これは競合状態を回避するためです
 - CIタスクは`--renderer github-actions`を使用してGitHub Actionsで適切な出力形式を生成します
-- すべてのタスクはシミュレータの設定先で明示的に`OS=26.2`を指定して一貫性を保っています
+- すべてのタスクはシミュレータの設定先で明示的に`OS=26.0.1`を指定して一貫性を保っています
 
 ### 直接xcodebuildコマンド
-- **シミュレータ用ビルド**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.2' build`
+- **シミュレータ用ビルド**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' build`
 - **汎用ビルド**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater build`（実機ではプロビジョニングの問題で失敗する可能性があります）
-- **全テスト実行**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.2' test`
-- **UIテスト実行**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.2' test -only-testing:ReadItLaterUITests`
-- **ユニットテストのみ実行**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.2' test -only-testing:ReadItLaterTests`
+- **全テスト実行**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' test`
+- **UIテスト実行**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' test -only-testing:ReadItLaterUITests`
+- **ユニットテストのみ実行**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' test -only-testing:ReadItLaterTests`
 
 ### シミュレータ設定
 - **ターゲット**: arm64-apple-ios26.0.1-simulator
@@ -51,68 +51,84 @@ ReadItLaterは、URL をブックマークするiOSアプリで、AI駆動のコ
 ### データモデルとマイグレーションシステム
 このアプリはSwiftDataマイグレーション用のバージョン管理されたスキーマアーキテクチャを使用しています。
 
-- **現在のスキーマ**: `AppV2Schema`（バージョン2.0.0）`Migration/VersionedSchema.swift`内
-  - `Bookmark`: id、createdAt、url、titleを持つ主要モデル
-  - `Item`モデルは現在使用されていません
-- **レガシースキーマ**: `AppV1Schema`（バージョン1.0.0）マイグレーション履歴のために保持
-  - `Item`と`Bookmark`の両モデルを含みます
-- **型エイリアス**: `Domain/BookmarkExtensions.swift`で`typealias Bookmark = AppV2Schema.Bookmark`を定義
-- **マイグレーションプラン**: `Migration/MigrationPlan.swift`に`AppMigrationPlan`を含む
-  - `AppV1Schema`と`AppV2Schema`の両方を含みます
-  - 軽量マイグレーションを使用（stagesは空配列 - SwiftDataが自動処理）
-- **モデルコンテナ**: `ReadItLaterApp.swift:14-51`でマイグレーションプラン統合と共に設定
-  - スキーマは`Bookmark.self`のみを含みます
+- **現在のスキーマ**: `AppV3Schema`（バージョン3.0.0）`ReadItLater/Migration/VersionedSchema.swift`内
+  - `Inbox`、`Bookmark`、`Archive`の3モデル
+- **レガシースキーマ**: `AppV1Schema`（Item/Bookmark）、`AppV2Schema`（Bookmarkのみ）
+- **型エイリアスと共通プロトコル**: `ReadItLater/Domain/ModelExtensions.swift`で`Inbox`/`Bookmark`/`Archive`の型エイリアスと`URLItem`を定義
+- **マイグレーションプラン**: `ReadItLater/Migration/MigrationPlan.swift`に`AppMigrationPlan`を定義（V1〜V3、stagesは空配列）
+- **モデルコンテナ**: `ReadItLater/ModelContainerFactory.swift`でApp Groupコンテナを使って生成し、`ReadItLaterApp.swift`と`ShareExtension/ShareViewController.swift`で利用
+  - プレビューはin-memoryコンテナを使用
 
 新しいモデルを追加または既存モデルを変更する場合:
-1. 新しいバージョンのスキーマを作成（例: `AppV3Schema`）
+1. 新しいバージョンのスキーマを作成（例: `AppV4Schema`）
 2. マイグレーションプランを更新して、schemasアレイに新しいスキーマを含める
 3. カスタムマイグレーションロジックが必要な場合はマイグレーションステージを追加（それ以外は軽量マイグレーション用に空配列を使用）
-4. 型エイリアスを更新して新しいスキーマバージョンを指すようにする
+4. `ModelExtensions.swift`の型エイリアスと`ModelContainerFactory.swift`のスキーマ配列を更新する
 
 ### CloudKit統合
 - **コンテナID**: `iCloud.munakata-hisashi.ReadItLater`（エンタイトルメントで定義）
-- **サービス**: データ同期のためエンタイトルメントでCloudKitを有効化
-- **設定**: アプリ初期化時にCloudKit同期用のModelContainerを設定
-- **デバッグ**: `ReadItLaterApp.swift:22-46`にコメントアウトされたCloudKitスキーマ初期化コードがあります
+- **サービス**: エンタイトルメントでCloudKitを有効化
 
 ### プロジェクト構造
 ```
 ReadItLater/
-├── Domain/              # ドメインモデルと値オブジェクト
-│   ├── BookmarkExtensions.swift  # 型エイリアスと拡張
-│   ├── BookmarkData.swift        # ブックマーク作成用DTO
-│   ├── BookmarkCreation.swift    # ファクトリメソッド
-│   ├── BookmarkURL.swift
-│   └── BookmarkTitle.swift
+├── Domain/              # ドメインモデルとバリデーション
+│   ├── ModelExtensions.swift     # 型エイリアスとURLItem
+│   ├── InboxCreation.swift       # Inbox作成と検証
+│   ├── InboxData.swift
+│   ├── InboxURL.swift
+│   ├── InboxTitle.swift
+│   ├── URLValidationError.swift
+│   ├── InboxRepositoryProtocol.swift
+│   ├── BookmarkRepositoryProtocol.swift
+│   ├── ArchiveRepositoryProtocol.swift
+│   ├── URLMetadataServiceProtocol.swift
+│   ├── ExtensionItemProviderProtocol.swift
+│   └── ShareURLUseCaseProtocol.swift
+├── UseCase/             # アプリケーションロジック
+│   └── ShareURLUseCase.swift
+├── Infrastructure/      # SwiftData/サービス実装
+│   ├── InboxRepository.swift
+│   ├── BookmarkRepository.swift
+│   ├── ArchiveRepository.swift
+│   ├── ExtensionItemProvider.swift
+│   └── URLMetadataService.swift
+├── Presentation/        # ViewModel
+│   └── AddInboxViewModel.swift
+├── View/                # SwiftUIビュー
+│   ├── MainTabView.swift
+│   ├── InboxListView.swift
+│   ├── BookmarkListView.swift
+│   ├── ArchiveListView.swift
+│   ├── AddInboxSheet.swift
+│   ├── URLItemRow.swift
+│   ├── URLItemDetailView.swift
+│   └── WebView.swift
 ├── Migration/           # SwiftDataスキーマバージョニング
 │   ├── VersionedSchema.swift
 │   └── MigrationPlan.swift
-├── Presentation/        # ViewModelとプレゼンテーションロジック
-│   └── AddBookmarkViewModel.swift
-└── View/               # SwiftUIビュー
-    ├── ContentView.swift
-    ├── BookmarkView.swift
-    └── AddBookmarkSheet.swift
+├── ModelContainerFactory.swift
+└── ReadItLaterApp.swift
+ShareExtension/
+└── ShareViewController.swift
 ```
 
 ### UI構造
-- **ナビゲーション**: マスター・ディテールレイアウトの`NavigationSplitView`パターンを使用
-- **ContentView**: ブックマークのCRUD操作を含むマスターリスト
-- **BookmarkView**: 個別のブックマーク表示用ディテールビュー
-- **AddBookmarkSheet**: 新しいブックマーク追加用のモーダルシート
-- **拡張**: `Domain/BookmarkExtensions.swift`でオプショナルプロパティ用の安全なアクセサ（`safeTitle`、`maybeURL`）を定義
+- **ナビゲーション**: `TabView` + 各タブ内の`NavigationStack`構成
+- **MainTabView**: Inbox/Bookmarks/Archiveの3タブ
+- **InboxListView**: URL一覧と追加シート（`AddInboxSheet`）を提供
+- **BookmarkListView / ArchiveListView**: 保存済みURLの一覧と詳細遷移を提供
+- **URLItemDetailView**: `URLItem`共通の詳細表示（WebView/タイトル表示）
 
 ## 計画中の機能
-README.mdに基づき、アプリは以下の機能を追加予定です:
+README.mdに基づく未実装項目は以下です:
 - サーバーサイド処理によるWebコンテンツの要約
 - 保存したコンテンツの翻訳サービス
-- URL取得用のSafari共有拡張
-- コンテンツ閲覧と管理の強化
 
 ## 開発に関する注意事項
 - アプリはサンドボックスエンタイトルメント付きでiOSをターゲットにしています
 - バックグラウンド処理用にリモート通知が設定されています
-- テストターゲットにはユニットテスト（`ReadItLaterTests`）とUIテスト（`ReadItLaterUITests`）の両方が含まれています
+- ユニットテストはSwift Testing（`ReadItLaterTests`）、UIテストはXCTest（`ReadItLaterUITests`）を使用します
 - プレビュー設定はSwiftUIプレビュー用にインメモリのモデルコンテナを使用します
 
 ## Git Workflow Guidelines
@@ -135,27 +151,3 @@ README.mdに基づき、アプリは以下の機能を追加予定です:
 - **Structure**:
   - Short summary line in Japanese
   - Detailed bullet points for changes
-  - Include Claude Code attribution footer
-
-## GitHub操作ガイドライン
-
-### ツール選択: GitHub MCP vs gh CLI
-
-**書き込み操作には`gh` CLIを使用（推奨）:**
-- PR作成/編集: `gh pr create`、`gh pr edit`
-- Issue作成/編集: `gh issue create`、`gh issue edit`
-- コメント追加: `gh pr comment`、`gh issue comment`
-- PRマージ: `gh pr merge`
-- レビューリクエスト: `gh pr review`
-
-**読み取り操作にはGitHub MCPを使用:**
-- PR詳細取得: `mcp__github__pull_request_read`
-- Issue/PR検索: `mcp__github__search_issues`、`mcp__github__search_pull_requests`
-- コミット情報取得: `mcp__github__get_commit`、`mcp__github__list_commits`
-- コード検索: `mcp__github__search_code`
-
-**理由:**
-- `gh` CLIはユーザー認証を使用し、より広い権限を持ちます
-- GitHub MCPはPAT制限により書き込み操作で403エラーが発生する可能性があります
-- GitHub MCPは構造化されたJSONデータを返すため、複雑なクエリに適しています
-- 書き込み操作では常に`gh`を最初に試し、利用できない場合のみMCPにフォールバックします
