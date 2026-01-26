@@ -1,17 +1,17 @@
 //
-//  BookmarkData.swift
+//  InboxData.swift
 //  ReadItLater
 //
-//  Data Transfer Object for Bookmark creation
+//  Data Transfer Object for Inbox creation
 //
 
 import Foundation
 
-/// Bookmarkの作成時に使用するデータ転送オブジェクト
+/// Inboxの作成時に使用するデータ転送オブジェクト
 ///
-/// SwiftDataの制約により、Bookmarkモデルを直接作成することが困難なため、
+/// SwiftDataの制約により、Inboxモデルを直接作成することが困難なため、
 /// 中間データ構造として使用します。
-struct BookmarkData: Equatable {
+struct InboxData: Equatable {
     let url: String
     let title: String
 

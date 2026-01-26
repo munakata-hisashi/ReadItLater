@@ -11,7 +11,7 @@ import Foundation
 enum InboxSaveError: LocalizedError, Equatable {
     case noURLFound
     case containerInitFailed
-    case bookmarkCreationFailed(Bookmark.CreationError)
+    case inboxCreationFailed(URLValidationError)
     case inboxFull
 
     var errorDescription: String? {
@@ -20,8 +20,8 @@ enum InboxSaveError: LocalizedError, Equatable {
             return "URLが見つかりませんでした"
         case .containerInitFailed:
             return "データベースの初期化に失敗しました"
-        case .bookmarkCreationFailed(let error):
-            return "ブックマークの作成に失敗しました: \(error.localizedDescription)"
+        case .inboxCreationFailed(let error):
+            return "Inboxアイテムの作成に失敗しました: \(error.localizedDescription)"
         case .inboxFull:
             return "Inboxが上限（\(InboxConfiguration.maxItems)件）に達しています。既存のアイテムを整理してください。"
         }
@@ -33,8 +33,8 @@ enum InboxSaveError: LocalizedError, Equatable {
              (.containerInitFailed, .containerInitFailed),
              (.inboxFull, .inboxFull):
             return true
-        case (.bookmarkCreationFailed(let lhsError), .bookmarkCreationFailed(let rhsError)):
-            return lhsError.localizedDescription == rhsError.localizedDescription
+        case (.inboxCreationFailed(let lhsError), .inboxCreationFailed(let rhsError)):
+            return lhsError == rhsError
         default:
             return false
         }

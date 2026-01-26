@@ -13,46 +13,9 @@ struct BookmarkRepositoryTests {
         try ModelContainerFactory.createSharedContainer(inMemory: true)
     }
 
-    // MARK: - Add Tests
-
-    @Test("ブックマーク追加: 成功")
-    @MainActor
-    func ブックマーク追加_成功() throws {
-        let container = try createInMemoryContainer()
-        let repository = BookmarkRepository(modelContext: container.mainContext)
-
-        let bookmarkData = BookmarkData(url: "https://example.com", title: "Example")
-        repository.add(bookmarkData)
-
-        let descriptor = FetchDescriptor<Bookmark>()
-        let bookmarks = try container.mainContext.fetch(descriptor)
-
-        #expect(bookmarks.count == 1)
-        #expect(bookmarks.first?.url == "https://example.com")
-        #expect(bookmarks.first?.title == "Example")
-    }
-
-    @Test("ブックマーク追加: 複数追加")
-    @MainActor
-    func ブックマーク追加_複数追加() throws {
-        let container = try createInMemoryContainer()
-        let repository = BookmarkRepository(modelContext: container.mainContext)
-
-        let bookmarkData1 = BookmarkData(url: "https://example1.com", title: "Example 1")
-        let bookmarkData2 = BookmarkData(url: "https://example2.com", title: "Example 2")
-        let bookmarkData3 = BookmarkData(url: "https://example3.com", title: "Example 3")
-
-        repository.add(bookmarkData1)
-        repository.add(bookmarkData2)
-        repository.add(bookmarkData3)
-
-        let descriptor = FetchDescriptor<Bookmark>()
-        let bookmarks = try container.mainContext.fetch(descriptor)
-
-        #expect(bookmarks.count == 3)
-    }
-
     // MARK: - Delete Single Tests
+    // 注: BookmarkはInboxから移動したものなので、直接addすることはありません。
+    // addのテストはInboxRepositoryTests.swiftで行います。
 
     @Test("ブックマーク削除: 単一削除成功")
     @MainActor

@@ -60,9 +60,9 @@ struct InboxListView: View {
             }
         }
         .sheet(isPresented: $showingAddSheet) {
-            AddBookmarkSheet(
-                onSave: { bookmarkData in
-                    addToInbox(from: bookmarkData)
+            AddInboxSheet(
+                onSave: { inboxData in
+                    addToInbox(from: inboxData)
                     showingAddSheet = false
                 },
                 onCancel: {
@@ -72,10 +72,10 @@ struct InboxListView: View {
         }
     }
 
-    private func addToInbox(from bookmarkData: BookmarkData) {
+    private func addToInbox(from inboxData: InboxData) {
         withAnimation {
             do {
-                try repository.add(url: bookmarkData.url, title: bookmarkData.title)
+                try repository.add(url: inboxData.url, title: inboxData.title)
             } catch {
                 // TODO: エラーハンドリング（アラート表示など）
                 print("Failed to add to Inbox: \(error)")
