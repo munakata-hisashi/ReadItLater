@@ -19,13 +19,13 @@ import Testing
     
     @Test func 空文字列_初期化成功() {
         let title = InboxTitle("")
-        #expect(title.displayValue == "Untitled Bookmark")
+        #expect(title.displayValue == "Untitled Inbox")
         #expect(title.isEmpty)
     }
     
     @Test func デフォルト初期化_空タイトル() {
         let title = InboxTitle()
-        #expect(title.displayValue == "Untitled Bookmark")
+        #expect(title.displayValue == "Untitled Inbox")
         #expect(title.isEmpty)
     }
     
@@ -49,7 +49,7 @@ import Testing
     
     @Test func 空白のみ文字列_空として扱う() {
         let title = InboxTitle("   \n\t   ")
-        #expect(title.displayValue == "Untitled Bookmark")
+        #expect(title.displayValue == "Untitled Inbox")
         #expect(title.isEmpty)
     }
     
@@ -106,12 +106,12 @@ import Testing
     
     @Test func displayValue_空タイトル_デフォルト表示() {
         let title = InboxTitle("")
-        #expect(title.displayValue == "Untitled Bookmark")
+        #expect(title.displayValue == "Untitled Inbox")
     }
     
     @Test func displayValue_空白のみ_デフォルト表示() {
         let title = InboxTitle("   ")
-        #expect(title.displayValue == "Untitled Bookmark")
+        #expect(title.displayValue == "Untitled Inbox")
     }
     
     // MARK: - エッジケーステスト
