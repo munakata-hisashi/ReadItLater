@@ -4,42 +4,42 @@ xcbeautify = "3.1.2"
 # ===== 開発用タスク（通常のbuild）=====
 [tasks.build]
 description = "Build ReadItLater App (raw output)"
-run = "xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' build"
+run = "xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.2' build"
 
 [tasks.buildformat]
 description = "Build app with formatted output"
-run = "xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' build SWIFT_TREAT_WARNINGS_AS_ERRORS=YES GCC_TREAT_WARNINGS_AS_ERRORS=YES | xcbeautify"
+run = "xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.2' build SWIFT_TREAT_WARNINGS_AS_ERRORS=YES GCC_TREAT_WARNINGS_AS_ERRORS=YES | xcbeautify"
 alias = "b"
 
 # ===== テスト用タスク（build-for-testing + test-without-building）=====
 [tasks.test]
 description = "Build for testing and run all tests (raw output)"
 run = """
-xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' build-for-testing -parallel-testing-enabled NO && \
-xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' test-without-building -parallel-testing-enabled NO
+xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.2' build-for-testing -parallel-testing-enabled NO && \
+xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.2' test-without-building -parallel-testing-enabled NO
 """
 
 [tasks.testformat]
 description = "Build for testing and run all tests with formatted output"
 run = """
-xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' build-for-testing -parallel-testing-enabled NO SWIFT_TREAT_WARNINGS_AS_ERRORS=YES GCC_TREAT_WARNINGS_AS_ERRORS=YES | xcbeautify && \
-xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' test-without-building -parallel-testing-enabled NO | xcbeautify
+xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.2' build-for-testing -parallel-testing-enabled NO SWIFT_TREAT_WARNINGS_AS_ERRORS=YES GCC_TREAT_WARNINGS_AS_ERRORS=YES | xcbeautify && \
+xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.2' test-without-building -parallel-testing-enabled NO | xcbeautify
 """
 alias = "t"
 
 [tasks.unit]
 description = "Build for testing and run unit tests only"
 run = """
-xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' build-for-testing -parallel-testing-enabled NO SWIFT_TREAT_WARNINGS_AS_ERRORS=YES GCC_TREAT_WARNINGS_AS_ERRORS=YES | xcbeautify && \
-xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' test-without-building -parallel-testing-enabled NO -only-testing:ReadItLaterTests | xcbeautify
+xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.2' build-for-testing -parallel-testing-enabled NO SWIFT_TREAT_WARNINGS_AS_ERRORS=YES GCC_TREAT_WARNINGS_AS_ERRORS=YES | xcbeautify && \
+xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.2' test-without-building -parallel-testing-enabled NO -only-testing:ReadItLaterTests | xcbeautify
 """
 alias = "u"
 
 # ===== CI用タスク（GitHub Actions形式）=====
 [tasks.ci-build]
 description = "Build for CI (GitHub Actions format)"
-run = "set -o pipefail && xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' build-for-testing -parallel-testing-enabled NO SWIFT_TREAT_WARNINGS_AS_ERRORS=YES GCC_TREAT_WARNINGS_AS_ERRORS=YES | xcbeautify --renderer github-actions"
+run = "set -o pipefail && xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.2' build-for-testing -parallel-testing-enabled NO SWIFT_TREAT_WARNINGS_AS_ERRORS=YES GCC_TREAT_WARNINGS_AS_ERRORS=YES | xcbeautify --renderer github-actions"
 
 [tasks.ci-test]
 description = "Run tests for CI (GitHub Actions format)"
-run = "set -o pipefail && xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' test-without-building -parallel-testing-enabled NO -only-testing:ReadItLaterTests | xcbeautify --renderer github-actions"
+run = "set -o pipefail && xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.2' test-without-building -parallel-testing-enabled NO -only-testing:ReadItLaterTests | xcbeautify --renderer github-actions"

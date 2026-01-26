@@ -27,14 +27,14 @@ ReadItLaterは、URL をブックマークするiOSアプリで、AI駆動のコ
 - テストタスクは`build-for-testing` + `test-without-building`パターンを使用して高速化しています
 - 並列テストは無効化されています（`-parallel-testing-enabled NO`）。これは競合状態を回避するためです
 - CIタスクは`--renderer github-actions`を使用してGitHub Actionsで適切な出力形式を生成します
-- すべてのタスクはシミュレータの設定先で明示的に`OS=26.0.1`を指定して一貫性を保っています
+- すべてのタスクはシミュレータの設定先で明示的に`OS=26.2`を指定して一貫性を保っています
 
 ### 直接xcodebuildコマンド
-- **シミュレータ用ビルド**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' build`
+- **シミュレータ用ビルド**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.2' build`
 - **汎用ビルド**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater build`（実機ではプロビジョニングの問題で失敗する可能性があります）
-- **全テスト実行**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' test`
-- **UIテスト実行**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' test -only-testing:ReadItLaterUITests`
-- **ユニットテストのみ実行**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' test -only-testing:ReadItLaterTests`
+- **全テスト実行**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.2' test`
+- **UIテスト実行**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.2' test -only-testing:ReadItLaterUITests`
+- **ユニットテストのみ実行**: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.2' test -only-testing:ReadItLaterTests`
 
 ### シミュレータ設定
 - **ターゲット**: arm64-apple-ios26.0.1-simulator
