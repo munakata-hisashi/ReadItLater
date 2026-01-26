@@ -1,5 +1,5 @@
 [tools]
-xcbeautify = "3.1.2"
+xcbeautify = "3"
 
 # ===== 開発用タスク（通常のbuild）=====
 [tasks.build]
