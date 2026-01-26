@@ -1,27 +1,27 @@
-# Repository Guidelines
+# リポジトリガイドライン
 
-## Project Structure & Module Organization
-ReadItLater is an iOS app built with SwiftUI and SwiftData. Core source lives under `ReadItLater/` and is organized by layers: `ReadItLater/Domain`, `ReadItLater/Presentation`, and `ReadItLater/View`. SwiftData migration logic is in `ReadItLater/Migration`, and assets live in `ReadItLater/Assets.xcassets`. Tests are in `ReadItLaterTests/` (unit) and `ReadItLaterUITests/` (UI). The Share extension code resides in `ShareExtension/`.
+## プロジェクト構成とモジュール編成
+ReadItLaterはSwiftUIとSwiftDataで構築されたiOSアプリです。中核のソースは`ReadItLater/`配下にあり、`ReadItLater/Domain`、`ReadItLater/Presentation`、`ReadItLater/View`のレイヤーで構成されています。SwiftDataのマイグレーションロジックは`ReadItLater/Migration`にあり、アセットは`ReadItLater/Assets.xcassets`にあります。テストは`ReadItLaterTests/`（ユニット）と`ReadItLaterUITests/`（UI）にあります。Share拡張のコードは`ShareExtension/`にあります。
 
-## Build, Test, and Development Commands
-Use mise tasks for consistent output:
-- `mise run buildformat` (alias `mise run b`) builds with `xcbeautify` formatting.
-- `mise run testformat` (alias `mise run t`) runs all tests with formatted logs.
-- `mise run unit` (alias `mise run u`) runs unit tests only.
-Direct commands are also available, e.g. `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' build`.
+## ビルド、テスト、開発コマンド
+出力を揃えるためにmiseタスクを使用します。
+- `mise run buildformat`（エイリアス`mise run b`）は`xcbeautify`で整形してビルドします。
+- `mise run testformat`（エイリアス`mise run t`）は整形されたログで全テストを実行します。
+- `mise run unit`（エイリアス`mise run u`）はユニットテストのみを実行します。
+直接コマンドも利用できます。例: `xcodebuild -project ReadItLater.xcodeproj -scheme ReadItLater -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0.1' build`。
 
-## Coding Style & Naming Conventions
-Follow standard Swift conventions: 4-space indentation, `UpperCamelCase` for types, `lowerCamelCase` for properties and functions. Keep file and type names aligned (e.g., `BookmarkURL.swift` defines `BookmarkURL`). SwiftData schema versions live in `ReadItLater/Migration/VersionedSchema.swift` and should be incremented via new schema types rather than edited in place. No automatic formatter or linter is configured, so keep diffs tidy and consistent.
-For new bookmark creation or URL validation, prefer the `Bookmark.create(from:title:)` factory in `ReadItLater/Domain/BookmarkCreation.swift` instead of constructing models directly.
+## コーディングスタイルと命名規約
+標準的なSwiftの規約に従います。インデントは4スペース、型は`UpperCamelCase`、プロパティと関数は`lowerCamelCase`です。ファイル名と型名は対応させてください（例: `BookmarkURL.swift`は`BookmarkURL`を定義）。SwiftDataのスキーマバージョンは`ReadItLater/Migration/VersionedSchema.swift`にあり、その場で編集するのではなく新しいスキーマ型を追加してインクリメントします。自動フォーマッタやリンタは設定されていないため、差分は整然と一貫性を保ってください。
+新しいブックマーク作成やURL検証では、モデルを直接構築するのではなく`ReadItLater/Domain/BookmarkCreation.swift`の`Bookmark.create(from:title:)`ファクトリを優先してください。
 
-## Architecture & Data
-SwiftData uses a versioned schema plan in `ReadItLater/Migration/MigrationPlan.swift`. The current schema is `AppV3Schema`, which defines `Inbox`, `Bookmark`, and `Archive` models; update the migration plan when introducing a new schema. Shared persistence is created by `ReadItLater/ModelContainerFactory.swift` using the App Group container `group.munakata-hisashi.ReadItLater`, and previews use the in-memory container. The Share Extension uses the same shared container to persist incoming URLs.
+## アーキテクチャとデータ
+SwiftDataは`ReadItLater/Migration/MigrationPlan.swift`のバージョン付きスキーマ計画を使用します。現在のスキーマは`AppV3Schema`で、`Inbox`、`Bookmark`、`Archive`モデルを定義しています。新しいスキーマを導入する際はマイグレーション計画を更新してください。共有永続化は`ReadItLater/ModelContainerFactory.swift`でApp Groupコンテナ`group.munakata-hisashi.ReadItLater`を使って作成され、プレビューはインメモリコンテナを使用します。Share拡張は同じ共有コンテナを使って受け取ったURLを保存します。
 
-## Testing Guidelines
-Testing uses XCTest. Unit tests live under `ReadItLaterTests/` and UI tests under `ReadItLaterUITests/`. Follow the existing naming pattern for test methods, e.g., `func test_空URL_作成失敗()` in `ReadItLaterTests/BookmarkCreationTests.swift`. Run all tests with `mise run testformat` or target-specific tests via `xcodebuild ... -only-testing:ReadItLaterTests`.
+## テストガイドライン
+テストはXCTestを使用します。ユニットテストは`ReadItLaterTests/`、UIテストは`ReadItLaterUITests/`にあります。テストメソッドは既存の命名パターンに従ってください（例: `ReadItLaterTests/BookmarkCreationTests.swift`の`func test_空URL_作成失敗()`）。全テストは`mise run testformat`、特定ターゲットのテストは`xcodebuild ... -only-testing:ReadItLaterTests`で実行します。
 
-## Commit & Pull Request Guidelines
-Commit messages should be in Japanese and follow a conventional-commit style. Use a short summary line and add bullet points for details. PRs should clearly describe behavior changes, link relevant issues or docs in `docs/`, and include screenshots for UI changes.
+## コミットとPRガイドライン
+コミットメッセージは日本語で、Conventional Commits風のスタイルに従います。短い要約行を付け、詳細は箇条書きで記載してください。PRでは挙動の変更点を明確に説明し、`docs/`内の関連Issueやドキュメントへリンクし、UI変更がある場合はスクリーンショットを含めてください。
 
-## Security & Configuration Tips
-CloudKit is enabled via `ReadItLater/ReadItLater.entitlements` with container `iCloud.munakata-hisashi.ReadItLater`. When adjusting entitlements or CloudKit behavior, validate the simulator build first and avoid committing device-specific provisioning changes from Xcode.
+## セキュリティと構成の注意点
+CloudKitは`ReadItLater/ReadItLater.entitlements`で`iCloud.munakata-hisashi.ReadItLater`コンテナを使って有効化されています。エンタイトルメントやCloudKitの挙動を調整する場合は、まずシミュレータビルドで検証し、Xcodeによるデバイス固有のプロビジョニング変更をコミットしないでください。
