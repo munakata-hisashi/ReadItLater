@@ -23,9 +23,11 @@ struct AddInboxSheet: View {
                         .autocapitalization(.none)
                         .disableAutocorrection(true)
                         .focused($isURLFieldFocused)
+                        .accessibilityIdentifier("AddInbox.URLField")
                     
                     TextField(titleFieldPlaceholder, text: $viewModel.titleString)
                         .autocapitalization(.words)
+                        .accessibilityIdentifier("AddInbox.TitleField")
                 } header: {
                     Text("Inbox Details")
                 } footer: {
