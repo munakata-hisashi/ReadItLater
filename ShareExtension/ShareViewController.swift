@@ -8,7 +8,6 @@
 import UIKit
 import SwiftData
 
-@MainActor
 final class ShareViewController: UIViewController {
 
     private var modelContainer: ModelContainer?

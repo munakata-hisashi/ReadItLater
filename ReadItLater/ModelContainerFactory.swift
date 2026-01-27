@@ -8,7 +8,7 @@
 import Foundation
 import SwiftData
 
-enum ModelContainerFactory {
+nonisolated enum ModelContainerFactory {
     /// App Groups識別子
     static let appGroupIdentifier = "group.munakata-hisashi.ReadItLater"
 

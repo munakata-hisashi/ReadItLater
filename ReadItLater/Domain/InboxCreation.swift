@@ -19,6 +19,7 @@ extension Inbox {
         }
     }
 
+    @MainActor
     static func create(
         from urlString: String,
         title: String? = nil

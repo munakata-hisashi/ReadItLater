@@ -8,7 +8,7 @@
 import Foundation
 
 /// Inboxの設定値
-enum InboxConfiguration {
+nonisolated enum InboxConfiguration {
     /// inbox内の最大保存数
     /// 開発時: 検証用に5件。将来的には50件に変更予定
     static let maxItems: Int = 5

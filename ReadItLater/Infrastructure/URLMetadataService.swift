@@ -13,7 +13,6 @@ struct URLMetadata {
     let description: String?
 }
 
-@MainActor
 final class URLMetadataService: URLMetadataServiceProtocol {
     private var currentProvider: LPMetadataProvider?
 
