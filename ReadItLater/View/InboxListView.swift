@@ -25,25 +25,16 @@ struct InboxListView: View {
                     URLItemRow(item: inbox)
                 }
                 .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                    Button {
+                    BookmarkSwipeButton {
                         moveToBookmark(inbox)
-                    } label: {
-                        Label("Bookmark", systemImage: "bookmark")
                     }
-                    .tint(.blue)
-
-                    Button {
+                    ArchiveSwipeButton {
                         moveToArchive(inbox)
-                    } label: {
-                        Label("Archive", systemImage: "archivebox")
                     }
-                    .tint(.green)
                 }
                 .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                    Button(role: .destructive) {
+                    DeleteSwipeButton {
                         deleteInbox(inbox)
-                    } label: {
-                        Label("Delete", systemImage: "trash")
                     }
                 }
             }

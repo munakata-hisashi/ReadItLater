@@ -24,18 +24,13 @@ struct BookmarkListView: View {
                     URLItemRow(item: bookmark)
                 }
                 .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                    Button {
+                    ArchiveSwipeButton {
                         moveToArchive(bookmark)
-                    } label: {
-                        Label("Archive", systemImage: "archivebox")
                     }
-                    .tint(.green)
                 }
                 .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                    Button(role: .destructive) {
+                    DeleteSwipeButton {
                         deleteBookmark(bookmark)
-                    } label: {
-                        Label("Delete", systemImage: "trash")
                     }
                 }
             }
