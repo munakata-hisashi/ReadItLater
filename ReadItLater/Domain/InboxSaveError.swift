@@ -26,17 +26,4 @@ enum InboxSaveError: LocalizedError, Equatable {
             return "Inboxが上限（\(InboxConfiguration.maxItems)件）に達しています。既存のアイテムを整理してください。"
         }
     }
-
-    static func == (lhs: InboxSaveError, rhs: InboxSaveError) -> Bool {
-        switch (lhs, rhs) {
-        case (.noURLFound, .noURLFound),
-             (.containerInitFailed, .containerInitFailed),
-             (.inboxFull, .inboxFull):
-            return true
-        case (.inboxCreationFailed(let lhsError), .inboxCreationFailed(let rhsError)):
-            return lhsError == rhsError
-        default:
-            return false
-        }
-    }
 }
