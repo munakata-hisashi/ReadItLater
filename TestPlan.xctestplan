@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "7A552AB5-2C2C-421A-92F8-6DCD6CE249E6",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:ReadItLater.xcodeproj",
+        "identifier" : "63B6ACB32E3E038400A16C13",
+        "name" : "ReadItLaterTests"
+      }
+    }
+  ],
+  "version" : 1
+}

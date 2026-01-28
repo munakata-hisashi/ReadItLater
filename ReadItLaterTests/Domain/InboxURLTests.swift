@@ -8,6 +8,7 @@
 import Testing
 @testable import ReadItLater
 
+@MainActor
 @Suite struct InboxURLTests {
     
     // MARK: - 初期化テスト

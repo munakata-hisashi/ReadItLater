@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		631A9C402F0BFC1600FA4142 /* ShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 631A9C362F0BFC1600FA4142 /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		638ED6DE2F2A79D90074E21E /* TestPlan.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = 638ED6DD2F2A79D90074E21E /* TestPlan.xctestplan */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +52,7 @@
 /* Begin PBXFileReference section */
 		631A9C362F0BFC1600FA4142 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		63507EDD2E5DC637001679E9 /* ReadItLater.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = ReadItLater.xctestplan; sourceTree = "<group>"; };
+		638ED6DD2F2A79D90074E21E /* TestPlan.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = TestPlan.xctestplan; sourceTree = "<group>"; };
 		63B6ACA02E3E038300A16C13 /* ReadItLater.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReadItLater.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63B6ACB42E3E038400A16C13 /* ReadItLaterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ReadItLaterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		63B6ACBE2E3E038400A16C13 /* ReadItLaterUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ReadItLaterUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -159,6 +161,7 @@
 		63B6AC972E3E038300A16C13 = {
 			isa = PBXGroup;
 			children = (
+				638ED6DD2F2A79D90074E21E /* TestPlan.xctestplan */,
 				63507EDD2E5DC637001679E9 /* ReadItLater.xctestplan */,
 				63B6ACA22E3E038300A16C13 /* ReadItLater */,
 				63B6ACB72E3E038400A16C13 /* ReadItLaterTests */,
@@ -334,6 +337,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				638ED6DE2F2A79D90074E21E /* TestPlan.xctestplan in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
