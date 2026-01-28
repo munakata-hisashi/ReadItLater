@@ -16,7 +16,6 @@ final class ExtensionItemProvider: ExtensionItemProviderProtocol {
         self.extensionContext = extensionContext
     }
 
-    @MainActor
     func extractURLAndTitle() async throws -> (url: URL, title: String?) {
         guard let extensionItem = extensionContext?.inputItems.first as? NSExtensionItem,
               let itemProviders = extensionItem.attachments else {
