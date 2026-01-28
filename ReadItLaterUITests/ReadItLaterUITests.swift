@@ -5,6 +5,7 @@
 //  Created by 宗像恒 on 2025/08/02.
 //
 
+import Foundation
 import XCTest
 
 final class ReadItLaterUITests: XCTestCase {
@@ -65,6 +66,46 @@ final class ReadItLaterUITests: XCTestCase {
 
         // Archiveのリスト画面には追加ボタンがない（Inboxのみ）
         XCTAssertFalse(addItemButton.exists, "Add Item button should not exist in Archive")
+    }
+
+    @MainActor
+    func testAddURLFromInbox() throws {
+        let app = XCUIApplication()
+        app.launch()
+
+        let inboxTab = app.tabBars.buttons["Inbox"]
+        XCTAssertTrue(inboxTab.waitForExistence(timeout: 5), "Inbox tab should exist")
+        inboxTab.tap()
+
+        let addItemButton = app.buttons["Add Item"]
+        XCTAssertTrue(addItemButton.waitForExistence(timeout: 5), "Add Item button should exist in Inbox")
+        addItemButton.tap()
+
+        let urlField = app.textFields["AddInbox.URLField"]
+        XCTAssertTrue(urlField.waitForExistence(timeout: 5), "URL field should exist")
+        urlField.tap()
+        urlField.typeText("https://example.com")
+
+        let titleField = app.textFields["AddInbox.TitleField"]
+        XCTAssertTrue(titleField.waitForExistence(timeout: 5), "Title field should exist")
+        titleField.tap()
+        let uniqueTitle = "UI Test " + UUID().uuidString
+        titleField.typeText(uniqueTitle)
+
+        let saveButton = app.buttons["Save"]
+        XCTAssertTrue(saveButton.waitForExistence(timeout: 2), "Save button should exist")
+        XCTAssertTrue(saveButton.isEnabled, "Save button should be enabled")
+        saveButton.tap()
+
+        let addedItem = app.staticTexts[uniqueTitle]
+        XCTAssertTrue(addedItem.waitForExistence(timeout: 5), "Added item should appear in Inbox list")
+        addedItem.tap()
+
+        let detailNavigationBar = app.navigationBars[uniqueTitle]
+        XCTAssertTrue(detailNavigationBar.waitForExistence(timeout: 5), "Detail navigation bar should show the item title")
+
+        let openInBrowserButton = app.buttons["ブラウザで開く"]
+        XCTAssertTrue(openInBrowserButton.waitForExistence(timeout: 5), "Open in browser button should exist")
     }
 
     @MainActor

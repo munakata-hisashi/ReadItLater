@@ -13,6 +13,7 @@ import SwiftData
 /// Inbox、Bookmark、Archiveの詳細表示に使用する共通ビュー
 struct URLItemDetailView: View {
     let item: any URLItem
+    @Environment(\.openURL) private var openURL
 
     var body: some View {
         VStack {
@@ -27,6 +28,17 @@ struct URLItemDetailView: View {
         }
         .navigationTitle(item.safeTitle)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if let url = item.maybeURL {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        openURL(url)
+                    } label: {
+                        Label("ブラウザで開く", systemImage: "safari")
+                    }
+                }
+            }
+        }
     }
 }
 
