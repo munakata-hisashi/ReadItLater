@@ -8,6 +8,7 @@
 import Testing
 @testable import ReadItLater
 
+@MainActor
 @Suite struct InboxCreationTests {
     
     // MARK: - 正常系テスト

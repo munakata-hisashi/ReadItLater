@@ -10,7 +10,6 @@ import Foundation
 /// URLメタデータ取得のためのプロトコル
 ///
 /// テスト時にモック実装を注入可能にするためのプロトコル。
-@MainActor
 protocol URLMetadataServiceProtocol {
     /// 指定されたURLのメタデータを取得
     /// - Parameter url: メタデータ取得対象のURL
