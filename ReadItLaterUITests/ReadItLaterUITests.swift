@@ -99,6 +99,13 @@ final class ReadItLaterUITests: XCTestCase {
 
         let addedItem = app.staticTexts[uniqueTitle]
         XCTAssertTrue(addedItem.waitForExistence(timeout: 5), "Added item should appear in Inbox list")
+        addedItem.tap()
+
+        let detailNavigationBar = app.navigationBars[uniqueTitle]
+        XCTAssertTrue(detailNavigationBar.waitForExistence(timeout: 5), "Detail navigation bar should show the item title")
+
+        let openInBrowserButton = app.buttons["ブラウザで開く"]
+        XCTAssertTrue(openInBrowserButton.waitForExistence(timeout: 5), "Open in browser button should exist")
     }
 
     @MainActor
