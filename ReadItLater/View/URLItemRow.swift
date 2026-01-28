@@ -13,11 +13,15 @@ import SwiftUI
 struct URLItemRow: View {
     let item: any URLItem
 
+    /// Dynamic Type対応の2行分の最小高さ
+    @ScaledMetric(relativeTo: .headline) private var titleMinHeight: CGFloat = 44
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(item.safeTitle)
                 .font(.headline)
                 .lineLimit(2)
+                .frame(minHeight: titleMinHeight, alignment: .topLeading)
 
             if let urlString = item.url {
                 Text(urlString)
