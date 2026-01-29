@@ -71,8 +71,12 @@
 			membershipExceptions = (
 				Domain/ExtensionItemProviderProtocol.swift,
 				Domain/InboxConfiguration.swift,
+				Domain/InboxCreation.swift,
+				Domain/InboxData.swift,
 				Domain/InboxRepositoryProtocol.swift,
 				Domain/InboxSaveError.swift,
+				Domain/InboxTitle.swift,
+				Domain/InboxURL.swift,
 				Domain/ModelExtensions.swift,
 				Domain/ShareURLUseCaseProtocol.swift,
 				Domain/URLMetadataServiceProtocol.swift,

@@ -40,10 +40,13 @@ final class ShareURLUseCase: ShareURLUseCaseProtocol {
                 await fetchTitle(for: url)
             }
 
-            // 3. URL検証とInboxに保存
-            try saveToInbox(url: url.absoluteString, title: title)
+            // 3. URL検証とInboxデータ生成
+            let inboxData = try createInboxData(from: url, title: title)
 
-            // 4. 成功完了
+            // 4. Inboxに保存
+            try saveToInbox(inboxData)
+
+            // 5. 成功完了
             return .success(())
 
         } catch let error as InboxSaveError {
@@ -65,65 +68,39 @@ final class ShareURLUseCase: ShareURLUseCaseProtocol {
         }
     }
 
-    private func saveToInbox(url: String, title: String?) throws {
-        // URL検証
-        let validatedURL: String
-        let finalTitle: String
+    private func createInboxData(from url: URL, title: String?) throws -> InboxData {
+        let result = Inbox.create(from: url.absoluteString, title: title)
 
-        do {
-            // URLバリデーション（InboxURLと同じロジック）
-            let trimmed = url.trimmingCharacters(in: .whitespacesAndNewlines)
-
-            guard !trimmed.isEmpty else {
-                throw URLValidationError.emptyURL
+        switch result {
+        case .success(let inboxData):
+            return inboxData
+        case .failure(let error):
+            switch error {
+            case .invalidURL(let urlError):
+                throw InboxSaveError.inboxCreationFailed(urlError)
             }
-
-            guard let urlObj = URL(string: trimmed),
-                  let scheme = urlObj.scheme?.lowercased() else {
-                throw URLValidationError.invalidFormat
-            }
-
-            guard ["http", "https"].contains(scheme) else {
-                throw URLValidationError.unsupportedScheme
-            }
-
-            guard urlObj.host != nil else {
-                throw URLValidationError.invalidFormat
-            }
-
-            validatedURL = trimmed
-
-            // タイトル処理（InboxTitleと同じロジック）
-            let trimmedTitle = title?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-            if !trimmedTitle.isEmpty {
-                finalTitle = trimmedTitle
-            } else {
-                // URLからタイトルを生成
-                if let host = urlObj.host {
-                    let cleanHost = host.hasPrefix("www.") ? String(host.dropFirst(4)) : host
-                    let components = cleanHost.components(separatedBy: ".")
-                    let capitalizedComponents = components.map { component in
-                        guard !component.isEmpty else { return component }
-                        return component.prefix(1).uppercased() + component.dropFirst()
-                    }
-                    finalTitle = capitalizedComponents.joined(separator: ".")
-                } else {
-                    finalTitle = "Untitled Inbox"
-                }
-            }
-        } catch let error as URLValidationError {
-            throw InboxSaveError.inboxCreationFailed(error)
         }
+    }
 
+    private func saveToInbox(_ inboxData: InboxData) throws {
         // Inbox上限チェック
         guard repository.canAdd() else {
             throw InboxSaveError.inboxFull
         }
 
         // Inboxに追加
-        try repository.add(
-            url: validatedURL,
-            title: finalTitle
-        )
+        do {
+            try repository.add(
+                url: inboxData.url,
+                title: inboxData.title
+            )
+        } catch let error as InboxRepositoryError {
+            switch error {
+            case .inboxFull:
+                throw InboxSaveError.inboxFull
+            }
+        } catch {
+            throw error
+        }
     }
 }
