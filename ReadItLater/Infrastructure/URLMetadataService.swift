@@ -8,11 +8,6 @@
 import Foundation
 import LinkPresentation
 
-struct URLMetadata {
-    let title: String?
-    let description: String?
-}
-
 final class URLMetadataService: URLMetadataServiceProtocol {
     private var currentProvider: LPMetadataProvider?
 

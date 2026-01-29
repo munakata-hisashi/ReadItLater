@@ -69,17 +69,18 @@
 		631A9C4B2F0BFE9300FA4142 /* Exceptions for "ReadItLater" folder in "ShareExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Domain/ExtensionItemProviderProtocol.swift,
+				UseCase/ExtensionItemProviderProtocol.swift,
 				Domain/InboxConfiguration.swift,
 				Domain/InboxCreation.swift,
 				Domain/InboxData.swift,
 				Domain/InboxRepositoryProtocol.swift,
-				Domain/InboxSaveError.swift,
+				UseCase/InboxSaveError.swift,
 				Domain/InboxTitle.swift,
 				Domain/InboxURL.swift,
 				Domain/ModelExtensions.swift,
-				Domain/ShareURLUseCaseProtocol.swift,
-				Domain/URLMetadataServiceProtocol.swift,
+				UseCase/ShareURLUseCaseProtocol.swift,
+				UseCase/URLMetadata.swift,
+				UseCase/URLMetadataServiceProtocol.swift,
 				Domain/URLValidationError.swift,
 				Infrastructure/ExtensionItemProvider.swift,
 				Infrastructure/InboxRepository.swift,
