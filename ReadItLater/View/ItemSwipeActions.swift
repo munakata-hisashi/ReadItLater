@@ -13,7 +13,7 @@ struct BookmarkSwipeButton: View {
 
     var body: some View {
         Button(action: action) {
-            Label("Bookmark", systemImage: "bookmark")
+            SwipeActionIconLabel(title: "Bookmark", systemImage: "bookmark")
         }
         .tint(.blue)
     }
@@ -25,7 +25,7 @@ struct ArchiveSwipeButton: View {
 
     var body: some View {
         Button(action: action) {
-            Label("Archive", systemImage: "archivebox")
+            SwipeActionIconLabel(title: "Archive", systemImage: "archivebox")
         }
         .tint(.green)
     }
@@ -39,6 +39,23 @@ struct DeleteSwipeButton: View {
         Button(role: .destructive, action: action) {
             Label("Delete", systemImage: "trash")
         }
+    }
+}
+
+private struct SwipeActionIconLabel: View {
+    let title: String
+    let systemImage: String
+
+    var body: some View {
+        Label(title, systemImage: systemImage)
+            .labelStyle(.iconOnly)
+            .overlay(alignment: .bottom) {
+                Text(title)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .padding(.bottom, 4)
+            }
+            .frame(width: 68, height: 72, alignment: .top)
     }
 }
 
