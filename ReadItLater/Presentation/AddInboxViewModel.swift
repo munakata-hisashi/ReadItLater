@@ -40,7 +40,7 @@ final class AddInboxViewModel {
     
     // MARK: - Dependencies
 
-    private let metadataService = URLMetadataService()
+    private let metadataService: URLMetadataServiceProtocol
 
     // MARK: - Private Properties
 
@@ -48,7 +48,9 @@ final class AddInboxViewModel {
     
     // MARK: - Initialization
     
-    init() {}
+    init(metadataService: URLMetadataServiceProtocol) {
+        self.metadataService = metadataService
+    }
     
     // MARK: - Public Methods
     

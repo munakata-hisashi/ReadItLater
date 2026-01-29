@@ -15,7 +15,7 @@ struct AddInboxViewModelTests {
     let viewModel: AddInboxViewModel
 
     init() {
-        viewModel = AddInboxViewModel()
+        viewModel = AddInboxViewModel(metadataService: MockURLMetadataService())
     }
     
     // MARK: - 初期状態テスト
