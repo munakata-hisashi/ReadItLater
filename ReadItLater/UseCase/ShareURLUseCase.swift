@@ -41,7 +41,7 @@ final class ShareURLUseCase: ShareURLUseCaseProtocol {
             }
 
             // 3. URL検証とInboxデータ生成
-            let inboxData = try await createInboxData(from: url, title: title)
+            let inboxData = try createInboxData(from: url, title: title)
 
             // 4. Inboxに保存
             try saveToInbox(inboxData)
@@ -68,8 +68,8 @@ final class ShareURLUseCase: ShareURLUseCaseProtocol {
         }
     }
 
-    private func createInboxData(from url: URL, title: String?) async throws -> InboxData {
-        let result = await Inbox.create(from: url.absoluteString, title: title)
+    private func createInboxData(from url: URL, title: String?) throws -> InboxData {
+        let result = Inbox.create(from: url.absoluteString, title: title)
 
         switch result {
         case .success(let inboxData):
