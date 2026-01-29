@@ -1,5 +1,4 @@
 import Foundation
-import SwiftData
 
 /// Bookmark永続化操作のためのプロトコル
 ///

@@ -3,6 +3,20 @@
 ## プロジェクト構成とモジュール編成
 ReadItLaterはSwiftUIとSwiftDataで構築されたiOSアプリです。中核のソースは`ReadItLater/`配下にあり、`ReadItLater/Domain`（ドメインモデルとバリデーション）、`ReadItLater/UseCase`（アプリケーションロジック）、`ReadItLater/Infrastructure`（SwiftData/サービス実装）、`ReadItLater/Presentation`（ViewModel）、`ReadItLater/View`（SwiftUIビュー）のレイヤーで構成されています。SwiftDataのマイグレーションロジックは`ReadItLater/Migration`にあり、アセットは`ReadItLater/Assets.xcassets`にあります。テストは`ReadItLaterTests/`（ユニット）と`ReadItLaterUITests/`（UI）にあります。Share拡張のコードは`ShareExtension/`にあります。
 
+## ディレクトリ別の配置ルール
+- `ReadItLater/Domain`: ドメインモデル、値オブジェクト、バリデーション、リポジトリ/サービスのプロトコル定義。SwiftUIやSwiftDataの具体実装は置かない。
+- `ReadItLater/UseCase`: ユースケース（アプリケーションロジック）。Domainとプロトコルに依存し、Infrastructureの具体実装には依存しない。
+- `ReadItLater/Infrastructure`: SwiftDataリポジトリや外部サービスなどの具体実装。Domainのプロトコルに適合させ、UIに依存しない。
+- `ReadItLater/Presentation`: ViewModelや画面状態の管理。UseCaseを呼び出し、Viewとは分離する（SwiftUI Viewは置かない）。
+- `ReadItLater/View`: SwiftUIビューのみ。表示とユーザー入力に集中し、ビジネスロジックはViewModel/UseCaseへ委譲する。
+- `ReadItLater/Migration`: SwiftDataスキーマ定義とマイグレーションプラン。既存スキーマを直接編集せず、新しいバージョン型を追加する。
+- `ReadItLater/Assets.xcassets`: 画像・色などのアセットのみ。
+- `ReadItLater/ReadItLaterApp.swift`/`ReadItLater/ModelContainerFactory.swift`: アプリ起動時のDIやModelContainer生成など、アプリ全体の初期化コード。
+- `ShareExtension/`: Share拡張の受け取り処理とUI。共有コンテナを使った保存処理はここに置く。
+- `ReadItLaterTests/`: Swift Testingによるユニットテスト（Domain/UseCase/Infrastructure/Presentationの検証）。
+- `ReadItLaterUITests/`: XCTestによるUIテスト。
+- `docs/`: 設計メモ、仕様、Issue関連資料。
+
 ## ビルド、テスト、開発コマンド
 出力を揃えるためにmiseタスクを使用します。
 - `mise run buildformat`（エイリアス`mise run b`）は`xcbeautify`で整形してビルドします。

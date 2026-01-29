@@ -55,14 +55,15 @@ final class ShareURLUseCase: ShareURLUseCaseProtocol {
 
 ### 新規作成ファイル
 
-#### Domain層（プロトコル定義）
-- `Domain/InboxSaveError.swift` - Inbox保存処理のエラー型（Equatable準拠）
-- `Domain/URLMetadataServiceProtocol.swift` - URLMetadataServiceの抽象化
-- `Domain/ExtensionItemProviderProtocol.swift` - NSExtensionItem抽象化
-- `Domain/ShareURLUseCaseProtocol.swift` - UseCaseプロトコル
+#### UseCase層（プロトコル/エラー定義）
+- `UseCase/InboxSaveError.swift` - Inbox保存処理のエラー型（Equatable準拠）
+- `UseCase/URLMetadataServiceProtocol.swift` - URLMetadataServiceの抽象化
+- `UseCase/ExtensionItemProviderProtocol.swift` - NSExtensionItem抽象化
+- `UseCase/ShareURLUseCaseProtocol.swift` - UseCaseプロトコル
 
 #### UseCase層
 - `UseCase/ShareURLUseCase.swift` - ビジネスロジック本体
+- `UseCase/URLMetadata.swift` - URLメタデータの値オブジェクト
 
 #### Infrastructure層
 - `Infrastructure/ExtensionItemProvider.swift` - NSExtensionItemのラッパー
@@ -118,10 +119,11 @@ final class ShareViewController: UIViewController {
 
 #### ReadItLater.xcodeproj/project.pbxproj
 新規ファイルをShareExtensionターゲットに追加:
-- Domain/ExtensionItemProviderProtocol.swift
-- Domain/InboxSaveError.swift
-- Domain/ShareURLUseCaseProtocol.swift
-- Domain/URLMetadataServiceProtocol.swift
+- UseCase/ExtensionItemProviderProtocol.swift
+- UseCase/InboxSaveError.swift
+- UseCase/ShareURLUseCaseProtocol.swift
+- UseCase/URLMetadata.swift
+- UseCase/URLMetadataServiceProtocol.swift
 - Infrastructure/ExtensionItemProvider.swift
 - UseCase/ShareURLUseCase.swift
 
