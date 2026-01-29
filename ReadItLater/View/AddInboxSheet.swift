@@ -8,11 +8,21 @@
 import SwiftUI
 
 struct AddInboxSheet: View {
-    @State private var viewModel = AddInboxViewModel()
+    @State private var viewModel: AddInboxViewModel
     @FocusState private var isURLFieldFocused: Bool
 
     let onSave: (InboxData) -> Void
     let onCancel: () -> Void
+
+    init(
+        metadataService: URLMetadataServiceProtocol = URLMetadataService(),
+        onSave: @escaping (InboxData) -> Void,
+        onCancel: @escaping () -> Void
+    ) {
+        _viewModel = State(initialValue: AddInboxViewModel(metadataService: metadataService))
+        self.onSave = onSave
+        self.onCancel = onCancel
+    }
     
     var body: some View {
         NavigationView {
