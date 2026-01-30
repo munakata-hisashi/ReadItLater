@@ -10,7 +10,7 @@ import Foundation
 
 /// URLMetadataServiceのモック実装
 @MainActor
-final class MockURLMetadataService: URLMetadataServiceProtocol {
+struct MockURLMetadataService: URLMetadataServiceProtocol {
     var metadataToReturn: URLMetadata?
     var errorToThrow: Error?
 

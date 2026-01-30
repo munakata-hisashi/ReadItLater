@@ -9,7 +9,7 @@ import Foundation
 @testable import ReadItLater
 
 /// ExtensionItemProviderのモック実装
-final class MockExtensionItemProvider: ExtensionItemProviderProtocol {
+struct MockExtensionItemProvider: ExtensionItemProviderProtocol {
     var urlToReturn: URL?
     var titleToReturn: String?
     var errorToThrow: Error?
