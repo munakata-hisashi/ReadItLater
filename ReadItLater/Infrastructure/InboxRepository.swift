@@ -22,7 +22,7 @@ import SwiftData
 /// # テスト
 /// テスト時はin-memory ModelContainerのcontextを注入することで、
 /// 実際のデータベースに影響を与えずにテストが可能。
-final class InboxRepository: InboxRepositoryProtocol {
+struct InboxRepository: InboxRepositoryProtocol {
     private let modelContext: ModelContext
 
     /// イニシャライザ

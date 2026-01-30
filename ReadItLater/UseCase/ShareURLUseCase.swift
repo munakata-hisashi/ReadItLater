@@ -13,7 +13,7 @@ import Foundation
 /// 2. タイトル取得（メタデータまたはホスト名）
 /// 3. URL検証
 /// 4. Inboxに保存
-final class ShareURLUseCase: ShareURLUseCaseProtocol {
+struct ShareURLUseCase: ShareURLUseCaseProtocol {
     private let itemProvider: ExtensionItemProviderProtocol
     private let metadataService: URLMetadataServiceProtocol
     private let repository: InboxRepositoryProtocol

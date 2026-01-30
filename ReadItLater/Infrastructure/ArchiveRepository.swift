@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 /// SwiftDataを使用したArchiveRepository実装
-final class ArchiveRepository: ArchiveRepositoryProtocol {
+struct ArchiveRepository: ArchiveRepositoryProtocol {
     private let modelContext: ModelContext
 
     init(modelContext: ModelContext) {
