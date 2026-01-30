@@ -28,6 +28,7 @@ struct URLItemDetailView: View {
         }
         .navigationTitle(item.safeTitle)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar(.hidden, for: .tabBar)
         .toolbar {
             if let url = item.maybeURL {
                 ToolbarItem(placement: .topBarTrailing) {
