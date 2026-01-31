@@ -46,4 +46,22 @@ struct BookmarkRepository: BookmarkRepositoryProtocol {
         modelContext.delete(bookmark)
         try modelContext.save()
     }
+
+    func moveToInbox(_ bookmark: Bookmark, using inboxRepository: InboxRepositoryProtocol) throws {
+        // Inbox容量チェック
+        guard inboxRepository.canAdd() else {
+            throw InboxRepositoryError.inboxFull
+        }
+
+        // Inboxを作成（元の追加日時を引き継ぐ）
+        let inbox = Inbox(
+            url: bookmark.url ?? "",
+            title: bookmark.title ?? "",
+            addedInboxAt: bookmark.addedInboxAt  // 元の追加日時を維持
+        )
+
+        modelContext.insert(inbox)
+        modelContext.delete(bookmark)
+        try modelContext.save()
+    }
 }

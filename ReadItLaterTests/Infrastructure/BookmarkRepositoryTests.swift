@@ -151,4 +151,75 @@ struct BookmarkRepositoryTests {
         let remainingBookmarks = try context.fetch(FetchDescriptor<Bookmark>())
         #expect(remainingBookmarks.isEmpty)
     }
+
+    @Test("状態移動: BookmarkからInboxへ")
+    @MainActor
+    func 状態移動_BookmarkからInboxへ() throws {
+        let container = try createInMemoryContainer()
+        let context = container.mainContext
+        let bookmarkRepository = BookmarkRepository(modelContext: context)
+        let inboxRepository = InboxRepository(modelContext: context)
+
+        // Given: Bookmarkを作成
+        let bookmark = Bookmark(
+            url: "https://example.com",
+            title: "Test Bookmark",
+            addedInboxAt: Date(timeIntervalSince1970: 1234567890)
+        )
+        context.insert(bookmark)
+        try context.save()
+
+        let originalAddedAt = bookmark.addedInboxAt
+
+        // When: Inboxへ移動
+        try bookmarkRepository.moveToInbox(bookmark, using: inboxRepository)
+
+        // Then: Inboxに存在
+        let inboxItems = try context.fetch(FetchDescriptor<Inbox>())
+        #expect(inboxItems.count == 1)
+        #expect(inboxItems.first?.url == "https://example.com")
+        #expect(inboxItems.first?.title == "Test Bookmark")
+        #expect(inboxItems.first?.addedInboxAt == originalAddedAt)
+
+        // Bookmarkから削除されている
+        let remainingBookmarks = try context.fetch(FetchDescriptor<Bookmark>())
+        #expect(remainingBookmarks.isEmpty)
+    }
+
+    @Test("状態移動: Inbox満杯時にBookmarkからInboxへ移動できない")
+    @MainActor
+    func 状態移動_Inbox満杯時にBookmarkからInboxへ移動できない() throws {
+        let container = try createInMemoryContainer()
+        let context = container.mainContext
+        let bookmarkRepository = BookmarkRepository(modelContext: context)
+        let inboxRepository = InboxRepository(modelContext: context)
+
+        // Given: Inboxを満杯にする
+        for i in 0..<InboxConfiguration.maxItems {
+            let inbox = Inbox(url: "https://example\(i).com", title: "Item \(i)")
+            context.insert(inbox)
+        }
+        try context.save()
+
+        // Bookmarkを作成
+        let bookmark = Bookmark(
+            url: "https://test.com",
+            title: "Test Bookmark"
+        )
+        context.insert(bookmark)
+        try context.save()
+
+        // When & Then: 容量エラーがスローされる
+        #expect(throws: InboxRepositoryError.inboxFull) {
+            try bookmarkRepository.moveToInbox(bookmark, using: inboxRepository)
+        }
+
+        // Bookmarkは削除されていない
+        let remainingBookmarks = try context.fetch(FetchDescriptor<Bookmark>())
+        #expect(remainingBookmarks.count == 1)
+
+        // Inboxは増えていない
+        let inboxItems = try context.fetch(FetchDescriptor<Inbox>())
+        #expect(inboxItems.count == InboxConfiguration.maxItems)
+    }
 }

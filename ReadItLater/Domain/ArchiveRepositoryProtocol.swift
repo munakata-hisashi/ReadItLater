@@ -16,6 +16,13 @@ protocol ArchiveRepositoryProtocol {
     /// - Throws: SwiftDataのエラー
     func moveToBookmark(_ archive: Archive) throws
 
+    /// ArchiveからInboxへ移動
+    /// - Parameters:
+    ///   - archive: 移動元のArchive
+    ///   - inboxRepository: Inbox容量チェックと追加に使用するリポジトリ
+    /// - Throws: InboxError（容量超過時）、SwiftDataのエラー
+    func moveToInbox(_ archive: Archive, using inboxRepository: InboxRepositoryProtocol) throws
+
     // MARK: - 削除
 
     /// Archiveを削除

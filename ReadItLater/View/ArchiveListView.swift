@@ -17,6 +17,10 @@ struct ArchiveListView: View {
         ArchiveRepository(modelContext: modelContext)
     }
 
+    private var inboxRepository: InboxRepositoryProtocol {
+        InboxRepository(modelContext: modelContext)
+    }
+
     var body: some View {
         List {
             ForEach(archiveItems) { archive in
@@ -24,6 +28,9 @@ struct ArchiveListView: View {
                     URLItemRow(item: archive)
                 }
                 .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                    InboxSwipeButton {
+                        moveToInbox(archive)
+                    }
                     BookmarkSwipeButton {
                         moveToBookmark(archive)
                     }
@@ -38,6 +45,16 @@ struct ArchiveListView: View {
         .navigationTitle("Archive")
         .navigationDestination(for: Archive.self) { archive in
             URLItemDetailView(item: archive)
+        }
+    }
+
+    private func moveToInbox(_ archive: Archive) {
+        withAnimation {
+            do {
+                try repository.moveToInbox(archive, using: inboxRepository)
+            } catch {
+                print("Failed to move to Inbox: \(error)")
+            }
         }
     }
 

@@ -31,6 +31,24 @@ struct ArchiveRepository: ArchiveRepositoryProtocol {
         try modelContext.save()
     }
 
+    func moveToInbox(_ archive: Archive, using inboxRepository: InboxRepositoryProtocol) throws {
+        // Inbox容量チェック
+        guard inboxRepository.canAdd() else {
+            throw InboxRepositoryError.inboxFull
+        }
+
+        // Inboxを作成（元の追加日時を引き継ぐ）
+        let inbox = Inbox(
+            url: archive.url ?? "",
+            title: archive.title ?? "",
+            addedInboxAt: archive.addedInboxAt  // 元の追加日時を維持
+        )
+
+        modelContext.insert(inbox)
+        modelContext.delete(archive)
+        try modelContext.save()
+    }
+
     // MARK: - 削除
 
     func delete(_ archive: Archive) {

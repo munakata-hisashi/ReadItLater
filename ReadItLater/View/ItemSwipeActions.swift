@@ -7,6 +7,18 @@
 
 import SwiftUI
 
+/// Inboxへ移動するスワイプアクションボタン
+struct InboxSwipeButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Label("Inbox", systemImage: "tray")
+        }
+        .tint(.orange)
+    }
+}
+
 /// ブックマークへ移動するスワイプアクションボタン
 struct BookmarkSwipeButton: View {
     let action: () -> Void
@@ -39,6 +51,15 @@ struct DeleteSwipeButton: View {
         Button(role: .destructive, action: action) {
             Label("Delete", systemImage: "trash")
         }
+    }
+}
+
+#Preview("Inbox Button") {
+    List {
+        Text("Swipe left to see inbox button")
+            .swipeActions(edge: .leading) {
+                InboxSwipeButton { }
+            }
     }
 }
 

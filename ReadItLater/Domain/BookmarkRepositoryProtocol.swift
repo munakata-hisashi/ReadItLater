@@ -24,4 +24,11 @@ protocol BookmarkRepositoryProtocol {
     /// - Parameter bookmark: 移動元のBookmark
     /// - Throws: SwiftDataのエラー
     func moveToArchive(_ bookmark: Bookmark) throws
+
+    /// BookmarkからInboxへ移動
+    /// - Parameters:
+    ///   - bookmark: 移動元のBookmark
+    ///   - inboxRepository: Inbox容量チェックと追加に使用するリポジトリ
+    /// - Throws: InboxError（容量超過時）、SwiftDataのエラー
+    func moveToInbox(_ bookmark: Bookmark, using inboxRepository: InboxRepositoryProtocol) throws
 }

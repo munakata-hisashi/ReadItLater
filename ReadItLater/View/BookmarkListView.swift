@@ -17,6 +17,10 @@ struct BookmarkListView: View {
         BookmarkRepository(modelContext: modelContext)
     }
 
+    private var inboxRepository: InboxRepositoryProtocol {
+        InboxRepository(modelContext: modelContext)
+    }
+
     var body: some View {
         List {
             ForEach(bookmarks) { bookmark in
@@ -24,6 +28,9 @@ struct BookmarkListView: View {
                     URLItemRow(item: bookmark)
                 }
                 .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                    InboxSwipeButton {
+                        moveToInbox(bookmark)
+                    }
                     ArchiveSwipeButton {
                         moveToArchive(bookmark)
                     }
@@ -38,6 +45,16 @@ struct BookmarkListView: View {
         .navigationTitle("Bookmarks")
         .navigationDestination(for: Bookmark.self) { bookmark in
             URLItemDetailView(item: bookmark)
+        }
+    }
+
+    private func moveToInbox(_ bookmark: Bookmark) {
+        withAnimation {
+            do {
+                try repository.moveToInbox(bookmark, using: inboxRepository)
+            } catch {
+                print("Failed to move to Inbox: \(error)")
+            }
         }
     }
 
