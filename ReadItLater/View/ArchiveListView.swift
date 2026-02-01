@@ -11,6 +11,7 @@ import SwiftData
 struct ArchiveListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Archive.archivedAt, order: .reverse) private var archiveItems: [Archive]
+    @State private var searchText = ""
 
     /// Repository（computed propertyとして生成）
     private var repository: ArchiveRepositoryProtocol {
@@ -21,9 +22,14 @@ struct ArchiveListView: View {
         InboxRepository(modelContext: modelContext)
     }
 
+    /// 検索フィルタ済みのアイテム
+    private var filteredItems: [Archive] {
+        archiveItems.filter { $0.matches(searchText: searchText) }
+    }
+
     var body: some View {
         List {
-            ForEach(archiveItems) { archive in
+            ForEach(filteredItems) { archive in
                 NavigationLink(value: archive) {
                     URLItemRow(item: archive)
                 }
@@ -42,6 +48,7 @@ struct ArchiveListView: View {
                 }
             }
         }
+        .searchable(text: $searchText, prompt: "タイトルまたはURLで検索")
         .navigationTitle("Archive")
         .navigationDestination(for: Archive.self) { archive in
             URLItemDetailView(item: archive)

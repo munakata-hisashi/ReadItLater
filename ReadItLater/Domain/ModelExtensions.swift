@@ -31,4 +31,14 @@ extension URLItem {
     var maybeURL: URL? {
         URL(string: url ?? "")
     }
+
+    /// 検索テキストがタイトルまたはURLに含まれるかを判定
+    /// - Parameter searchText: 検索文字列
+    /// - Returns: マッチする場合true、空文字列の場合も常にtrue
+    func matches(searchText: String) -> Bool {
+        guard !searchText.isEmpty else { return true }
+        let titleMatches = title?.localizedCaseInsensitiveContains(searchText) ?? false
+        let urlMatches = url?.localizedCaseInsensitiveContains(searchText) ?? false
+        return titleMatches || urlMatches
+    }
 }
