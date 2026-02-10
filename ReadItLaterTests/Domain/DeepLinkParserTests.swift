@@ -10,6 +10,7 @@ import Foundation
 @testable import ReadItLater
 
 @Suite("DeepLinkParser")
+@MainActor
 struct DeepLinkParserTests {
 
     // MARK: - saveアクションのパース成功
