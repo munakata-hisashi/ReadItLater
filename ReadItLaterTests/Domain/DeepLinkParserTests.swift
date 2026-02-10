@@ -46,6 +46,16 @@ struct DeepLinkParserTests {
         #expect(action == .saveToInbox(url: targetURL, title: nil))
     }
 
+    @Test("save - パスやクエリ付きURLとタイトル")
+    func testParseSave_WithComplexURLAndTitle() throws {
+        let targetURL = "https://example.com/path/to/page?key=value&other=123"
+        let encodedURL = targetURL.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+        let encodedTitle = "Example Title".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+        let url = URL(string: "readitlater://save?url=\(encodedURL)&title=\(encodedTitle)")!
+        let action = try DeepLinkParser.parse(url)
+        #expect(action == .saveToInbox(url: targetURL, title: "Example Title"))
+    }
+
     @Test("save - スキーム大文字小文字を区別しない")
     func testParseSave_CaseInsensitiveScheme() throws {
         let url = URL(string: "ReadItLater://save?url=https%3A%2F%2Fexample.com")!

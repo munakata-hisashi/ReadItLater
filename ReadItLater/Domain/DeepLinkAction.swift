@@ -66,14 +66,59 @@ enum DeepLinkParser {
         }
 
         let queryItems = components.queryItems ?? []
+        let title = queryItems.first(where: { $0.name == "title" })?.value
 
-        guard let urlParam = queryItems.first(where: { $0.name == "url" })?.value,
+        guard let urlParam = extractURLParameter(from: components, hasTitleParameter: title != nil),
               !urlParam.isEmpty else {
             throw ParseError.missingURL
         }
 
-        let title = queryItems.first(where: { $0.name == "title" })?.value
-
         return .saveToInbox(url: urlParam, title: title)
+    }
+
+    private static func extractURLParameter(from components: URLComponents, hasTitleParameter: Bool) -> String? {
+        let queryItems = components.queryItems ?? []
+        guard let parsedURL = queryItems.first(where: { $0.name == "url" })?.value else {
+            return nil
+        }
+
+        let expectedItemCount = hasTitleParameter ? 2 : 1
+        let hasUnexpectedItems = queryItems.count > expectedItemCount
+
+        guard let rawQuery = components.percentEncodedQuery,
+              hasUnexpectedItems,
+              parsedURL.contains("?"),
+              let reconstructedURL = reconstructURLParameter(from: rawQuery, hasTitleParameter: hasTitleParameter),
+              !reconstructedURL.isEmpty else {
+            return parsedURL
+        }
+
+        return reconstructedURL
+    }
+
+    private static func reconstructURLParameter(from rawQuery: String, hasTitleParameter: Bool) -> String? {
+        let urlStart: String.Index
+        if rawQuery.hasPrefix("url=") {
+            urlStart = rawQuery.index(rawQuery.startIndex, offsetBy: 4)
+        } else if let range = rawQuery.range(of: "&url=") {
+            urlStart = range.upperBound
+        } else {
+            return nil
+        }
+
+        let urlEnd: String.Index
+        if hasTitleParameter,
+           let titleRange = rawQuery.range(
+            of: "&title=",
+            options: [],
+            range: urlStart..<rawQuery.endIndex
+           ) {
+            urlEnd = titleRange.lowerBound
+        } else {
+            urlEnd = rawQuery.endIndex
+        }
+
+        let encodedURL = String(rawQuery[urlStart..<urlEnd])
+        return encodedURL.removingPercentEncoding ?? encodedURL
     }
 }
