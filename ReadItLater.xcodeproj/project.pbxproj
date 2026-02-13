@@ -88,6 +88,7 @@
 				Migration/MigrationPlan.swift,
 				Migration/VersionedSchema.swift,
 				ModelContainerFactory.swift,
+				UseCase/SaveToInboxUseCase.swift,
 				UseCase/ShareURLUseCase.swift,
 			);
 			target = 631A9C352F0BFC1600FA4142 /* ShareExtension */;

@@ -210,6 +210,33 @@ struct DeepLinkUseCaseTests {
         }
     }
 
+    @Test("エラー - 保存処理で予期しないエラー")
+    func testExecuteFailure_UnexpectedRepositoryError() async {
+        // Given
+        let mockMetadataService = MockURLMetadataService()
+        let mockRepository = MockInboxRepository()
+        mockRepository.errorToThrow = NSError(domain: "save", code: 999)
+
+        let useCase = DeepLinkUseCase(
+            metadataService: mockMetadataService,
+            repository: mockRepository
+        )
+
+        let url = URL(string: "readitlater://save?url=https%3A%2F%2Fexample.com&title=Test")!
+
+        // When
+        let result = await useCase.execute(url: url)
+
+        // Then
+        switch result {
+        case .success:
+            Issue.record("Expected failure but got success")
+        case .failure(let error):
+            #expect(error == .saveFailed(.containerInitFailed))
+            #expect(!mockRepository.addCalled)
+        }
+    }
+
     @Test("エラー - 無効なURL形式")
     func testExecuteFailure_InvalidURL() async {
         // Given
