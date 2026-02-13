@@ -21,7 +21,27 @@ struct ReadItLaterApp: App {
     var body: some Scene {
         WindowGroup {
             MainTabView()
+                .onOpenURL { url in
+                    handleDeepLink(url)
+                }
         }
         .modelContainer(sharedModelContainer)
+    }
+
+    private func handleDeepLink(_ url: URL) {
+        let modelContext = sharedModelContainer.mainContext
+        let repository = InboxRepository(modelContext: modelContext)
+        let metadataService = URLMetadataService()
+        let useCase = DeepLinkUseCase(
+            metadataService: metadataService,
+            repository: repository
+        )
+
+        Task {
+            let result = await useCase.execute(url: url)
+            if case .failure(let error) = result {
+                print("DeepLink処理エラー: \(error.localizedDescription)")
+            }
+        }
     }
 }
