@@ -24,7 +24,7 @@ struct DeepLinkUseCase: DeepLinkUseCaseProtocol {
         )
     }
 
-    func execute(url: URL) async -> Result<Void, DeepLinkError> {
+    func execute(url: URL) async -> Result<DeepLinkOutput, DeepLinkError> {
         // 1. URLスキームのパース
         let action: DeepLinkAction
         do {
@@ -41,10 +41,16 @@ struct DeepLinkUseCase: DeepLinkUseCaseProtocol {
             let saveResult = await saveToInboxUseCase.execute(urlString: targetURL, title: title)
             switch saveResult {
             case .success:
-                return .success(())
+                return .success(.none)
             case .failure(let error):
                 return .failure(.saveFailed(error))
             }
+        case .openInbox:
+            return .success(.openTab(.inbox))
+        case .openBookmarks:
+            return .success(.openTab(.bookmarks))
+        case .openArchive:
+            return .success(.openTab(.archive))
         }
     }
 }

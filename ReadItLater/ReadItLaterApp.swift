@@ -10,6 +10,8 @@ import SwiftData
 
 @main
 struct ReadItLaterApp: App {
+    @State private var selectedTab: MainTab = .inbox
+
     var sharedModelContainer: ModelContainer = {
         do {
             return try ModelContainerFactory.createSharedContainer()
@@ -20,7 +22,7 @@ struct ReadItLaterApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainTabView()
+            MainTabView(selectedTab: $selectedTab)
                 .onOpenURL { url in
                     handleDeepLink(url)
                 }
@@ -28,6 +30,7 @@ struct ReadItLaterApp: App {
         .modelContainer(sharedModelContainer)
     }
 
+    @MainActor
     private func handleDeepLink(_ url: URL) {
         let modelContext = sharedModelContainer.mainContext
         let repository = InboxRepository(modelContext: modelContext)
@@ -39,9 +42,23 @@ struct ReadItLaterApp: App {
 
         Task {
             let result = await useCase.execute(url: url)
-            if case .failure(let error) = result {
+            switch result {
+            case .success(let output):
+                handleDeepLinkOutput(output)
+            case .failure(let error):
                 print("DeepLink処理エラー: \(error.localizedDescription)")
             }
         }
     }
+
+    @MainActor
+    private func handleDeepLinkOutput(_ output: DeepLinkOutput) {
+        switch output {
+        case .none:
+            break
+        case .openTab(let tab):
+            selectedTab = tab
+        }
+    }
 }
+

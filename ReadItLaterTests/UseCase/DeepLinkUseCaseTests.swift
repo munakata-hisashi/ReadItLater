@@ -33,7 +33,8 @@ struct DeepLinkUseCaseTests {
 
         // Then
         switch result {
-        case .success:
+        case .success(let output):
+            #expect(output == .none)
             #expect(mockRepository.addCalled)
             #expect(mockRepository.addedURL == "https://example.com")
             #expect(mockRepository.addedTitle == "Example Title")
@@ -64,7 +65,8 @@ struct DeepLinkUseCaseTests {
 
         // Then
         switch result {
-        case .success:
+        case .success(let output):
+            #expect(output == .none)
             #expect(mockRepository.addCalled)
             #expect(mockRepository.addedURL == "https://example.com")
             #expect(mockRepository.addedTitle == "Fetched Title")
@@ -92,10 +94,65 @@ struct DeepLinkUseCaseTests {
 
         // Then
         switch result {
-        case .success:
+        case .success(let output):
+            #expect(output == .none)
             #expect(mockRepository.addCalled)
             #expect(mockRepository.addedURL == "https://example.com")
             #expect(mockRepository.addedTitle == "Example.Com")
+        case .failure(let error):
+            Issue.record("Expected success but got error: \(error)")
+        }
+    }
+
+    @Test("open成功 - inboxタブ")
+    func testExecuteSuccess_OpenInbox() async {
+        let useCase = DeepLinkUseCase(
+            metadataService: MockURLMetadataService(),
+            repository: MockInboxRepository()
+        )
+
+        let url = URL(string: "readitlater://inbox")!
+        let result = await useCase.execute(url: url)
+
+        switch result {
+        case .success(let output):
+            #expect(output == .openTab(.inbox))
+        case .failure(let error):
+            Issue.record("Expected success but got error: \(error)")
+        }
+    }
+
+    @Test("open成功 - bookmarksタブ")
+    func testExecuteSuccess_OpenBookmarks() async {
+        let useCase = DeepLinkUseCase(
+            metadataService: MockURLMetadataService(),
+            repository: MockInboxRepository()
+        )
+
+        let url = URL(string: "readitlater://bookmarks")!
+        let result = await useCase.execute(url: url)
+
+        switch result {
+        case .success(let output):
+            #expect(output == .openTab(.bookmarks))
+        case .failure(let error):
+            Issue.record("Expected success but got error: \(error)")
+        }
+    }
+
+    @Test("open成功 - archiveタブ")
+    func testExecuteSuccess_OpenArchive() async {
+        let useCase = DeepLinkUseCase(
+            metadataService: MockURLMetadataService(),
+            repository: MockInboxRepository()
+        )
+
+        let url = URL(string: "readitlater://archive")!
+        let result = await useCase.execute(url: url)
+
+        switch result {
+        case .success(let output):
+            #expect(output == .openTab(.archive))
         case .failure(let error):
             Issue.record("Expected success but got error: \(error)")
         }
