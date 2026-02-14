@@ -11,14 +11,17 @@ import SwiftUI
 ///
 /// Inbox、Bookmarks、Archiveの3つのタブを提供
 struct MainTabView: View {
+    @Binding var selectedTab: MainTab
+
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             NavigationStack {
                 InboxListView()
             }
             .tabItem {
                 Label("Inbox", systemImage: "tray")
             }
+            .tag(MainTab.inbox)
 
             NavigationStack {
                 BookmarkListView()
@@ -26,6 +29,7 @@ struct MainTabView: View {
             .tabItem {
                 Label("Bookmarks", systemImage: "bookmark")
             }
+            .tag(MainTab.bookmarks)
 
             NavigationStack {
                 ArchiveListView()
@@ -33,11 +37,12 @@ struct MainTabView: View {
             .tabItem {
                 Label("Archive", systemImage: "archivebox")
             }
+            .tag(MainTab.archive)
         }
     }
 }
 
 #Preview {
-    MainTabView()
+    MainTabView(selectedTab: .constant(.inbox))
         .modelContainer(ModelContainerFactory.createPreviewContainer())
 }

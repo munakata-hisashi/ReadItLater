@@ -63,6 +63,27 @@ struct DeepLinkParserTests {
         #expect(action == .saveToInbox(url: "https://example.com", title: nil))
     }
 
+    @Test("open - inbox")
+    func testParseOpenInbox() throws {
+        let url = URL(string: "readitlater://inbox")!
+        let action = try DeepLinkParser.parse(url)
+        #expect(action == .openInbox)
+    }
+
+    @Test("open - bookmarks")
+    func testParseOpenBookmarks() throws {
+        let url = URL(string: "readitlater://bookmarks")!
+        let action = try DeepLinkParser.parse(url)
+        #expect(action == .openBookmarks)
+    }
+
+    @Test("open - archive")
+    func testParseOpenArchive() throws {
+        let url = URL(string: "readitlater://archive")!
+        let action = try DeepLinkParser.parse(url)
+        #expect(action == .openArchive)
+    }
+
     // MARK: - パースエラー
 
     @Test("エラー - サポートされていないスキーム")

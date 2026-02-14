@@ -14,6 +14,12 @@ enum DeepLinkAction: Equatable {
     ///   - url: 保存対象のURL文字列
     ///   - title: オプションのタイトル
     case saveToInbox(url: String, title: String?)
+    /// Inboxタブを開く
+    case openInbox
+    /// Bookmarksタブを開く
+    case openBookmarks
+    /// Archiveタブを開く
+    case openArchive
 }
 
 /// カスタムURLスキームのパース処理
@@ -53,6 +59,12 @@ enum DeepLinkParser {
         switch action {
         case "save":
             return try parseSaveAction(url)
+        case "inbox":
+            return .openInbox
+        case "bookmark", "bookmarks":
+            return .openBookmarks
+        case "archive":
+            return .openArchive
         default:
             throw ParseError.unknownAction(action)
         }
