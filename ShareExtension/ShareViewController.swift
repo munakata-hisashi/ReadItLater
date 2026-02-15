@@ -201,7 +201,32 @@ final class ShareViewController: UIViewController {
             return
         }
 
-        extensionContext?.open(url) { _ in }
+        extensionContext?.open(url) { [weak self] success in
+            Task { @MainActor in
+                guard let self else { return }
+                if success {
+                    self.extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
+                    return
+                }
+
+                // Share Extension環境ではextensionContext.openが失敗することがあるため、
+                // responder chain経由でopenURL:をフォールバック実行する。
+                self.openAppViaResponderChain(url)
+                self.extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
+            }
+        }
+    }
+
+    private func openAppViaResponderChain(_ url: URL) {
+        let selector = NSSelectorFromString("openURL:")
+        var responder: UIResponder? = self
+        while let currentResponder = responder {
+            if currentResponder.responds(to: selector) {
+                _ = currentResponder.perform(selector, with: url)
+                return
+            }
+            responder = currentResponder.next
+        }
     }
 
     @objc
