@@ -53,6 +53,7 @@ struct ArchiveListView: View {
         .navigationDestination(for: Archive.self) { archive in
             URLItemDetailView(item: archive)
         }
+        .tint(Color.appBrandPrimary)
     }
 
     private func moveToInbox(_ archive: Archive) {

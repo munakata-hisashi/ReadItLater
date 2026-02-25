@@ -17,16 +17,17 @@ struct URLItemRow: View {
     @ScaledMetric(relativeTo: .headline) private var titleMinHeight: CGFloat = 44
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: AppSpacing.xSmall) {
             Text(item.safeTitle)
-                .font(.headline)
+                .font(AppFont.listTitle())
+                .foregroundStyle(Color.appTextPrimary)
                 .lineLimit(2)
                 .frame(minHeight: titleMinHeight, alignment: .topLeading)
 
             if let urlString = item.url {
                 Text(urlString)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    .font(AppFont.caption())
+                    .foregroundStyle(Color.appTextSecondary)
                     .lineLimit(1)
             }
         }

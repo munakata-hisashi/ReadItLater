@@ -15,7 +15,7 @@ struct InboxSwipeButton: View {
         Button(action: action) {
             Label("Inbox", systemImage: "tray")
         }
-        .tint(.orange)
+        .tint(Color.appSwipeInbox)
     }
 }
 
@@ -27,7 +27,7 @@ struct BookmarkSwipeButton: View {
         Button(action: action) {
             Label("Bookmark", systemImage: "bookmark")
         }
-        .tint(.blue)
+        .tint(Color.appSwipeBookmark)
     }
 }
 
@@ -39,7 +39,7 @@ struct ArchiveSwipeButton: View {
         Button(action: action) {
             Label("Archive", systemImage: "archivebox")
         }
-        .tint(.green)
+        .tint(Color.appSwipeArchive)
     }
 }
 
