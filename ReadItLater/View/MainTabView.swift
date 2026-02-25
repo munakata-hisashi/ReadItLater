@@ -9,35 +9,37 @@ import SwiftUI
 
 /// アプリのメインタブビュー
 ///
-/// Inbox、Bookmarks、Archiveの3つのタブを提供
+/// Inbox、Bookmarks、Archiveの3つのタブを提供。
+/// フローティングカプセル型タブバーを採用。
 struct MainTabView: View {
     @Binding var selectedTab: MainTab
+    @State private var hideTabBar = false
 
     var body: some View {
-        TabView(selection: $selectedTab) {
-            NavigationStack {
-                InboxListView()
+        ZStack(alignment: .bottom) {
+            Group {
+                switch selectedTab {
+                case .inbox:
+                    NavigationStack {
+                        InboxListView()
+                    }
+                case .bookmarks:
+                    NavigationStack {
+                        BookmarkListView()
+                    }
+                case .archive:
+                    NavigationStack {
+                        ArchiveListView()
+                    }
+                }
             }
-            .tabItem {
-                Label("Inbox", systemImage: "tray")
-            }
-            .tag(MainTab.inbox)
+            .environment(\.hideFloatingTabBar, $hideTabBar)
 
-            NavigationStack {
-                BookmarkListView()
+            if !hideTabBar {
+                FloatingTabBar(selectedTab: $selectedTab)
+                    .padding(.bottom, AppSpacing.xSmall)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
             }
-            .tabItem {
-                Label("Bookmarks", systemImage: "bookmark")
-            }
-            .tag(MainTab.bookmarks)
-
-            NavigationStack {
-                ArchiveListView()
-            }
-            .tabItem {
-                Label("Archive", systemImage: "archivebox")
-            }
-            .tag(MainTab.archive)
         }
     }
 }

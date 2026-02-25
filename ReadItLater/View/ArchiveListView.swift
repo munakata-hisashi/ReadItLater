@@ -54,6 +54,7 @@ struct ArchiveListView: View {
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
         .background(AppColors.backgroundPrimary)
+        .safeAreaInset(edge: .bottom) { Color.clear.frame(height: 80) }
         .searchable(text: $searchText, prompt: "タイトルまたはURLで検索")
         .navigationTitle("Archive")
         .navigationDestination(for: Archive.self) { archive in

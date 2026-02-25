@@ -14,6 +14,7 @@ import SwiftData
 struct URLItemDetailView: View {
     let item: any URLItem
     @Environment(\.openURL) private var openURL
+    @Environment(\.hideFloatingTabBar) private var hideTabBar
 
     var body: some View {
         VStack {
@@ -31,7 +32,8 @@ struct URLItemDetailView: View {
         }
         .navigationTitle(item.safeTitle)
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar(.hidden, for: .tabBar)
+        .onAppear { hideTabBar.wrappedValue = true }
+        .onDisappear { hideTabBar.wrappedValue = false }
         .toolbar {
             if let url = item.maybeURL {
                 ToolbarItem(placement: .topBarTrailing) {
