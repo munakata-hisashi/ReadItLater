@@ -23,9 +23,14 @@ struct ArchiveListView: View {
         InboxRepository(modelContext: modelContext)
     }
 
+    /// 検索入力をトリムした文字列（空白のみ入力は空として扱う）
+    private var normalizedSearchText: String {
+        searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     /// 検索フィルタ済みのアイテム
     private var filteredItems: [Archive] {
-        archiveItems.filter { $0.matches(searchText: searchText) }
+        archiveItems.filter { $0.matches(searchText: normalizedSearchText) }
     }
 
     var body: some View {
@@ -53,7 +58,7 @@ struct ArchiveListView: View {
         .urlItemListScreenStyle()
         .overlay {
             if filteredItems.isEmpty {
-                if searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                if normalizedSearchText.isEmpty {
                     URLItemEmptyStateView(
                         systemImage: "archivebox",
                         title: "Archiveは空です",
