@@ -83,6 +83,7 @@ struct AddInboxSheet: View {
                         onCancel()
                     }
                     .foregroundStyle(Color.appTextSecondary)
+                    .accessibilityLabel("Cancel")
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -92,6 +93,7 @@ struct AddInboxSheet: View {
                     .font(AppFont.button())
                     .fontWeight(.semibold)
                     .disabled(viewModel.urlString.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading)
+                    .accessibilityLabel("Save Inbox Item")
                 }
             }
         }
