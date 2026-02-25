@@ -10,6 +10,7 @@ import SwiftUI
 /// URLItemプロトコルに準拠したモデルをカード形式で表示する
 struct ArticleCardView: View {
     let item: any URLItem
+    @State private var didTap = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.xxSmall) {
@@ -31,6 +32,8 @@ struct ArticleCardView: View {
         .background(AppColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.06), radius: 6, x: 0, y: 2)
+        .sensoryFeedback(.selection, trigger: didTap)
+        .onTapGesture { didTap.toggle() }
     }
 }
 

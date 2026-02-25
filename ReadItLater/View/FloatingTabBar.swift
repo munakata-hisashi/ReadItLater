@@ -44,7 +44,7 @@ struct FloatingTabBar: View {
         let isSelected = selectedTab == item.tab
 
         Button {
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
+            withAnimation(AppAnimation.standard) {
                 selectedTab = item.tab
             }
         } label: {

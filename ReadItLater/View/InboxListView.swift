@@ -71,7 +71,7 @@ struct InboxListView: View {
     }
 
     private func addToInbox(from inboxData: InboxData) {
-        withAnimation {
+        withAnimation(AppAnimation.standard) {
             do {
                 try repository.add(url: inboxData.url, title: inboxData.title)
             } catch {
@@ -82,7 +82,7 @@ struct InboxListView: View {
     }
 
     private func moveToBookmark(_ inbox: Inbox) {
-        withAnimation {
+        withAnimation(AppAnimation.standard) {
             do {
                 try repository.moveToBookmark(inbox)
             } catch {
@@ -92,7 +92,7 @@ struct InboxListView: View {
     }
 
     private func moveToArchive(_ inbox: Inbox) {
-        withAnimation {
+        withAnimation(AppAnimation.standard) {
             do {
                 try repository.moveToArchive(inbox)
             } catch {
@@ -102,7 +102,7 @@ struct InboxListView: View {
     }
 
     private func deleteInbox(_ inbox: Inbox) {
-        withAnimation {
+        withAnimation(AppAnimation.standard) {
             repository.delete(inbox)
         }
     }
