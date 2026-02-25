@@ -46,8 +46,10 @@ struct ArchiveListView: View {
                         deleteArchive(archive)
                     }
                 }
+                .urlItemListRowStyle()
             }
         }
+        .urlItemListScreenStyle()
         .searchable(text: $searchText, prompt: "タイトルまたはURLで検索")
         .navigationTitle("Archive")
         .navigationDestination(for: Archive.self) { archive in

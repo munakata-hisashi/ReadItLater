@@ -37,8 +37,10 @@ struct InboxListView: View {
                         deleteInbox(inbox)
                     }
                 }
+                .urlItemListRowStyle()
             }
         }
+        .urlItemListScreenStyle()
         .navigationTitle("Inbox")
         .navigationDestination(for: Inbox.self) { inbox in
             URLItemDetailView(item: inbox)
