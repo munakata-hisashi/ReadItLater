@@ -12,6 +12,8 @@ struct InboxListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Inbox.addedInboxAt, order: .reverse) private var inboxItems: [Inbox]
     @State private var showingAddSheet = false
+    @State private var addButtonTrigger = 0
+    @State private var actionFeedbackTrigger = 0
 
     /// Repository（computed propertyとして生成）
     private var repository: InboxRepositoryProtocol {
@@ -41,19 +43,32 @@ struct InboxListView: View {
             }
         }
         .urlItemListScreenStyle()
+        .overlay {
+            if inboxItems.isEmpty {
+                URLItemEmptyStateView(
+                    systemImage: "tray",
+                    title: "Inboxはまだ空です",
+                    message: "気になる記事URLを追加して、あとで読み返せるようにしましょう。",
+                    actionTitle: "URLを追加",
+                    action: openAddSheet
+                )
+            }
+        }
         .navigationTitle("Inbox")
         .navigationDestination(for: Inbox.self) { inbox in
             URLItemDetailView(item: inbox)
         }
         .tint(Color.appBrandPrimary)
+        .sensoryFeedback(.success, trigger: actionFeedbackTrigger)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: { showingAddSheet = true }) {
+                Button(action: openAddSheet) {
                     Image(systemName: "plus")
                         .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(.white)
                         .frame(width: 30, height: 30)
                         .background(Circle().fill(Color.appBrandPrimary))
+                        .symbolEffect(.bounce, value: addButtonTrigger)
                 }
                 .accessibilityLabel("Add Item")
                 .accessibilityHint("Open sheet to add a new URL")
@@ -73,9 +88,10 @@ struct InboxListView: View {
     }
 
     private func addToInbox(from inboxData: InboxData) {
-        withAnimation {
+        withAnimation(.bouncy) {
             do {
                 try repository.add(url: inboxData.url, title: inboxData.title)
+                actionFeedbackTrigger += 1
             } catch {
                 // TODO: エラーハンドリング（アラート表示など）
                 print("Failed to add to Inbox: \(error)")
@@ -84,9 +100,10 @@ struct InboxListView: View {
     }
 
     private func moveToBookmark(_ inbox: Inbox) {
-        withAnimation {
+        withAnimation(.bouncy) {
             do {
                 try repository.moveToBookmark(inbox)
+                actionFeedbackTrigger += 1
             } catch {
                 print("Failed to move to Bookmark: \(error)")
             }
@@ -94,9 +111,10 @@ struct InboxListView: View {
     }
 
     private func moveToArchive(_ inbox: Inbox) {
-        withAnimation {
+        withAnimation(.bouncy) {
             do {
                 try repository.moveToArchive(inbox)
+                actionFeedbackTrigger += 1
             } catch {
                 print("Failed to move to Archive: \(error)")
             }
@@ -104,9 +122,15 @@ struct InboxListView: View {
     }
 
     private func deleteInbox(_ inbox: Inbox) {
-        withAnimation {
+        withAnimation(.bouncy) {
             repository.delete(inbox)
+            actionFeedbackTrigger += 1
         }
+    }
+
+    private func openAddSheet() {
+        addButtonTrigger += 1
+        showingAddSheet = true
     }
 }
 
