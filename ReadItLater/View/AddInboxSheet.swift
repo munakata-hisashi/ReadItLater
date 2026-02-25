@@ -49,19 +49,19 @@ struct AddInboxSheet: View {
                                 ProgressView()
                                     .scaleEffect(0.8)
                                 Text("Fetching page title...")
-                                    .font(.caption)
+                                    .font(AppFont.caption())
                                     .foregroundColor(.secondary)
                             }
                         }
-                        
+
                         if let fetchedTitle = viewModel.fetchedTitle,
                            viewModel.titleString.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                             Button {
                                 viewModel.titleString = fetchedTitle
                             } label: {
                                 Text("Suggested title: \(fetchedTitle)")
-                                    .font(.caption)
-                                    .foregroundColor(.blue)
+                                    .font(AppFont.caption())
+                                    .foregroundColor(AppColors.brandPrimary)
                             }
                         }
                     }

@@ -22,7 +22,10 @@ struct URLItemDetailView: View {
             } else {
                 VStack {
                     Text(item.safeTitle)
+                        .font(AppFont.headline())
                     Text("No URL")
+                        .font(AppFont.body())
+                        .foregroundColor(.secondary)
                 }
             }
         }
