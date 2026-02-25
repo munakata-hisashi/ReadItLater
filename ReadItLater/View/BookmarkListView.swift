@@ -48,6 +48,7 @@ struct BookmarkListView: View {
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
         .background(AppColors.backgroundPrimary)
+        .safeAreaInset(edge: .bottom) { Color.clear.frame(height: 80) }
         .navigationTitle("Bookmarks")
         .navigationDestination(for: Bookmark.self) { bookmark in
             URLItemDetailView(item: bookmark)

@@ -45,6 +45,7 @@ struct InboxListView: View {
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
         .background(AppColors.backgroundPrimary)
+        .safeAreaInset(edge: .bottom) { Color.clear.frame(height: 80) }
         .navigationTitle("Inbox")
         .navigationDestination(for: Inbox.self) { inbox in
             URLItemDetailView(item: inbox)
