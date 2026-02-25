@@ -63,7 +63,7 @@ struct ArchiveListView: View {
     }
 
     private func moveToInbox(_ archive: Archive) {
-        withAnimation {
+        withAnimation(AppAnimation.standard) {
             do {
                 try repository.moveToInbox(archive, using: inboxRepository)
             } catch {
@@ -73,7 +73,7 @@ struct ArchiveListView: View {
     }
 
     private func moveToBookmark(_ archive: Archive) {
-        withAnimation {
+        withAnimation(AppAnimation.standard) {
             do {
                 try repository.moveToBookmark(archive)
             } catch {
@@ -83,7 +83,7 @@ struct ArchiveListView: View {
     }
 
     private func deleteArchive(_ archive: Archive) {
-        withAnimation {
+        withAnimation(AppAnimation.standard) {
             repository.delete(archive)
         }
     }

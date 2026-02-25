@@ -56,7 +56,7 @@ struct BookmarkListView: View {
     }
 
     private func moveToInbox(_ bookmark: Bookmark) {
-        withAnimation {
+        withAnimation(AppAnimation.standard) {
             do {
                 try repository.moveToInbox(bookmark, using: inboxRepository)
             } catch {
@@ -66,7 +66,7 @@ struct BookmarkListView: View {
     }
 
     private func moveToArchive(_ bookmark: Bookmark) {
-        withAnimation {
+        withAnimation(AppAnimation.standard) {
             do {
                 try repository.moveToArchive(bookmark)
             } catch {
@@ -76,7 +76,7 @@ struct BookmarkListView: View {
     }
 
     private func deleteBookmark(_ bookmark: Bookmark) {
-        withAnimation {
+        withAnimation(AppAnimation.standard) {
             repository.delete(bookmark)
         }
     }
