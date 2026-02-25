@@ -28,33 +28,49 @@ struct ArchiveListView: View {
     }
 
     var body: some View {
-        List {
-            ForEach(filteredItems) { archive in
-                NavigationLink(value: archive) {
-                    ArticleCardView(item: archive)
-                }
-                .listRowBackground(Color.clear)
-                .listRowSeparator(.hidden)
-                .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
-                .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                    InboxSwipeButton {
-                        moveToInbox(archive)
+        Group {
+            if archiveItems.isEmpty {
+                EmptyStateView(
+                    icon: "archivebox",
+                    title: "Archive is Empty",
+                    description: "InboxやBookmarksのURLをアーカイブに移動できます"
+                )
+            } else if filteredItems.isEmpty {
+                EmptyStateView(
+                    icon: "magnifyingglass",
+                    title: "No Results",
+                    description: "\"\(searchText)\" に一致するアイテムが見つかりません"
+                )
+            } else {
+                List {
+                    ForEach(filteredItems) { archive in
+                        NavigationLink(value: archive) {
+                            ArticleCardView(item: archive)
+                        }
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                            InboxSwipeButton {
+                                moveToInbox(archive)
+                            }
+                            BookmarkSwipeButton {
+                                moveToBookmark(archive)
+                            }
+                        }
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            DeleteSwipeButton {
+                                deleteArchive(archive)
+                            }
+                        }
                     }
-                    BookmarkSwipeButton {
-                        moveToBookmark(archive)
-                    }
                 }
-                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                    DeleteSwipeButton {
-                        deleteArchive(archive)
-                    }
-                }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(AppColors.backgroundPrimary)
+                .safeAreaInset(edge: .bottom) { Color.clear.frame(height: 80) }
             }
         }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
-        .background(AppColors.backgroundPrimary)
-        .safeAreaInset(edge: .bottom) { Color.clear.frame(height: 80) }
         .searchable(text: $searchText, prompt: "タイトルまたはURLで検索")
         .navigationTitle("Archive")
         .navigationDestination(for: Archive.self) { archive in
