@@ -66,10 +66,11 @@ struct InboxListView: View {
                     Image(systemName: "plus")
                         .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(.white)
-                        .frame(width: 30, height: 30)
+                        .frame(width: 36, height: 36)
                         .background(Circle().fill(Color.appBrandPrimary))
                         .symbolEffect(.bounce, value: addButtonTrigger)
                 }
+                .contentShape(Rectangle())
                 .accessibilityLabel("Add Item")
                 .accessibilityHint("Open sheet to add a new URL")
             }

@@ -67,6 +67,7 @@ struct URLItemEmptyStateView: View {
                         .font(AppFont.button())
                         .padding(.horizontal, AppSpacing.large)
                         .padding(.vertical, AppSpacing.small)
+                        .frame(minHeight: 44)
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(Color.appBrandPrimary)

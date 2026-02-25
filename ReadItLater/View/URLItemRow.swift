@@ -16,6 +16,8 @@ struct URLItemRow: View {
 
     /// Dynamic Type対応の2行分の最小高さ
     @ScaledMetric(relativeTo: .headline) private var titleMinHeight: CGFloat = 44
+    @ScaledMetric(relativeTo: .headline) private var stateIconSize: CGFloat = 28
+    @ScaledMetric(relativeTo: .caption) private var stateBadgeVerticalPadding: CGFloat = 3
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.small) {
@@ -27,7 +29,7 @@ struct URLItemRow: View {
                             .font(.system(size: 12, weight: .semibold))
                             .foregroundStyle(itemStateColor)
                     )
-                    .frame(width: 28, height: 28)
+                    .frame(width: stateIconSize, height: stateIconSize)
 
                 Text(item.safeTitle)
                     .font(AppFont.listTitle())
@@ -50,7 +52,7 @@ struct URLItemRow: View {
                     .font(AppFont.caption())
                     .foregroundStyle(itemStateColor)
                     .padding(.horizontal, AppSpacing.small)
-                    .padding(.vertical, 2)
+                    .padding(.vertical, stateBadgeVerticalPadding)
                     .background(
                         Capsule().fill(itemStateColor.opacity(colorScheme == .dark ? 0.25 : 0.12))
                     )
@@ -75,12 +77,18 @@ struct URLItemRow: View {
                         )
                 )
                 .shadow(
-                    color: colorScheme == .dark ? Color.clear : Color.black.opacity(0.08),
-                    radius: 8,
+                    color: colorScheme == .dark
+                        ? Color.appBrandPrimary.opacity(0.14)
+                        : Color.black.opacity(0.08),
+                    radius: colorScheme == .dark ? 12 : 8,
                     x: 0,
-                    y: 3
+                    y: colorScheme == .dark ? 0 : 3
                 )
         )
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(itemStateTitle), \(item.safeTitle)")
+        .accessibilityValue(item.url ?? "No URL")
+        .accessibilityHint("Added on \(item.addedInboxAt.formatted(date: .abbreviated, time: .omitted))")
     }
 
     private var itemStateTitle: String {
