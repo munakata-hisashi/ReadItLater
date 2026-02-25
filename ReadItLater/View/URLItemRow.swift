@@ -19,13 +19,13 @@ struct URLItemRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(item.safeTitle)
-                .font(.headline)
+                .font(AppFont.headline())
                 .lineLimit(2)
                 .frame(minHeight: titleMinHeight, alignment: .topLeading)
 
             if let urlString = item.url {
                 Text(urlString)
-                    .font(.caption)
+                    .font(AppFont.caption())
                     .foregroundColor(.secondary)
                     .lineLimit(1)
             }
