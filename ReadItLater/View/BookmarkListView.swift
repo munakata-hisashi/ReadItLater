@@ -25,8 +25,11 @@ struct BookmarkListView: View {
         List {
             ForEach(bookmarks) { bookmark in
                 NavigationLink(value: bookmark) {
-                    URLItemRow(item: bookmark)
+                    ArticleCardView(item: bookmark)
                 }
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
+                .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
                 .swipeActions(edge: .leading, allowsFullSwipe: true) {
                     InboxSwipeButton {
                         moveToInbox(bookmark)
@@ -42,6 +45,9 @@ struct BookmarkListView: View {
                 }
             }
         }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .background(AppColors.backgroundPrimary)
         .navigationTitle("Bookmarks")
         .navigationDestination(for: Bookmark.self) { bookmark in
             URLItemDetailView(item: bookmark)

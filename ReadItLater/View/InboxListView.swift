@@ -22,8 +22,11 @@ struct InboxListView: View {
         List {
             ForEach(inboxItems) { inbox in
                 NavigationLink(value: inbox) {
-                    URLItemRow(item: inbox)
+                    ArticleCardView(item: inbox)
                 }
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
+                .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
                 .swipeActions(edge: .leading, allowsFullSwipe: true) {
                     BookmarkSwipeButton {
                         moveToBookmark(inbox)
@@ -39,6 +42,9 @@ struct InboxListView: View {
                 }
             }
         }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .background(AppColors.backgroundPrimary)
         .navigationTitle("Inbox")
         .navigationDestination(for: Inbox.self) { inbox in
             URLItemDetailView(item: inbox)

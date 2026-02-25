@@ -31,8 +31,11 @@ struct ArchiveListView: View {
         List {
             ForEach(filteredItems) { archive in
                 NavigationLink(value: archive) {
-                    URLItemRow(item: archive)
+                    ArticleCardView(item: archive)
                 }
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
+                .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
                 .swipeActions(edge: .leading, allowsFullSwipe: true) {
                     InboxSwipeButton {
                         moveToInbox(archive)
@@ -48,6 +51,9 @@ struct ArchiveListView: View {
                 }
             }
         }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .background(AppColors.backgroundPrimary)
         .searchable(text: $searchText, prompt: "タイトルまたはURLで検索")
         .navigationTitle("Archive")
         .navigationDestination(for: Archive.self) { archive in
