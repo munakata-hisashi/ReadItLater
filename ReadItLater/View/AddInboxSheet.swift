@@ -49,32 +49,31 @@ struct AddInboxSheet: View {
                                 ProgressView()
                                     .scaleEffect(0.8)
                                 Text("Fetching page title...")
-                                    .font(AppFont.caption())
-                                    .foregroundStyle(Color.appTextSecondary)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
                             }
                         }
-
+                        
                         if let fetchedTitle = viewModel.fetchedTitle,
                            viewModel.titleString.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                             Button {
                                 viewModel.titleString = fetchedTitle
                             } label: {
                                 Text("Suggested title: \(fetchedTitle)")
-                                    .font(AppFont.caption())
-                                    .foregroundStyle(Color.appBrandPrimary)
+                                    .font(.caption)
+                                    .foregroundColor(.blue)
                             }
                         }
                     }
                 }
-
+                
                 if let errorMessage = viewModel.errorMessage {
                     Section {
                         Label(errorMessage, systemImage: "exclamationmark.triangle")
-                            .foregroundStyle(.red)
+                            .foregroundColor(.red)
                     }
                 }
             }
-            .tint(Color.appBrandPrimary)
             .navigationTitle("Add Inbox")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -88,7 +87,6 @@ struct AddInboxSheet: View {
                     Button("Save") {
                         saveInbox()
                     }
-                    .font(AppFont.button())
                     .disabled(viewModel.urlString.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading)
                 }
             }

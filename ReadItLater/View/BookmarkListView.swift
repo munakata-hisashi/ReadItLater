@@ -46,7 +46,6 @@ struct BookmarkListView: View {
         .navigationDestination(for: Bookmark.self) { bookmark in
             URLItemDetailView(item: bookmark)
         }
-        .tint(Color.appBrandPrimary)
     }
 
     private func moveToInbox(_ bookmark: Bookmark) {

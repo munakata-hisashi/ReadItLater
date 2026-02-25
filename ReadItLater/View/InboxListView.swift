@@ -43,7 +43,6 @@ struct InboxListView: View {
         .navigationDestination(for: Inbox.self) { inbox in
             URLItemDetailView(item: inbox)
         }
-        .tint(Color.appBrandPrimary)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: { showingAddSheet = true }) {
