@@ -39,6 +39,7 @@ struct MainTabView: View {
             }
             .tag(MainTab.archive)
         }
+        .tint(Color.appBrandPrimary)
     }
 }
 
