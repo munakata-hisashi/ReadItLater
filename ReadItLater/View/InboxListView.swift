@@ -49,8 +49,14 @@ struct InboxListView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: { showingAddSheet = true }) {
-                    Label("Add Item", systemImage: "plus")
+                    Image(systemName: "plus")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
+                        .frame(width: 30, height: 30)
+                        .background(Circle().fill(Color.appBrandPrimary))
                 }
+                .accessibilityLabel("Add Item")
+                .accessibilityHint("Open sheet to add a new URL")
             }
         }
         .sheet(isPresented: $showingAddSheet) {

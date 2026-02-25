@@ -82,6 +82,7 @@ struct AddInboxSheet: View {
                     Button("Cancel") {
                         onCancel()
                     }
+                    .foregroundStyle(Color.appTextSecondary)
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -89,6 +90,7 @@ struct AddInboxSheet: View {
                         saveInbox()
                     }
                     .font(AppFont.button())
+                    .fontWeight(.semibold)
                     .disabled(viewModel.urlString.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading)
                 }
             }

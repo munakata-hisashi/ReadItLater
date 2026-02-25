@@ -19,7 +19,7 @@ struct MainTabView: View {
                 InboxListView()
             }
             .tabItem {
-                Label("Inbox", systemImage: "tray")
+                Label("Inbox", systemImage: selectedTab == .inbox ? "tray.fill" : "tray")
             }
             .tag(MainTab.inbox)
 
@@ -27,7 +27,7 @@ struct MainTabView: View {
                 BookmarkListView()
             }
             .tabItem {
-                Label("Bookmarks", systemImage: "bookmark")
+                Label("Bookmarks", systemImage: selectedTab == .bookmarks ? "bookmark.fill" : "bookmark")
             }
             .tag(MainTab.bookmarks)
 
@@ -35,11 +35,13 @@ struct MainTabView: View {
                 ArchiveListView()
             }
             .tabItem {
-                Label("Archive", systemImage: "archivebox")
+                Label("Archive", systemImage: selectedTab == .archive ? "archivebox.fill" : "archivebox")
             }
             .tag(MainTab.archive)
         }
         .tint(Color.appBrandPrimary)
+        .toolbarBackground(Color.appCardBackground, for: .tabBar)
+        .toolbarBackground(.visible, for: .tabBar)
     }
 }
 
