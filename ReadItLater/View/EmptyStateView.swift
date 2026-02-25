@@ -16,6 +16,7 @@ struct EmptyStateView: View {
     var actionTitle: String? = nil
     var action: (() -> Void)? = nil
 
+    @Environment(\.colorScheme) private var colorScheme
     @State private var isPulsing = false
 
     var body: some View {
@@ -58,13 +59,16 @@ struct EmptyStateView: View {
                         .padding(.vertical, AppSpacing.small)
                         .background(
                             LinearGradient(
-                                colors: [AppColors.brandPrimary, AppColors.brandSecondary],
+                                colors: [
+                                    AppColors.brandPrimary.opacity(colorScheme == .dark ? 0.85 : 1.0),
+                                    AppColors.brandSecondary.opacity(colorScheme == .dark ? 0.85 : 1.0),
+                                ],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
                         )
                         .clipShape(Capsule())
-                        .shadow(color: AppColors.brandPrimary.opacity(0.4), radius: 8, x: 0, y: 4)
+                        .shadow(color: AppColors.brandPrimary.opacity(colorScheme == .dark ? 0.25 : 0.4), radius: 8, x: 0, y: 4)
                 }
                 .buttonStyle(ScaleButtonStyle())
             }

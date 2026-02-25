@@ -31,7 +31,7 @@ struct ArticleCardView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(AppColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: .black.opacity(0.06), radius: 6, x: 0, y: 2)
+        .adaptiveShadow()
         .sensoryFeedback(.selection, trigger: didTap)
         .onTapGesture { didTap.toggle() }
     }
