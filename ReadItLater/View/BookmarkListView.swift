@@ -22,33 +22,43 @@ struct BookmarkListView: View {
     }
 
     var body: some View {
-        List {
-            ForEach(bookmarks) { bookmark in
-                NavigationLink(value: bookmark) {
-                    ArticleCardView(item: bookmark)
-                }
-                .listRowBackground(Color.clear)
-                .listRowSeparator(.hidden)
-                .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
-                .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                    InboxSwipeButton {
-                        moveToInbox(bookmark)
+        Group {
+            if bookmarks.isEmpty {
+                EmptyStateView(
+                    icon: "bookmark",
+                    title: "No Bookmarks",
+                    description: "InboxのURLをブックマークに移動できます"
+                )
+            } else {
+                List {
+                    ForEach(bookmarks) { bookmark in
+                        NavigationLink(value: bookmark) {
+                            ArticleCardView(item: bookmark)
+                        }
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                            InboxSwipeButton {
+                                moveToInbox(bookmark)
+                            }
+                            ArchiveSwipeButton {
+                                moveToArchive(bookmark)
+                            }
+                        }
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            DeleteSwipeButton {
+                                deleteBookmark(bookmark)
+                            }
+                        }
                     }
-                    ArchiveSwipeButton {
-                        moveToArchive(bookmark)
-                    }
                 }
-                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                    DeleteSwipeButton {
-                        deleteBookmark(bookmark)
-                    }
-                }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(AppColors.backgroundPrimary)
+                .safeAreaInset(edge: .bottom) { Color.clear.frame(height: 80) }
             }
         }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
-        .background(AppColors.backgroundPrimary)
-        .safeAreaInset(edge: .bottom) { Color.clear.frame(height: 80) }
         .navigationTitle("Bookmarks")
         .navigationDestination(for: Bookmark.self) { bookmark in
             URLItemDetailView(item: bookmark)

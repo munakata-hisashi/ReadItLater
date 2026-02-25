@@ -19,33 +19,45 @@ struct InboxListView: View {
     }
 
     var body: some View {
-        List {
-            ForEach(inboxItems) { inbox in
-                NavigationLink(value: inbox) {
-                    ArticleCardView(item: inbox)
-                }
-                .listRowBackground(Color.clear)
-                .listRowSeparator(.hidden)
-                .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
-                .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                    BookmarkSwipeButton {
-                        moveToBookmark(inbox)
+        Group {
+            if inboxItems.isEmpty {
+                EmptyStateView(
+                    icon: "tray",
+                    title: "Inbox is Empty",
+                    description: "URLを追加して後で読もう",
+                    actionTitle: "URLを追加",
+                    action: { showingAddSheet = true }
+                )
+            } else {
+                List {
+                    ForEach(inboxItems) { inbox in
+                        NavigationLink(value: inbox) {
+                            ArticleCardView(item: inbox)
+                        }
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                            BookmarkSwipeButton {
+                                moveToBookmark(inbox)
+                            }
+                            ArchiveSwipeButton {
+                                moveToArchive(inbox)
+                            }
+                        }
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            DeleteSwipeButton {
+                                deleteInbox(inbox)
+                            }
+                        }
                     }
-                    ArchiveSwipeButton {
-                        moveToArchive(inbox)
-                    }
                 }
-                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                    DeleteSwipeButton {
-                        deleteInbox(inbox)
-                    }
-                }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(AppColors.backgroundPrimary)
+                .safeAreaInset(edge: .bottom) { Color.clear.frame(height: 80) }
             }
         }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
-        .background(AppColors.backgroundPrimary)
-        .safeAreaInset(edge: .bottom) { Color.clear.frame(height: 80) }
         .navigationTitle("Inbox")
         .navigationDestination(for: Inbox.self) { inbox in
             URLItemDetailView(item: inbox)
