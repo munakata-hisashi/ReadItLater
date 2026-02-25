@@ -24,6 +24,7 @@ private let tabItems: [TabItem] = [
 struct FloatingTabBar: View {
     @Binding var selectedTab: MainTab
     @Namespace private var indicatorNamespace
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         HStack(spacing: 0) {
@@ -35,7 +36,13 @@ struct FloatingTabBar: View {
         .padding(.vertical, AppSpacing.xSmall)
         .background(.ultraThinMaterial)
         .clipShape(Capsule())
-        .shadow(color: .black.opacity(0.15), radius: 12, x: 0, y: 4)
+        .overlay {
+            if colorScheme == .dark {
+                Capsule()
+                    .stroke(Color.white.opacity(0.12), lineWidth: 1)
+            }
+        }
+        .shadow(color: .black.opacity(colorScheme == .dark ? 0.4 : 0.15), radius: 12, x: 0, y: 4)
         .padding(.horizontal, AppSpacing.large)
     }
 
