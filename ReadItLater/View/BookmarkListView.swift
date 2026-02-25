@@ -40,8 +40,10 @@ struct BookmarkListView: View {
                         deleteBookmark(bookmark)
                     }
                 }
+                .urlItemListRowStyle()
             }
         }
+        .urlItemListScreenStyle()
         .navigationTitle("Bookmarks")
         .navigationDestination(for: Bookmark.self) { bookmark in
             URLItemDetailView(item: bookmark)
