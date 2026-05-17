@@ -15,7 +15,8 @@ struct InboxSwipeButton: View {
         Button(action: action) {
             Label("Inbox", systemImage: "tray")
         }
-        .tint(.orange)
+        .tint(Color.appSwipeInbox)
+        .accessibilityLabel("Move to Inbox")
     }
 }
 
@@ -27,7 +28,8 @@ struct BookmarkSwipeButton: View {
         Button(action: action) {
             Label("Bookmark", systemImage: "bookmark")
         }
-        .tint(.blue)
+        .tint(Color.appSwipeBookmark)
+        .accessibilityLabel("Move to Bookmark")
     }
 }
 
@@ -39,7 +41,8 @@ struct ArchiveSwipeButton: View {
         Button(action: action) {
             Label("Archive", systemImage: "archivebox")
         }
-        .tint(.green)
+        .tint(Color.appSwipeArchive)
+        .accessibilityLabel("Move to Archive")
     }
 }
 
@@ -51,6 +54,7 @@ struct DeleteSwipeButton: View {
         Button(role: .destructive, action: action) {
             Label("Delete", systemImage: "trash")
         }
+        .accessibilityLabel("Delete item")
     }
 }
 
