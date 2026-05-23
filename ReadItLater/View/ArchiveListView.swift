@@ -17,6 +17,7 @@ struct ArchiveListView: View {
     @State private var exportFilename = ""
     @State private var exportErrorMessage: String?
     @State private var showingExportError = false
+    @State private var actionFeedbackTrigger = 0
 
     /// Repository（computed propertyとして生成）
     private var repository: ArchiveRepositoryProtocol {
@@ -29,9 +30,14 @@ struct ArchiveListView: View {
 
     private let exportUseCase = ArchiveExportUseCase()
 
+    /// 検索入力をトリムした文字列（空白のみ入力は空として扱う）
+    private var normalizedSearchText: String {
+        searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     /// 検索フィルタ済みのアイテム
     private var filteredItems: [Archive] {
-        archiveItems.filter { $0.matches(searchText: searchText) }
+        archiveItems.filter { $0.matches(searchText: normalizedSearchText) }
     }
 
     var body: some View {
@@ -52,6 +58,31 @@ struct ArchiveListView: View {
                     DeleteSwipeButton {
                         deleteArchive(archive)
                     }
+                }
+                .urlItemListRowStyle()
+            }
+        }
+        .urlItemListScreenStyle()
+        .overlay {
+            if filteredItems.isEmpty {
+                if normalizedSearchText.isEmpty {
+                    URLItemEmptyStateView(
+                        systemImage: "archivebox",
+                        title: "Archiveは空です",
+                        message: "読み終えた項目をArchiveに移すと、ここで一覧できます。"
+                    )
+                } else {
+                    URLItemEmptyStateView(
+                        systemImage: "magnifyingglass",
+                        title: "検索結果がありません",
+                        message: "別のキーワードで検索するか、検索条件をクリアしてください。",
+                        actionTitle: "検索をクリア",
+                        action: {
+                            withAnimation(.smooth) {
+                                searchText = ""
+                            }
+                        }
+                    )
                 }
             }
         }
@@ -85,12 +116,15 @@ struct ArchiveListView: View {
         } message: {
             Text(exportErrorMessage ?? "不明なエラーが発生しました。")
         }
+        .tint(Color.appBrandPrimary)
+        .sensoryFeedback(.success, trigger: actionFeedbackTrigger)
     }
 
     private func moveToInbox(_ archive: Archive) {
-        withAnimation {
+        withAnimation(.bouncy) {
             do {
                 try repository.moveToInbox(archive, using: inboxRepository)
+                actionFeedbackTrigger += 1
             } catch {
                 print("Failed to move to Inbox: \(error)")
             }
@@ -98,9 +132,10 @@ struct ArchiveListView: View {
     }
 
     private func moveToBookmark(_ archive: Archive) {
-        withAnimation {
+        withAnimation(.bouncy) {
             do {
                 try repository.moveToBookmark(archive)
+                actionFeedbackTrigger += 1
             } catch {
                 print("Failed to move to Bookmark: \(error)")
             }
@@ -108,8 +143,9 @@ struct ArchiveListView: View {
     }
 
     private func deleteArchive(_ archive: Archive) {
-        withAnimation {
+        withAnimation(.bouncy) {
             repository.delete(archive)
+            actionFeedbackTrigger += 1
         }
     }
 
