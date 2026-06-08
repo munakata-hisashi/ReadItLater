@@ -78,7 +78,11 @@ struct ArchiveExportUseCase {
 
     private func escapeCSVField(_ value: String) -> String {
         let escapedValue = value.replacingOccurrences(of: "\"", with: "\"\"")
-        guard escapedValue.contains(",") || escapedValue.contains("\"") || escapedValue.contains("\n") else {
+        guard escapedValue.contains(",")
+            || escapedValue.contains("\"")
+            || escapedValue.contains("\n")
+            || escapedValue.contains("\r")
+        else {
             return escapedValue
         }
 
@@ -95,7 +99,6 @@ struct ArchiveExportUseCase {
         let formatter = DateFormatter()
         formatter.calendar = Calendar(identifier: .gregorian)
         formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.timeZone = TimeZone(secondsFromGMT: 0)
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter
     }()
