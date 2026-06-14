@@ -12,6 +12,11 @@ struct ArchiveListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Archive.archivedAt, order: .reverse) private var archiveItems: [Archive]
     @State private var searchText = ""
+    @State private var showingExporter = false
+    @State private var exportDocument: ArchiveExportDocument?
+    @State private var exportFilename = ""
+    @State private var exportErrorMessage: String?
+    @State private var showingExportError = false
     @State private var actionFeedbackTrigger = 0
 
     /// Repository（computed propertyとして生成）
@@ -22,6 +27,8 @@ struct ArchiveListView: View {
     private var inboxRepository: InboxRepositoryProtocol {
         InboxRepository(modelContext: modelContext)
     }
+
+    private let exportUseCase = ArchiveExportUseCase()
 
     /// 検索入力をトリムした文字列（空白のみ入力は空として扱う）
     private var normalizedSearchText: String {
@@ -84,6 +91,31 @@ struct ArchiveListView: View {
         .navigationDestination(for: Archive.self) { archive in
             URLItemDetailView(item: archive)
         }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: exportArchives) {
+                    Label("Export URLs", systemImage: "square.and.arrow.up")
+                }
+                .disabled(filteredItems.isEmpty)
+            }
+        }
+        .fileExporter(
+            isPresented: $showingExporter,
+            document: exportDocument,
+            contentType: .commaSeparatedText,
+            defaultFilename: exportFilename
+        ) { result in
+            if case .failure(let error) = result, !isUserCancelled(error) {
+                showExportError(message: error.localizedDescription)
+            }
+
+            exportDocument = nil
+        }
+        .alert("エクスポートできませんでした", isPresented: $showingExportError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(exportErrorMessage ?? "不明なエラーが発生しました。")
+        }
         .tint(Color.appBrandPrimary)
         .sensoryFeedback(.success, trigger: actionFeedbackTrigger)
     }
@@ -115,6 +147,39 @@ struct ArchiveListView: View {
             repository.delete(archive)
             actionFeedbackTrigger += 1
         }
+    }
+
+    private func exportArchives() {
+        do {
+            let items = filteredItems.map { ArchiveExportItem(archive: $0) }
+            let export = try exportUseCase.execute(items: items)
+            exportDocument = ArchiveExportDocument(data: export.data)
+            exportFilename = export.filename
+            showingExporter = true
+        } catch let error as ArchiveExportError {
+            showExportError(message: message(for: error))
+        } catch {
+            showExportError(message: error.localizedDescription)
+        }
+    }
+
+    private func showExportError(message: String) {
+        exportErrorMessage = message
+        showingExportError = true
+    }
+
+    private func message(for error: ArchiveExportError) -> String {
+        switch error {
+        case .emptyArchives:
+            return "エクスポートするアーカイブがありません。"
+        case .encodingFailed:
+            return "エクスポートデータの作成に失敗しました。"
+        }
+    }
+
+    private func isUserCancelled(_ error: Error) -> Bool {
+        let nsError = error as NSError
+        return nsError.domain == NSCocoaErrorDomain && nsError.code == CocoaError.userCancelled.rawValue
     }
 }
 
