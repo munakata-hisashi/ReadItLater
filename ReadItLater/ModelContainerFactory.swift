@@ -15,9 +15,7 @@ nonisolated enum ModelContainerFactory {
     /// 共有ModelContainer作成
     static func createSharedContainer(inMemory: Bool = false) throws -> ModelContainer {
         let schema = Schema([
-            Inbox.self,
-            Bookmark.self,
-            Archive.self
+            URLItem.self
         ])
         let modelConfiguration: ModelConfiguration
 

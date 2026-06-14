@@ -21,11 +21,15 @@ struct ArchiveExportItem {
     }
 
     @MainActor
-    init(archive: Archive) {
+    init?(archive: Archive) {
+        guard let archivedAt = archive.archivedAt else {
+            return nil
+        }
+
         self.title = archive.title ?? ""
         self.url = archive.url ?? ""
         self.addedInboxAt = archive.addedInboxAt
-        self.archivedAt = archive.archivedAt
+        self.archivedAt = archivedAt
     }
 }
 

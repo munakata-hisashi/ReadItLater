@@ -38,7 +38,7 @@ struct InboxRepository: InboxRepositoryProtocol {
             throw InboxRepositoryError.inboxFull
         }
 
-        let inbox = Inbox(url: url, title: title)
+        let inbox = Inbox(url: url, title: title, status: .inbox)
         modelContext.insert(inbox)
         try modelContext.save()
     }
@@ -50,7 +50,9 @@ struct InboxRepository: InboxRepositoryProtocol {
     }
 
     func count() -> Int {
-        let descriptor = FetchDescriptor<Inbox>()
+        let descriptor = FetchDescriptor<Inbox>(
+            predicate: #Predicate { $0.status == "inbox" }
+        )
         return (try? modelContext.fetchCount(descriptor)) ?? 0
     }
 
@@ -61,28 +63,16 @@ struct InboxRepository: InboxRepositoryProtocol {
     // MARK: - 状態移動
 
     func moveToBookmark(_ inbox: Inbox) throws {
-        let bookmark = Bookmark(
-            url: inbox.url ?? "",
-            title: inbox.title ?? "",
-            addedInboxAt: inbox.addedInboxAt,  // 元の追加日時を引き継ぐ
-            bookmarkedAt: Date.now  // Bookmarkに移動した日時
-        )
-
-        modelContext.insert(bookmark)
-        modelContext.delete(inbox)
+        inbox.status = URLItemStatus.bookmark.rawValue
+        inbox.bookmarkedAt = Date.now
+        inbox.archivedAt = nil
         try modelContext.save()
     }
 
     func moveToArchive(_ inbox: Inbox) throws {
-        let archive = Archive(
-            url: inbox.url ?? "",
-            title: inbox.title ?? "",
-            addedInboxAt: inbox.addedInboxAt,  // 元の追加日時を引き継ぐ
-            archivedAt: Date.now  // Archiveに移動した日時
-        )
-
-        modelContext.insert(archive)
-        modelContext.delete(inbox)
+        inbox.status = URLItemStatus.archive.rawValue
+        inbox.bookmarkedAt = nil
+        inbox.archivedAt = Date.now
         try modelContext.save()
     }
 

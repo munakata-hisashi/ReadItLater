@@ -11,7 +11,7 @@ import SwiftUI
 ///
 /// URLItemプロトコルに準拠したモデルの共通表示ビュー
 struct URLItemRow: View {
-    let item: any URLItem
+    let item: any URLItemDisplayable
     @Environment(\.colorScheme) private var colorScheme
 
     /// Dynamic Type対応の2行分の最小高さ
@@ -92,33 +92,36 @@ struct URLItemRow: View {
     }
 
     private var itemStateTitle: String {
-        if item is Inbox {
+        switch item.itemStatus {
+        case .inbox:
             return "Inbox"
-        }
-        if item is Bookmark {
+        case .bookmark:
             return "Bookmark"
+        case .archive, nil:
+            return "Archive"
         }
-        return "Archive"
     }
 
     private var itemStateIcon: String {
-        if item is Inbox {
+        switch item.itemStatus {
+        case .inbox:
             return "tray.fill"
-        }
-        if item is Bookmark {
+        case .bookmark:
             return "bookmark.fill"
+        case .archive, nil:
+            return "archivebox.fill"
         }
-        return "archivebox.fill"
     }
 
     private var itemStateColor: Color {
-        if item is Inbox {
+        switch item.itemStatus {
+        case .inbox:
             return Color.appBrandAccent
-        }
-        if item is Bookmark {
+        case .bookmark:
             return Color.appBrandSecondary
+        case .archive, nil:
+            return Color.appBrandPrimary
         }
-        return Color.appBrandPrimary
     }
 }
 

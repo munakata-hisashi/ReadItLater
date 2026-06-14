@@ -118,3 +118,134 @@ struct AppV3Schema: VersionedSchema {
     }
 }
 
+enum URLItemStatus: String {
+    case inbox
+    case bookmark
+    case archive
+}
+
+struct AppV4Schema: VersionedSchema {
+    static let models: [any PersistentModel.Type] = [
+        Inbox.self,
+        Bookmark.self,
+        Archive.self,
+        URLItem.self
+    ]
+    static let versionIdentifier: Schema.Version = .init(4, 0, 0)
+
+    @Model
+    final class Inbox {
+        var id: UUID = UUID()
+        var addedInboxAt: Date = Date.now
+        var url: String?
+        var title: String?
+
+        init(id: UUID = UUID(), url: String, title: String, addedInboxAt: Date = Date.now) {
+            self.id = id
+            self.url = url
+            self.title = title
+            self.addedInboxAt = addedInboxAt
+        }
+    }
+
+    @Model
+    final class Bookmark {
+        var id: UUID = UUID()
+        var addedInboxAt: Date = Date.now
+        var bookmarkedAt: Date = Date.now
+        var url: String?
+        var title: String?
+
+        init(id: UUID = UUID(), url: String, title: String, addedInboxAt: Date = Date.now, bookmarkedAt: Date = Date.now) {
+            self.id = id
+            self.url = url
+            self.title = title
+            self.addedInboxAt = addedInboxAt
+            self.bookmarkedAt = bookmarkedAt
+        }
+    }
+
+    @Model
+    final class Archive {
+        var id: UUID = UUID()
+        var addedInboxAt: Date = Date.now
+        var archivedAt: Date = Date.now
+        var url: String?
+        var title: String?
+
+        init(id: UUID = UUID(), url: String, title: String, addedInboxAt: Date = Date.now, archivedAt: Date = Date.now) {
+            self.id = id
+            self.url = url
+            self.title = title
+            self.addedInboxAt = addedInboxAt
+            self.archivedAt = archivedAt
+        }
+    }
+
+    /// URLItem: V3の3モデルを集約するための中間モデル。
+    @Model
+    final class URLItem {
+        var id: UUID = UUID()
+        var addedInboxAt: Date = Date.now
+        var bookmarkedAt: Date?
+        var archivedAt: Date?
+        var url: String?
+        var title: String?
+        var status: String = URLItemStatus.inbox.rawValue
+
+        init(
+            id: UUID = UUID(),
+            url: String,
+            title: String,
+            addedInboxAt: Date = Date.now,
+            bookmarkedAt: Date? = nil,
+            archivedAt: Date? = nil,
+            status: URLItemStatus = .inbox
+        ) {
+            self.id = id
+            self.url = url
+            self.title = title
+            self.addedInboxAt = addedInboxAt
+            self.bookmarkedAt = bookmarkedAt
+            self.archivedAt = archivedAt
+            self.status = status.rawValue
+        }
+    }
+}
+
+struct AppV5Schema: VersionedSchema {
+    static let models: [any PersistentModel.Type] = [
+        URLItem.self
+    ]
+    static let versionIdentifier: Schema.Version = .init(5, 0, 0)
+
+    /// URLItem: URLの共通本体。現在の置き場所はstatusで表す。
+    @Model
+    final class URLItem {
+        var id: UUID = UUID()
+        var addedInboxAt: Date = Date.now
+        var bookmarkedAt: Date?
+        var archivedAt: Date?
+        var url: String?
+        var title: String?
+        var status: String = URLItemStatus.inbox.rawValue
+
+        init(
+            id: UUID = UUID(),
+            url: String,
+            title: String,
+            addedInboxAt: Date = Date.now,
+            bookmarkedAt: Date? = nil,
+            archivedAt: Date? = nil,
+            status: URLItemStatus = .inbox
+        ) {
+            self.id = id
+            self.url = url
+            self.title = title
+            self.addedInboxAt = addedInboxAt
+            self.bookmarkedAt = bookmarkedAt
+            self.archivedAt = archivedAt
+            self.status = status.rawValue
+        }
+    }
+}

@@ -7,9 +7,10 @@
 
 import Testing
 import SwiftData
+import Foundation
 @testable import ReadItLater
 
-@Suite("InboxRepository")
+@Suite("InboxRepository", .serialized)
 struct InboxRepositoryTests {
 
     // MARK: - Helper
@@ -17,6 +18,27 @@ struct InboxRepositoryTests {
     @MainActor
     private func createInMemoryContainer() throws -> ModelContainer {
         try ModelContainerFactory.createSharedContainer(inMemory: true)
+    }
+
+    private func fetchInboxItems(from context: ModelContext) throws -> [Inbox] {
+        let descriptor = FetchDescriptor<Inbox>(
+            predicate: #Predicate { $0.status == "inbox" }
+        )
+        return try context.fetch(descriptor)
+    }
+
+    private func fetchBookmarks(from context: ModelContext) throws -> [Bookmark] {
+        let descriptor = FetchDescriptor<Bookmark>(
+            predicate: #Predicate { $0.status == "bookmark" }
+        )
+        return try context.fetch(descriptor)
+    }
+
+    private func fetchArchives(from context: ModelContext) throws -> [Archive] {
+        let descriptor = FetchDescriptor<Archive>(
+            predicate: #Predicate { $0.status == "archive" }
+        )
+        return try context.fetch(descriptor)
     }
 
     // MARK: - Add Tests
@@ -29,8 +51,7 @@ struct InboxRepositoryTests {
 
         try repository.add(url: "https://example.com", title: "Example")
 
-        let descriptor = FetchDescriptor<Inbox>()
-        let items = try container.mainContext.fetch(descriptor)
+        let items = try fetchInboxItems(from: container.mainContext)
 
         #expect(items.count == 1)
         #expect(items.first?.url == "https://example.com")
@@ -129,19 +150,19 @@ struct InboxRepositoryTests {
 
         // Given: Inboxアイテム
         try repository.add(url: "https://example.com", title: "Test")
-        let inbox = try context.fetch(FetchDescriptor<Inbox>()).first!
+        let inbox = try fetchInboxItems(from: context).first!
         let originalAddedAt = inbox.addedInboxAt
 
         // When: Bookmarkへ移動
         try repository.moveToBookmark(inbox)
 
         // Then: Bookmarkに存在し、Inboxから削除
-        let bookmarks = try context.fetch(FetchDescriptor<Bookmark>())
+        let bookmarks = try fetchBookmarks(from: context)
         #expect(bookmarks.count == 1)
         #expect(bookmarks.first?.url == "https://example.com")
         #expect(bookmarks.first?.addedInboxAt == originalAddedAt)
 
-        let remainingInbox = try context.fetch(FetchDescriptor<Inbox>())
+        let remainingInbox = try fetchInboxItems(from: context)
         #expect(remainingInbox.isEmpty)
     }
 
@@ -154,19 +175,19 @@ struct InboxRepositoryTests {
 
         // Given: Inboxアイテム
         try repository.add(url: "https://example.com", title: "Test")
-        let inbox = try context.fetch(FetchDescriptor<Inbox>()).first!
+        let inbox = try fetchInboxItems(from: context).first!
         let originalAddedAt = inbox.addedInboxAt
 
         // When: Archiveへ移動
         try repository.moveToArchive(inbox)
 
         // Then: Archiveに存在し、Inboxから削除
-        let archives = try context.fetch(FetchDescriptor<Archive>())
+        let archives = try fetchArchives(from: context)
         #expect(archives.count == 1)
         #expect(archives.first?.url == "https://example.com")
         #expect(archives.first?.addedInboxAt == originalAddedAt)
 
-        let remainingInbox = try context.fetch(FetchDescriptor<Inbox>())
+        let remainingInbox = try fetchInboxItems(from: context)
         #expect(remainingInbox.isEmpty)
     }
 
@@ -179,13 +200,13 @@ struct InboxRepositoryTests {
 
         // Given: Inboxアイテム
         try repository.add(url: "https://example.com", title: "Test")
-        let inbox = try context.fetch(FetchDescriptor<Inbox>()).first!
+        let inbox = try fetchInboxItems(from: context).first!
 
         // When: 削除
         repository.delete(inbox)
         try context.save()
 
         // Then: Inboxが空
-        #expect(try context.fetch(FetchDescriptor<Inbox>()).isEmpty)
+        #expect(try fetchInboxItems(from: context).isEmpty)
     }
 }

@@ -10,11 +10,32 @@ import Foundation
 @MainActor
 struct URLItemSearchTests {
     // テスト用のモックアイテム
-    struct MockURLItem: URLItem {
+    struct MockURLItem: URLItemDisplayable {
         var id: UUID
         var url: String?
         var title: String?
         var addedInboxAt: Date
+        var bookmarkedAt: Date?
+        var archivedAt: Date?
+        var status: String
+
+        init(
+            id: UUID,
+            url: String?,
+            title: String?,
+            addedInboxAt: Date,
+            bookmarkedAt: Date? = nil,
+            archivedAt: Date? = nil,
+            status: String = URLItemStatus.inbox.rawValue
+        ) {
+            self.id = id
+            self.url = url
+            self.title = title
+            self.addedInboxAt = addedInboxAt
+            self.bookmarkedAt = bookmarkedAt
+            self.archivedAt = archivedAt
+            self.status = status
+        }
     }
 
     @Test("空文字列での検索は常にマッチする")

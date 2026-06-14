@@ -10,7 +10,11 @@ import SwiftData
 
 struct ArchiveListView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \Archive.archivedAt, order: .reverse) private var archiveItems: [Archive]
+    @Query(
+        filter: #Predicate<Archive> { $0.status == "archive" },
+        sort: \Archive.archivedAt,
+        order: .reverse
+    ) private var archiveItems: [Archive]
     @State private var searchText = ""
     @State private var showingExporter = false
     @State private var exportDocument: ArchiveExportDocument?
@@ -151,7 +155,7 @@ struct ArchiveListView: View {
 
     private func exportArchives() {
         do {
-            let items = filteredItems.map { ArchiveExportItem(archive: $0) }
+            let items = filteredItems.compactMap { ArchiveExportItem(archive: $0) }
             let export = try exportUseCase.execute(items: items)
             exportDocument = ArchiveExportDocument(data: export.data)
             exportFilename = export.filename

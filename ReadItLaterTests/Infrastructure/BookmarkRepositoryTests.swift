@@ -3,7 +3,7 @@ import SwiftData
 import Foundation
 @testable import ReadItLater
 
-@Suite("BookmarkRepository")
+@Suite("BookmarkRepository", .serialized)
 struct BookmarkRepositoryTests {
 
     // MARK: - Helper
@@ -11,6 +11,27 @@ struct BookmarkRepositoryTests {
     /// テスト用のin-memory ModelContainerを作成
     private func createInMemoryContainer() throws -> ModelContainer {
         try ModelContainerFactory.createSharedContainer(inMemory: true)
+    }
+
+    private func fetchInboxItems(from context: ModelContext) throws -> [Inbox] {
+        let descriptor = FetchDescriptor<Inbox>(
+            predicate: #Predicate { $0.status == "inbox" }
+        )
+        return try context.fetch(descriptor)
+    }
+
+    private func fetchBookmarks(from context: ModelContext) throws -> [Bookmark] {
+        let descriptor = FetchDescriptor<Bookmark>(
+            predicate: #Predicate { $0.status == "bookmark" }
+        )
+        return try context.fetch(descriptor)
+    }
+
+    private func fetchArchives(from context: ModelContext) throws -> [Archive] {
+        let descriptor = FetchDescriptor<Archive>(
+            predicate: #Predicate { $0.status == "archive" }
+        )
+        return try context.fetch(descriptor)
     }
 
     // MARK: - Delete Single Tests
@@ -25,20 +46,18 @@ struct BookmarkRepositoryTests {
         let repository = BookmarkRepository(modelContext: context)
 
         // 準備: ブックマークを追加
-        let bookmark = Bookmark(url: "https://example.com", title: "Example")
+        let bookmark = Bookmark(url: "https://example.com", title: "Example", status: .bookmark)
         context.insert(bookmark)
 
         // 削除前の確認
-        var descriptor = FetchDescriptor<Bookmark>()
-        var bookmarks = try context.fetch(descriptor)
+        var bookmarks = try fetchBookmarks(from: context)
         #expect(bookmarks.count == 1)
 
         // 実行
         repository.delete(bookmark)
 
         // 検証
-        descriptor = FetchDescriptor<Bookmark>()
-        bookmarks = try context.fetch(descriptor)
+        bookmarks = try fetchBookmarks(from: context)
         #expect(bookmarks.isEmpty)
     }
 
@@ -52,24 +71,22 @@ struct BookmarkRepositoryTests {
         let repository = BookmarkRepository(modelContext: context)
 
         // 準備: 3つのブックマークを追加
-        let bookmark1 = Bookmark(url: "https://example1.com", title: "Example 1")
-        let bookmark2 = Bookmark(url: "https://example2.com", title: "Example 2")
-        let bookmark3 = Bookmark(url: "https://example3.com", title: "Example 3")
+        let bookmark1 = Bookmark(url: "https://example1.com", title: "Example 1", status: .bookmark)
+        let bookmark2 = Bookmark(url: "https://example2.com", title: "Example 2", status: .bookmark)
+        let bookmark3 = Bookmark(url: "https://example3.com", title: "Example 3", status: .bookmark)
         context.insert(bookmark1)
         context.insert(bookmark2)
         context.insert(bookmark3)
 
         // 削除前の確認
-        var descriptor = FetchDescriptor<Bookmark>()
-        var bookmarks = try context.fetch(descriptor)
+        var bookmarks = try fetchBookmarks(from: context)
         #expect(bookmarks.count == 3)
 
         // 実行: 2つを削除
         repository.delete([bookmark1, bookmark3])
 
         // 検証: bookmark2のみ残る
-        descriptor = FetchDescriptor<Bookmark>()
-        bookmarks = try context.fetch(descriptor)
+        bookmarks = try fetchBookmarks(from: context)
         #expect(bookmarks.count == 1)
         #expect(bookmarks.first?.url == "https://example2.com")
     }
@@ -82,15 +99,14 @@ struct BookmarkRepositoryTests {
         let repository = BookmarkRepository(modelContext: context)
 
         // 準備: ブックマークを追加
-        let bookmark = Bookmark(url: "https://example.com", title: "Example")
+        let bookmark = Bookmark(url: "https://example.com", title: "Example", status: .bookmark)
         context.insert(bookmark)
 
         // 実行: 空配列で削除
         repository.delete([])
 
         // 検証: bookmarkが残る
-        let descriptor = FetchDescriptor<Bookmark>()
-        let bookmarks = try context.fetch(descriptor)
+        let bookmarks = try fetchBookmarks(from: context)
         #expect(bookmarks.count == 1)
     }
 
@@ -102,20 +118,17 @@ struct BookmarkRepositoryTests {
         let repository = BookmarkRepository(modelContext: context)
 
         // 準備: 複数のブックマークを追加
-        let bookmark1 = Bookmark(url: "https://example1.com", title: "Example 1")
-        let bookmark2 = Bookmark(url: "https://example2.com", title: "Example 2")
+        let bookmark1 = Bookmark(url: "https://example1.com", title: "Example 1", status: .bookmark)
+        let bookmark2 = Bookmark(url: "https://example2.com", title: "Example 2", status: .bookmark)
         context.insert(bookmark1)
         context.insert(bookmark2)
 
         // 実行: 全件削除
-        var descriptor = FetchDescriptor<Bookmark>()
-        var allBookmarks = try context.fetch(descriptor)
+        let allBookmarks = try fetchBookmarks(from: context)
         repository.delete(allBookmarks)
 
         // 検証: 空になる
-        descriptor = FetchDescriptor<Bookmark>()
-        allBookmarks = try context.fetch(descriptor)
-        #expect(allBookmarks.isEmpty)
+        #expect(try fetchBookmarks(from: context).isEmpty)
     }
 
     // MARK: - 状態移動テスト
@@ -131,7 +144,8 @@ struct BookmarkRepositoryTests {
         let bookmark = Bookmark(
             url: "https://example.com",
             title: "Test",
-            addedInboxAt: Date(timeIntervalSince1970: 1234567890)
+            addedInboxAt: Date(timeIntervalSince1970: 1234567890),
+            status: .bookmark
         )
         context.insert(bookmark)
         try context.save()
@@ -142,13 +156,13 @@ struct BookmarkRepositoryTests {
         try repository.moveToArchive(bookmark)
 
         // Then: Archiveに存在
-        let archives = try context.fetch(FetchDescriptor<Archive>())
+        let archives = try fetchArchives(from: context)
         #expect(archives.count == 1)
         #expect(archives.first?.url == "https://example.com")
         #expect(archives.first?.addedInboxAt == originalAddedAt)
 
         // Bookmarkから削除されている
-        let remainingBookmarks = try context.fetch(FetchDescriptor<Bookmark>())
+        let remainingBookmarks = try fetchBookmarks(from: context)
         #expect(remainingBookmarks.isEmpty)
     }
 
@@ -164,7 +178,8 @@ struct BookmarkRepositoryTests {
         let bookmark = Bookmark(
             url: "https://example.com",
             title: "Test Bookmark",
-            addedInboxAt: Date(timeIntervalSince1970: 1234567890)
+            addedInboxAt: Date(timeIntervalSince1970: 1234567890),
+            status: .bookmark
         )
         context.insert(bookmark)
         try context.save()
@@ -175,14 +190,14 @@ struct BookmarkRepositoryTests {
         try bookmarkRepository.moveToInbox(bookmark, using: inboxRepository)
 
         // Then: Inboxに存在
-        let inboxItems = try context.fetch(FetchDescriptor<Inbox>())
+        let inboxItems = try fetchInboxItems(from: context)
         #expect(inboxItems.count == 1)
         #expect(inboxItems.first?.url == "https://example.com")
         #expect(inboxItems.first?.title == "Test Bookmark")
         #expect(inboxItems.first?.addedInboxAt == originalAddedAt)
 
         // Bookmarkから削除されている
-        let remainingBookmarks = try context.fetch(FetchDescriptor<Bookmark>())
+        let remainingBookmarks = try fetchBookmarks(from: context)
         #expect(remainingBookmarks.isEmpty)
     }
 
@@ -204,7 +219,8 @@ struct BookmarkRepositoryTests {
         // Bookmarkを作成
         let bookmark = Bookmark(
             url: "https://test.com",
-            title: "Test Bookmark"
+            title: "Test Bookmark",
+            status: .bookmark
         )
         context.insert(bookmark)
         try context.save()
@@ -215,11 +231,11 @@ struct BookmarkRepositoryTests {
         }
 
         // Bookmarkは削除されていない
-        let remainingBookmarks = try context.fetch(FetchDescriptor<Bookmark>())
+        let remainingBookmarks = try fetchBookmarks(from: context)
         #expect(remainingBookmarks.count == 1)
 
         // Inboxは増えていない
-        let inboxItems = try context.fetch(FetchDescriptor<Inbox>())
+        let inboxItems = try fetchInboxItems(from: context)
         #expect(inboxItems.count == InboxConfiguration.maxItems)
     }
 }
