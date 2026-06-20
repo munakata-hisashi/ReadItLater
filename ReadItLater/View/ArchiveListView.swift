@@ -11,10 +11,10 @@ import SwiftData
 struct ArchiveListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(
-        filter: #Predicate<Archive> { $0.status == "archive" },
-        sort: \Archive.archivedAt,
+        filter: #Predicate<URLItem> { $0.status == "archive" },
+        sort: \URLItem.archivedAt,
         order: .reverse
-    ) private var archiveItems: [Archive]
+    ) private var archiveItems: [URLItem]
     @State private var searchText = ""
     @State private var showingExporter = false
     @State private var exportDocument: ArchiveExportDocument?
@@ -40,7 +40,7 @@ struct ArchiveListView: View {
     }
 
     /// 検索フィルタ済みのアイテム
-    private var filteredItems: [Archive] {
+    private var filteredItems: [URLItem] {
         archiveItems.filter { $0.matches(searchText: normalizedSearchText) }
     }
 
@@ -92,7 +92,7 @@ struct ArchiveListView: View {
         }
         .searchable(text: $searchText, prompt: "タイトルまたはURLで検索")
         .navigationTitle("Archive")
-        .navigationDestination(for: Archive.self) { archive in
+        .navigationDestination(for: URLItem.self) { archive in
             URLItemDetailView(item: archive)
         }
         .toolbar {
@@ -124,7 +124,7 @@ struct ArchiveListView: View {
         .sensoryFeedback(.success, trigger: actionFeedbackTrigger)
     }
 
-    private func moveToInbox(_ archive: Archive) {
+    private func moveToInbox(_ archive: URLItem) {
         withAnimation(.bouncy) {
             do {
                 try repository.moveToInbox(archive, using: inboxRepository)
@@ -135,7 +135,7 @@ struct ArchiveListView: View {
         }
     }
 
-    private func moveToBookmark(_ archive: Archive) {
+    private func moveToBookmark(_ archive: URLItem) {
         withAnimation(.bouncy) {
             do {
                 try repository.moveToBookmark(archive)
@@ -146,7 +146,7 @@ struct ArchiveListView: View {
         }
     }
 
-    private func deleteArchive(_ archive: Archive) {
+    private func deleteArchive(_ archive: URLItem) {
         withAnimation(.bouncy) {
             repository.delete(archive)
             actionFeedbackTrigger += 1

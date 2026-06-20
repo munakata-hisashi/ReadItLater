@@ -7,9 +7,6 @@ import Foundation
 
 /// 現在のスキーマバージョンのモデルへのtype alias
 typealias URLItem = AppV5Schema.URLItem
-typealias Inbox = AppV5Schema.URLItem
-typealias Bookmark = AppV5Schema.URLItem
-typealias Archive = AppV5Schema.URLItem
 
 /// 共通プロトコル: URLを持つアイテム
 protocol URLItemDisplayable {

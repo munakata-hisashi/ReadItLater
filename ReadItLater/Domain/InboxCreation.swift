@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension Inbox {
+enum InboxCreation {
     enum CreationError: Error, LocalizedError, Equatable {
         case invalidURL(URLValidationError)
 

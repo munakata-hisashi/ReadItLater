@@ -20,22 +20,22 @@ struct InboxRepositoryTests {
         try ModelContainerFactory.createSharedContainer(inMemory: true)
     }
 
-    private func fetchInboxItems(from context: ModelContext) throws -> [Inbox] {
-        let descriptor = FetchDescriptor<Inbox>(
+    private func fetchInboxItems(from context: ModelContext) throws -> [URLItem] {
+        let descriptor = FetchDescriptor<URLItem>(
             predicate: #Predicate { $0.status == "inbox" }
         )
         return try context.fetch(descriptor)
     }
 
-    private func fetchBookmarks(from context: ModelContext) throws -> [Bookmark] {
-        let descriptor = FetchDescriptor<Bookmark>(
+    private func fetchBookmarks(from context: ModelContext) throws -> [URLItem] {
+        let descriptor = FetchDescriptor<URLItem>(
             predicate: #Predicate { $0.status == "bookmark" }
         )
         return try context.fetch(descriptor)
     }
 
-    private func fetchArchives(from context: ModelContext) throws -> [Archive] {
-        let descriptor = FetchDescriptor<Archive>(
+    private func fetchArchives(from context: ModelContext) throws -> [URLItem] {
+        let descriptor = FetchDescriptor<URLItem>(
             predicate: #Predicate { $0.status == "archive" }
         )
         return try context.fetch(descriptor)
@@ -93,7 +93,7 @@ struct InboxRepositoryTests {
 
         // 上限-1件を追加
         for i in 0..<(InboxConfiguration.maxItems - 1) {
-            let inbox = Inbox(url: "https://example.com/\(i)", title: "Item \(i)")
+            let inbox = URLItem(url: "https://example.com/\(i)", title: "Item \(i)")
             context.insert(inbox)
         }
 
@@ -110,7 +110,7 @@ struct InboxRepositoryTests {
 
         // 上限件数を追加
         for i in 0..<InboxConfiguration.maxItems {
-            let inbox = Inbox(url: "https://example.com/\(i)", title: "Item \(i)")
+            let inbox = URLItem(url: "https://example.com/\(i)", title: "Item \(i)")
             context.insert(inbox)
         }
 
@@ -129,7 +129,7 @@ struct InboxRepositoryTests {
 
         // 上限件数を追加
         for i in 0..<InboxConfiguration.maxItems {
-            let inbox = Inbox(url: "https://example.com/\(i)", title: "Item \(i)")
+            let inbox = URLItem(url: "https://example.com/\(i)", title: "Item \(i)")
             context.insert(inbox)
         }
 

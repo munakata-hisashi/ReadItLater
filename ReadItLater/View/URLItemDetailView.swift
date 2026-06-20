@@ -45,7 +45,7 @@ struct URLItemDetailView: View {
 
 #Preview {
     let container = ModelContainerFactory.createPreviewContainer()
-    let exampleBookmark = Bookmark(
+    let exampleBookmark = URLItem(
         url: "https://example.com",
         title: "Example",
         addedInboxAt: Date.now

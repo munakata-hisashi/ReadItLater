@@ -21,7 +21,7 @@ struct ArchiveExportItem {
     }
 
     @MainActor
-    init?(archive: Archive) {
+    init?(archive: URLItem) {
         guard let archivedAt = archive.archivedAt else {
             return nil
         }

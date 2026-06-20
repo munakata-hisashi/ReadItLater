@@ -60,7 +60,7 @@ final class AddInboxViewModel {
 
         let trimmedTitle = titleString.trimmingCharacters(in: .whitespacesAndNewlines)
         let finalTitle = trimmedTitle.isEmpty ? fetchedTitle : trimmedTitle
-        let result = Inbox.create(from: urlString, title: finalTitle)
+        let result = InboxCreation.create(from: urlString, title: finalTitle)
 
         switch result {
         case .success(let inboxData):
@@ -113,7 +113,7 @@ final class AddInboxViewModel {
         errorMessage = nil
     }
     
-    private func handleCreationError(_ error: Inbox.CreationError) {
+    private func handleCreationError(_ error: InboxCreation.CreationError) {
         switch error {
         case .invalidURL(let urlError):
             errorMessage = urlError.localizedDescription

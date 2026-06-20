@@ -38,7 +38,7 @@ struct InboxRepository: InboxRepositoryProtocol {
             throw InboxRepositoryError.inboxFull
         }
 
-        let inbox = Inbox(url: url, title: title, status: .inbox)
+        let inbox = URLItem(url: url, title: title, status: .inbox)
         modelContext.insert(inbox)
         try modelContext.save()
     }
@@ -50,7 +50,7 @@ struct InboxRepository: InboxRepositoryProtocol {
     }
 
     func count() -> Int {
-        let descriptor = FetchDescriptor<Inbox>(
+        let descriptor = FetchDescriptor<URLItem>(
             predicate: #Predicate { $0.status == "inbox" }
         )
         return (try? modelContext.fetchCount(descriptor)) ?? 0
@@ -62,14 +62,14 @@ struct InboxRepository: InboxRepositoryProtocol {
 
     // MARK: - 状態移動
 
-    func moveToBookmark(_ inbox: Inbox) throws {
+    func moveToBookmark(_ inbox: URLItem) throws {
         inbox.status = URLItemStatus.bookmark.rawValue
         inbox.bookmarkedAt = Date.now
         inbox.archivedAt = nil
         try modelContext.save()
     }
 
-    func moveToArchive(_ inbox: Inbox) throws {
+    func moveToArchive(_ inbox: URLItem) throws {
         inbox.status = URLItemStatus.archive.rawValue
         inbox.bookmarkedAt = nil
         inbox.archivedAt = Date.now
@@ -78,7 +78,7 @@ struct InboxRepository: InboxRepositoryProtocol {
 
     // MARK: - 削除
 
-    func delete(_ inbox: Inbox) {
+    func delete(_ inbox: URLItem) {
         modelContext.delete(inbox)
     }
 }

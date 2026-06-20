@@ -11,10 +11,10 @@ import SwiftData
 struct BookmarkListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(
-        filter: #Predicate<Bookmark> { $0.status == "bookmark" },
-        sort: \Bookmark.bookmarkedAt,
+        filter: #Predicate<URLItem> { $0.status == "bookmark" },
+        sort: \URLItem.bookmarkedAt,
         order: .reverse
-    ) private var bookmarks: [Bookmark]
+    ) private var bookmarks: [URLItem]
     @State private var actionFeedbackTrigger = 0
 
     /// Repository（computed propertyとして生成）
@@ -59,14 +59,14 @@ struct BookmarkListView: View {
             }
         }
         .navigationTitle("Bookmarks")
-        .navigationDestination(for: Bookmark.self) { bookmark in
+        .navigationDestination(for: URLItem.self) { bookmark in
             URLItemDetailView(item: bookmark)
         }
         .tint(Color.appBrandPrimary)
         .sensoryFeedback(.success, trigger: actionFeedbackTrigger)
     }
 
-    private func moveToInbox(_ bookmark: Bookmark) {
+    private func moveToInbox(_ bookmark: URLItem) {
         withAnimation(.bouncy) {
             do {
                 try repository.moveToInbox(bookmark, using: inboxRepository)
@@ -77,7 +77,7 @@ struct BookmarkListView: View {
         }
     }
 
-    private func moveToArchive(_ bookmark: Bookmark) {
+    private func moveToArchive(_ bookmark: URLItem) {
         withAnimation(.bouncy) {
             do {
                 try repository.moveToArchive(bookmark)
@@ -88,7 +88,7 @@ struct BookmarkListView: View {
         }
     }
 
-    private func deleteBookmark(_ bookmark: Bookmark) {
+    private func deleteBookmark(_ bookmark: URLItem) {
         withAnimation(.bouncy) {
             repository.delete(bookmark)
             actionFeedbackTrigger += 1

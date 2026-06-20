@@ -18,14 +18,14 @@ struct ArchiveRepository: ArchiveRepositoryProtocol {
 
     // MARK: - 状態移動
 
-    func moveToBookmark(_ archive: Archive) throws {
+    func moveToBookmark(_ archive: URLItem) throws {
         archive.status = URLItemStatus.bookmark.rawValue
         archive.bookmarkedAt = Date.now
         archive.archivedAt = nil
         try modelContext.save()
     }
 
-    func moveToInbox(_ archive: Archive, using inboxRepository: InboxRepositoryProtocol) throws {
+    func moveToInbox(_ archive: URLItem, using inboxRepository: InboxRepositoryProtocol) throws {
         // Inbox容量チェック
         guard inboxRepository.canAdd() else {
             throw InboxRepositoryError.inboxFull
@@ -39,7 +39,7 @@ struct ArchiveRepository: ArchiveRepositoryProtocol {
 
     // MARK: - 削除
 
-    func delete(_ archive: Archive) {
+    func delete(_ archive: URLItem) {
         modelContext.delete(archive)
     }
 }

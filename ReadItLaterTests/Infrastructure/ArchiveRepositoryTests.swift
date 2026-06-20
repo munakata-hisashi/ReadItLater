@@ -20,22 +20,22 @@ struct ArchiveRepositoryTests {
         try ModelContainerFactory.createSharedContainer(inMemory: true)
     }
 
-    private func fetchInboxItems(from context: ModelContext) throws -> [Inbox] {
-        let descriptor = FetchDescriptor<Inbox>(
+    private func fetchInboxItems(from context: ModelContext) throws -> [URLItem] {
+        let descriptor = FetchDescriptor<URLItem>(
             predicate: #Predicate { $0.status == "inbox" }
         )
         return try context.fetch(descriptor)
     }
 
-    private func fetchBookmarks(from context: ModelContext) throws -> [Bookmark] {
-        let descriptor = FetchDescriptor<Bookmark>(
+    private func fetchBookmarks(from context: ModelContext) throws -> [URLItem] {
+        let descriptor = FetchDescriptor<URLItem>(
             predicate: #Predicate { $0.status == "bookmark" }
         )
         return try context.fetch(descriptor)
     }
 
-    private func fetchArchives(from context: ModelContext) throws -> [Archive] {
-        let descriptor = FetchDescriptor<Archive>(
+    private func fetchArchives(from context: ModelContext) throws -> [URLItem] {
+        let descriptor = FetchDescriptor<URLItem>(
             predicate: #Predicate { $0.status == "archive" }
         )
         return try context.fetch(descriptor)
@@ -51,7 +51,7 @@ struct ArchiveRepositoryTests {
         let repository = ArchiveRepository(modelContext: context)
 
         // Given: Archiveを作成
-        let archive = Archive(
+        let archive = URLItem(
             url: "https://example.com",
             title: "Test",
             addedInboxAt: Date(timeIntervalSince1970: 1234567890),
@@ -85,7 +85,7 @@ struct ArchiveRepositoryTests {
         let inboxRepository = InboxRepository(modelContext: context)
 
         // Given: Archiveを作成
-        let archive = Archive(
+        let archive = URLItem(
             url: "https://example.com",
             title: "Test Archive",
             addedInboxAt: Date(timeIntervalSince1970: 1234567890),
@@ -121,13 +121,13 @@ struct ArchiveRepositoryTests {
 
         // Given: Inboxを満杯にする
         for i in 0..<InboxConfiguration.maxItems {
-            let inbox = Inbox(url: "https://example\(i).com", title: "Item \(i)")
+            let inbox = URLItem(url: "https://example\(i).com", title: "Item \(i)")
             context.insert(inbox)
         }
         try context.save()
 
         // Archiveを作成
-        let archive = Archive(
+        let archive = URLItem(
             url: "https://test.com",
             title: "Test Archive",
             status: .archive
@@ -159,7 +159,7 @@ struct ArchiveRepositoryTests {
         let repository = ArchiveRepository(modelContext: context)
 
         // Given: Archiveを作成
-        let archive = Archive(url: "https://example.com", title: "Test", status: .archive)
+        let archive = URLItem(url: "https://example.com", title: "Test", status: .archive)
         context.insert(archive)
         try context.save()
 

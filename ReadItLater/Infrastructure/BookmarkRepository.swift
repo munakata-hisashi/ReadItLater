@@ -22,11 +22,11 @@ struct BookmarkRepository: BookmarkRepositoryProtocol {
         self.modelContext = modelContext
     }
 
-    func delete(_ bookmark: Bookmark) {
+    func delete(_ bookmark: URLItem) {
         modelContext.delete(bookmark)
     }
 
-    func delete(_ bookmarks: [Bookmark]) {
+    func delete(_ bookmarks: [URLItem]) {
         for bookmark in bookmarks {
             modelContext.delete(bookmark)
         }
@@ -34,14 +34,14 @@ struct BookmarkRepository: BookmarkRepositoryProtocol {
 
     // MARK: - 状態移動
 
-    func moveToArchive(_ bookmark: Bookmark) throws {
+    func moveToArchive(_ bookmark: URLItem) throws {
         bookmark.status = URLItemStatus.archive.rawValue
         bookmark.bookmarkedAt = nil
         bookmark.archivedAt = Date.now
         try modelContext.save()
     }
 
-    func moveToInbox(_ bookmark: Bookmark, using inboxRepository: InboxRepositoryProtocol) throws {
+    func moveToInbox(_ bookmark: URLItem, using inboxRepository: InboxRepositoryProtocol) throws {
         // Inbox容量チェック
         guard inboxRepository.canAdd() else {
             throw InboxRepositoryError.inboxFull
