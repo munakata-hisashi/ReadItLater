@@ -10,7 +10,11 @@ import SwiftData
 
 struct BookmarkListView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \Bookmark.bookmarkedAt, order: .reverse) private var bookmarks: [Bookmark]
+    @Query(
+        filter: #Predicate<Bookmark> { $0.status == "bookmark" },
+        sort: \Bookmark.bookmarkedAt,
+        order: .reverse
+    ) private var bookmarks: [Bookmark]
     @State private var actionFeedbackTrigger = 0
 
     /// Repository（computed propertyとして生成）

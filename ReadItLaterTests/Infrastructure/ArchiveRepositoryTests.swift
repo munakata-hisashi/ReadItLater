@@ -10,7 +10,7 @@ import SwiftData
 import Foundation
 @testable import ReadItLater
 
-@Suite("ArchiveRepository")
+@Suite("ArchiveRepository", .serialized)
 struct ArchiveRepositoryTests {
 
     // MARK: - Helper
@@ -18,6 +18,27 @@ struct ArchiveRepositoryTests {
     /// テスト用のin-memory ModelContainerを作成
     private func createInMemoryContainer() throws -> ModelContainer {
         try ModelContainerFactory.createSharedContainer(inMemory: true)
+    }
+
+    private func fetchInboxItems(from context: ModelContext) throws -> [Inbox] {
+        let descriptor = FetchDescriptor<Inbox>(
+            predicate: #Predicate { $0.status == "inbox" }
+        )
+        return try context.fetch(descriptor)
+    }
+
+    private func fetchBookmarks(from context: ModelContext) throws -> [Bookmark] {
+        let descriptor = FetchDescriptor<Bookmark>(
+            predicate: #Predicate { $0.status == "bookmark" }
+        )
+        return try context.fetch(descriptor)
+    }
+
+    private func fetchArchives(from context: ModelContext) throws -> [Archive] {
+        let descriptor = FetchDescriptor<Archive>(
+            predicate: #Predicate { $0.status == "archive" }
+        )
+        return try context.fetch(descriptor)
     }
 
     // MARK: - 状態移動テスト
@@ -33,7 +54,8 @@ struct ArchiveRepositoryTests {
         let archive = Archive(
             url: "https://example.com",
             title: "Test",
-            addedInboxAt: Date(timeIntervalSince1970: 1234567890)
+            addedInboxAt: Date(timeIntervalSince1970: 1234567890),
+            status: .archive
         )
         context.insert(archive)
         try context.save()
@@ -44,13 +66,13 @@ struct ArchiveRepositoryTests {
         try repository.moveToBookmark(archive)
 
         // Then: Bookmarkに存在
-        let bookmarks = try context.fetch(FetchDescriptor<Bookmark>())
+        let bookmarks = try fetchBookmarks(from: context)
         #expect(bookmarks.count == 1)
         #expect(bookmarks.first?.url == "https://example.com")
         #expect(bookmarks.first?.addedInboxAt == originalAddedAt)
 
         // Archiveから削除されている
-        let remainingArchives = try context.fetch(FetchDescriptor<Archive>())
+        let remainingArchives = try fetchArchives(from: context)
         #expect(remainingArchives.isEmpty)
     }
 
@@ -66,7 +88,8 @@ struct ArchiveRepositoryTests {
         let archive = Archive(
             url: "https://example.com",
             title: "Test Archive",
-            addedInboxAt: Date(timeIntervalSince1970: 1234567890)
+            addedInboxAt: Date(timeIntervalSince1970: 1234567890),
+            status: .archive
         )
         context.insert(archive)
         try context.save()
@@ -77,14 +100,14 @@ struct ArchiveRepositoryTests {
         try archiveRepository.moveToInbox(archive, using: inboxRepository)
 
         // Then: Inboxに存在
-        let inboxItems = try context.fetch(FetchDescriptor<Inbox>())
+        let inboxItems = try fetchInboxItems(from: context)
         #expect(inboxItems.count == 1)
         #expect(inboxItems.first?.url == "https://example.com")
         #expect(inboxItems.first?.title == "Test Archive")
         #expect(inboxItems.first?.addedInboxAt == originalAddedAt)
 
         // Archiveから削除されている
-        let remainingArchives = try context.fetch(FetchDescriptor<Archive>())
+        let remainingArchives = try fetchArchives(from: context)
         #expect(remainingArchives.isEmpty)
     }
 
@@ -106,7 +129,8 @@ struct ArchiveRepositoryTests {
         // Archiveを作成
         let archive = Archive(
             url: "https://test.com",
-            title: "Test Archive"
+            title: "Test Archive",
+            status: .archive
         )
         context.insert(archive)
         try context.save()
@@ -117,11 +141,11 @@ struct ArchiveRepositoryTests {
         }
 
         // Archiveは削除されていない
-        let remainingArchives = try context.fetch(FetchDescriptor<Archive>())
+        let remainingArchives = try fetchArchives(from: context)
         #expect(remainingArchives.count == 1)
 
         // Inboxは増えていない
-        let inboxItems = try context.fetch(FetchDescriptor<Inbox>())
+        let inboxItems = try fetchInboxItems(from: context)
         #expect(inboxItems.count == InboxConfiguration.maxItems)
     }
 
@@ -135,7 +159,7 @@ struct ArchiveRepositoryTests {
         let repository = ArchiveRepository(modelContext: context)
 
         // Given: Archiveを作成
-        let archive = Archive(url: "https://example.com", title: "Test")
+        let archive = Archive(url: "https://example.com", title: "Test", status: .archive)
         context.insert(archive)
         try context.save()
 
@@ -144,6 +168,6 @@ struct ArchiveRepositoryTests {
         try context.save()
 
         // Then: Archiveが空
-        #expect(try context.fetch(FetchDescriptor<Archive>()).isEmpty)
+        #expect(try fetchArchives(from: context).isEmpty)
     }
 }

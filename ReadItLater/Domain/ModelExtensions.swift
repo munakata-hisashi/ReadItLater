@@ -6,24 +6,30 @@
 import Foundation
 
 /// 現在のスキーマバージョンのモデルへのtype alias
-typealias Inbox = AppV3Schema.Inbox
-typealias Bookmark = AppV3Schema.Bookmark
-typealias Archive = AppV3Schema.Archive
+typealias URLItem = AppV5Schema.URLItem
+typealias Inbox = AppV5Schema.URLItem
+typealias Bookmark = AppV5Schema.URLItem
+typealias Archive = AppV5Schema.URLItem
 
 /// 共通プロトコル: URLを持つアイテム
-protocol URLItem {
+protocol URLItemDisplayable {
     var id: UUID { get }
     var url: String? { get }
     var title: String? { get }
     var addedInboxAt: Date { get }
+    var bookmarkedAt: Date? { get }
+    var archivedAt: Date? { get }
+    var status: String { get }
 }
 
-extension Inbox: URLItem {}
-extension Bookmark: URLItem {}
-extension Archive: URLItem {}
+extension URLItem: URLItemDisplayable {}
 
 /// URLItemの共通extension
-extension URLItem {
+extension URLItemDisplayable {
+    var itemStatus: URLItemStatus? {
+        URLItemStatus(rawValue: status)
+    }
+
     var safeTitle: String {
         title ?? "No title"
     }

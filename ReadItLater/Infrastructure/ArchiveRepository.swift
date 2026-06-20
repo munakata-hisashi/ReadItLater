@@ -19,15 +19,9 @@ struct ArchiveRepository: ArchiveRepositoryProtocol {
     // MARK: - 状態移動
 
     func moveToBookmark(_ archive: Archive) throws {
-        let bookmark = Bookmark(
-            url: archive.url ?? "",
-            title: archive.title ?? "",
-            addedInboxAt: archive.addedInboxAt,  // 元の追加日時を引き継ぐ
-            bookmarkedAt: Date.now  // Bookmarkに移動した日時
-        )
-
-        modelContext.insert(bookmark)
-        modelContext.delete(archive)
+        archive.status = URLItemStatus.bookmark.rawValue
+        archive.bookmarkedAt = Date.now
+        archive.archivedAt = nil
         try modelContext.save()
     }
 
@@ -37,15 +31,9 @@ struct ArchiveRepository: ArchiveRepositoryProtocol {
             throw InboxRepositoryError.inboxFull
         }
 
-        // Inboxを作成（元の追加日時を引き継ぐ）
-        let inbox = Inbox(
-            url: archive.url ?? "",
-            title: archive.title ?? "",
-            addedInboxAt: archive.addedInboxAt  // 元の追加日時を維持
-        )
-
-        modelContext.insert(inbox)
-        modelContext.delete(archive)
+        archive.status = URLItemStatus.inbox.rawValue
+        archive.bookmarkedAt = nil
+        archive.archivedAt = nil
         try modelContext.save()
     }
 

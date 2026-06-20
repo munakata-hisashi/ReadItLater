@@ -12,7 +12,7 @@ import SwiftData
 ///
 /// Inbox、Bookmark、Archiveの詳細表示に使用する共通ビュー
 struct URLItemDetailView: View {
-    let item: any URLItem
+    let item: any URLItemDisplayable
     @Environment(\.openURL) private var openURL
 
     var body: some View {

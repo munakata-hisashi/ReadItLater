@@ -10,7 +10,11 @@ import SwiftData
 
 struct InboxListView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \Inbox.addedInboxAt, order: .reverse) private var inboxItems: [Inbox]
+    @Query(
+        filter: #Predicate<Inbox> { $0.status == "inbox" },
+        sort: \Inbox.addedInboxAt,
+        order: .reverse
+    ) private var inboxItems: [Inbox]
     @State private var showingAddSheet = false
     @State private var addButtonTrigger = 0
     @State private var actionFeedbackTrigger = 0
