@@ -40,18 +40,18 @@ protocol InboxRepositoryProtocol {
     /// InboxからBookmarkへ移動
     /// - Parameter inbox: 移動元のInbox
     /// - Throws: SwiftDataのエラー
-    func moveToBookmark(_ inbox: Inbox) throws
+    func moveToBookmark(_ inbox: URLItem) throws
 
     /// InboxからArchiveへ移動
     /// - Parameter inbox: 移動元のInbox
     /// - Throws: SwiftDataのエラー
-    func moveToArchive(_ inbox: Inbox) throws
+    func moveToArchive(_ inbox: URLItem) throws
 
     // MARK: - 削除
 
     /// Inboxを削除
     /// - Parameter inbox: 削除対象のInbox
-    func delete(_ inbox: Inbox)
+    func delete(_ inbox: URLItem)
 }
 
 /// InboxRepository固有のエラー

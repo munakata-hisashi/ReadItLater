@@ -20,22 +20,22 @@ struct RepositoryIntegrationTests {
         try ModelContainerFactory.createSharedContainer(inMemory: true)
     }
 
-    private func fetchInboxItems(from context: ModelContext) throws -> [Inbox] {
-        let descriptor = FetchDescriptor<Inbox>(
+    private func fetchInboxItems(from context: ModelContext) throws -> [URLItem] {
+        let descriptor = FetchDescriptor<URLItem>(
             predicate: #Predicate { $0.status == "inbox" }
         )
         return try context.fetch(descriptor)
     }
 
-    private func fetchBookmarks(from context: ModelContext) throws -> [Bookmark] {
-        let descriptor = FetchDescriptor<Bookmark>(
+    private func fetchBookmarks(from context: ModelContext) throws -> [URLItem] {
+        let descriptor = FetchDescriptor<URLItem>(
             predicate: #Predicate { $0.status == "bookmark" }
         )
         return try context.fetch(descriptor)
     }
 
-    private func fetchArchives(from context: ModelContext) throws -> [Archive] {
-        let descriptor = FetchDescriptor<Archive>(
+    private func fetchArchives(from context: ModelContext) throws -> [URLItem] {
+        let descriptor = FetchDescriptor<URLItem>(
             predicate: #Predicate { $0.status == "archive" }
         )
         return try context.fetch(descriptor)
@@ -55,7 +55,7 @@ struct RepositoryIntegrationTests {
 
         // Given: 特定の日時でInboxに追加
         let specificDate = Date(timeIntervalSince1970: 1234567890)
-        let inbox = Inbox(url: "https://example.com", title: "Test", addedInboxAt: specificDate)
+        let inbox = URLItem(url: "https://example.com", title: "Test", addedInboxAt: specificDate)
         context.insert(inbox)
         try context.save()
 

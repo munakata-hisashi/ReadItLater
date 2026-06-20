@@ -39,15 +39,15 @@ final class MockInboxRepository: InboxRepositoryProtocol {
         return InboxConfiguration.maxItems - countResult
     }
 
-    func moveToBookmark(_ inbox: Inbox) throws {
+    func moveToBookmark(_ inbox: URLItem) throws {
         // テストでは未使用
     }
 
-    func moveToArchive(_ inbox: Inbox) throws {
+    func moveToArchive(_ inbox: URLItem) throws {
         // テストでは未使用
     }
 
-    func delete(_ inbox: Inbox) {
+    func delete(_ inbox: URLItem) {
         // テストでは未使用
     }
 }

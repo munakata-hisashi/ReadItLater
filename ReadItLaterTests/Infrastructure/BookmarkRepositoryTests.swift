@@ -13,22 +13,22 @@ struct BookmarkRepositoryTests {
         try ModelContainerFactory.createSharedContainer(inMemory: true)
     }
 
-    private func fetchInboxItems(from context: ModelContext) throws -> [Inbox] {
-        let descriptor = FetchDescriptor<Inbox>(
+    private func fetchInboxItems(from context: ModelContext) throws -> [URLItem] {
+        let descriptor = FetchDescriptor<URLItem>(
             predicate: #Predicate { $0.status == "inbox" }
         )
         return try context.fetch(descriptor)
     }
 
-    private func fetchBookmarks(from context: ModelContext) throws -> [Bookmark] {
-        let descriptor = FetchDescriptor<Bookmark>(
+    private func fetchBookmarks(from context: ModelContext) throws -> [URLItem] {
+        let descriptor = FetchDescriptor<URLItem>(
             predicate: #Predicate { $0.status == "bookmark" }
         )
         return try context.fetch(descriptor)
     }
 
-    private func fetchArchives(from context: ModelContext) throws -> [Archive] {
-        let descriptor = FetchDescriptor<Archive>(
+    private func fetchArchives(from context: ModelContext) throws -> [URLItem] {
+        let descriptor = FetchDescriptor<URLItem>(
             predicate: #Predicate { $0.status == "archive" }
         )
         return try context.fetch(descriptor)
@@ -46,7 +46,7 @@ struct BookmarkRepositoryTests {
         let repository = BookmarkRepository(modelContext: context)
 
         // 準備: ブックマークを追加
-        let bookmark = Bookmark(url: "https://example.com", title: "Example", status: .bookmark)
+        let bookmark = URLItem(url: "https://example.com", title: "Example", status: .bookmark)
         context.insert(bookmark)
 
         // 削除前の確認
@@ -71,9 +71,9 @@ struct BookmarkRepositoryTests {
         let repository = BookmarkRepository(modelContext: context)
 
         // 準備: 3つのブックマークを追加
-        let bookmark1 = Bookmark(url: "https://example1.com", title: "Example 1", status: .bookmark)
-        let bookmark2 = Bookmark(url: "https://example2.com", title: "Example 2", status: .bookmark)
-        let bookmark3 = Bookmark(url: "https://example3.com", title: "Example 3", status: .bookmark)
+        let bookmark1 = URLItem(url: "https://example1.com", title: "Example 1", status: .bookmark)
+        let bookmark2 = URLItem(url: "https://example2.com", title: "Example 2", status: .bookmark)
+        let bookmark3 = URLItem(url: "https://example3.com", title: "Example 3", status: .bookmark)
         context.insert(bookmark1)
         context.insert(bookmark2)
         context.insert(bookmark3)
@@ -99,7 +99,7 @@ struct BookmarkRepositoryTests {
         let repository = BookmarkRepository(modelContext: context)
 
         // 準備: ブックマークを追加
-        let bookmark = Bookmark(url: "https://example.com", title: "Example", status: .bookmark)
+        let bookmark = URLItem(url: "https://example.com", title: "Example", status: .bookmark)
         context.insert(bookmark)
 
         // 実行: 空配列で削除
@@ -118,8 +118,8 @@ struct BookmarkRepositoryTests {
         let repository = BookmarkRepository(modelContext: context)
 
         // 準備: 複数のブックマークを追加
-        let bookmark1 = Bookmark(url: "https://example1.com", title: "Example 1", status: .bookmark)
-        let bookmark2 = Bookmark(url: "https://example2.com", title: "Example 2", status: .bookmark)
+        let bookmark1 = URLItem(url: "https://example1.com", title: "Example 1", status: .bookmark)
+        let bookmark2 = URLItem(url: "https://example2.com", title: "Example 2", status: .bookmark)
         context.insert(bookmark1)
         context.insert(bookmark2)
 
@@ -141,7 +141,7 @@ struct BookmarkRepositoryTests {
         let repository = BookmarkRepository(modelContext: context)
 
         // Given: Bookmarkを作成
-        let bookmark = Bookmark(
+        let bookmark = URLItem(
             url: "https://example.com",
             title: "Test",
             addedInboxAt: Date(timeIntervalSince1970: 1234567890),
@@ -175,7 +175,7 @@ struct BookmarkRepositoryTests {
         let inboxRepository = InboxRepository(modelContext: context)
 
         // Given: Bookmarkを作成
-        let bookmark = Bookmark(
+        let bookmark = URLItem(
             url: "https://example.com",
             title: "Test Bookmark",
             addedInboxAt: Date(timeIntervalSince1970: 1234567890),
@@ -211,13 +211,13 @@ struct BookmarkRepositoryTests {
 
         // Given: Inboxを満杯にする
         for i in 0..<InboxConfiguration.maxItems {
-            let inbox = Inbox(url: "https://example\(i).com", title: "Item \(i)")
+            let inbox = URLItem(url: "https://example\(i).com", title: "Item \(i)")
             context.insert(inbox)
         }
         try context.save()
 
         // Bookmarkを作成
-        let bookmark = Bookmark(
+        let bookmark = URLItem(
             url: "https://test.com",
             title: "Test Bookmark",
             status: .bookmark

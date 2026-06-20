@@ -127,7 +127,7 @@ struct URLItemRow: View {
 
 #Preview {
     let container = ModelContainerFactory.createPreviewContainer()
-    let exampleInbox = Inbox(url: "https://example.com", title: "Example Inbox")
+    let exampleInbox = URLItem(url: "https://example.com", title: "Example Inbox")
 
     return List {
         URLItemRow(item: exampleInbox)

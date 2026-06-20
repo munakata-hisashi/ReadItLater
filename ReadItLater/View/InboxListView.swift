@@ -11,10 +11,10 @@ import SwiftData
 struct InboxListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(
-        filter: #Predicate<Inbox> { $0.status == "inbox" },
-        sort: \Inbox.addedInboxAt,
+        filter: #Predicate<URLItem> { $0.status == "inbox" },
+        sort: \URLItem.addedInboxAt,
         order: .reverse
-    ) private var inboxItems: [Inbox]
+    ) private var inboxItems: [URLItem]
     @State private var showingAddSheet = false
     @State private var addButtonTrigger = 0
     @State private var actionFeedbackTrigger = 0
@@ -59,7 +59,7 @@ struct InboxListView: View {
             }
         }
         .navigationTitle("Inbox")
-        .navigationDestination(for: Inbox.self) { inbox in
+        .navigationDestination(for: URLItem.self) { inbox in
             URLItemDetailView(item: inbox)
         }
         .tint(Color.appBrandPrimary)
@@ -104,7 +104,7 @@ struct InboxListView: View {
         }
     }
 
-    private func moveToBookmark(_ inbox: Inbox) {
+    private func moveToBookmark(_ inbox: URLItem) {
         withAnimation(.bouncy) {
             do {
                 try repository.moveToBookmark(inbox)
@@ -115,7 +115,7 @@ struct InboxListView: View {
         }
     }
 
-    private func moveToArchive(_ inbox: Inbox) {
+    private func moveToArchive(_ inbox: URLItem) {
         withAnimation(.bouncy) {
             do {
                 try repository.moveToArchive(inbox)
@@ -126,7 +126,7 @@ struct InboxListView: View {
         }
     }
 
-    private func deleteInbox(_ inbox: Inbox) {
+    private func deleteInbox(_ inbox: URLItem) {
         withAnimation(.bouncy) {
             repository.delete(inbox)
             actionFeedbackTrigger += 1

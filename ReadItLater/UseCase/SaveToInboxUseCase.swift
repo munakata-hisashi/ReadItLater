@@ -29,7 +29,7 @@ struct SaveToInboxUseCase {
             await fetchTitle(for: urlString)
         }
 
-        let inboxDataResult = Inbox.create(from: urlString, title: resolvedTitle)
+        let inboxDataResult = InboxCreation.create(from: urlString, title: resolvedTitle)
         let inboxData: InboxData
         switch inboxDataResult {
         case .success(let data):
@@ -51,7 +51,7 @@ struct SaveToInboxUseCase {
             let metadata = try await metadataService.fetchMetadata(for: url)
             return metadata.title
         } catch {
-            // タイトル取得失敗時はnilを返す（Inbox.createがホスト名で代用）
+            // タイトル取得失敗時はnilを返す（InboxCreation.createがホスト名で代用）
             return nil
         }
     }

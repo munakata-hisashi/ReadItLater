@@ -12,23 +12,23 @@ protocol BookmarkRepositoryProtocol {
 
     /// ブックマークを削除
     /// - Parameter bookmark: 削除対象のBookmark
-    func delete(_ bookmark: Bookmark)
+    func delete(_ bookmark: URLItem)
 
     /// 複数のブックマークを削除
     /// - Parameter bookmarks: 削除対象のBookmark配列
-    func delete(_ bookmarks: [Bookmark])
+    func delete(_ bookmarks: [URLItem])
 
     // MARK: - 状態移動
 
     /// BookmarkからArchiveへ移動
     /// - Parameter bookmark: 移動元のBookmark
     /// - Throws: SwiftDataのエラー
-    func moveToArchive(_ bookmark: Bookmark) throws
+    func moveToArchive(_ bookmark: URLItem) throws
 
     /// BookmarkからInboxへ移動
     /// - Parameters:
     ///   - bookmark: 移動元のBookmark
     ///   - inboxRepository: Inbox容量チェックと追加に使用するリポジトリ
     /// - Throws: InboxError（容量超過時）、SwiftDataのエラー
-    func moveToInbox(_ bookmark: Bookmark, using inboxRepository: InboxRepositoryProtocol) throws
+    func moveToInbox(_ bookmark: URLItem, using inboxRepository: InboxRepositoryProtocol) throws
 }
